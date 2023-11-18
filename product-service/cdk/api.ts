@@ -20,7 +20,7 @@ export class ProductsApi extends Construct {
         })
 
         const integrationOptions = <LambdaIntegrationOptions>{
-            allowTestInvoke: false
+            allowTestInvoke: true,
         }
         const getAllProductsIntegration = new LambdaIntegration(getAllProducts, integrationOptions);
         const getOneProductIntegration = new LambdaIntegration(getOneProduct, integrationOptions);
@@ -31,8 +31,8 @@ export class ProductsApi extends Construct {
                 stageName: "dev",
             },
             defaultCorsPreflightOptions: {
-                allowMethods: ["GET"],
-                allowOrigins: Cors.ALL_ORIGINS
+                allowOrigins: Cors.ALL_ORIGINS,
+                allowMethods: ["GET", "OPTIONS"]
             }
         });
         

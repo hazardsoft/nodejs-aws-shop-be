@@ -1,7 +1,9 @@
+import { APIGatewayProxyResult } from "aws-lambda";
 import { findOne } from "./repository";
-import { APIGatewayEvent, ProductApiFailedResponse, ProductApiResponse, ProductApiSuccessfulResponse } from "./types";
+import { APIGatewayEvent, ProductApiFailedResponse } from "./types";
+import { enableCors } from "./cors";
 
-export const handler = async (event: APIGatewayEvent): Promise<ProductApiResponse > => {
+export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult > => {
     console.log(`lambda: getOneProduct, event: ${JSON.stringify(event)}`);
 
     const productId: string = event.pathParameters.id;
@@ -26,11 +28,8 @@ export const handler = async (event: APIGatewayEvent): Promise<ProductApiRespons
         }
     }
 
-    return {
+    return enableCors({
         statusCode: 200,
-        body: JSON.stringify(
-            < ProductApiSuccessfulResponse > {
-                data: product
-        })
-    }
+        body: JSON.stringify(product)
+    })
 }

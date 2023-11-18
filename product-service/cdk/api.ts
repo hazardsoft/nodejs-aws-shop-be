@@ -1,5 +1,5 @@
 import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
-import { LambdaIntegration, LambdaIntegrationOptions, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { Cors, LambdaIntegration, LambdaIntegrationOptions, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from "constructs";
 import { CfnOutput } from "aws-cdk-lib/core";
 
@@ -29,6 +29,10 @@ export class ProductsApi extends Construct {
             restApiName: "Products",
             deployOptions: {
                 stageName: "dev",
+            },
+            defaultCorsPreflightOptions: {
+                allowMethods: ["GET"],
+                allowOrigins: Cors.ALL_ORIGINS
             }
         });
         

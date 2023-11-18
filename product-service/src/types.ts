@@ -5,12 +5,6 @@ export type Product = {
     price:number
 }
 
-export interface APIGatewayEvent {
-    pathParameters: {
-        id:string
-    }
-}
-
 type ProductInputErrorMessage = "Product id is not defined";
 type ProductErrorMessage = "Product Not Found";
 

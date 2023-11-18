@@ -1,12 +1,12 @@
-import { APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { findOne } from "./repository";
-import { APIGatewayEvent, ProductApiFailedResponse } from "./types";
+import { ProductApiFailedResponse } from "./types";
 import { enableCors } from "./cors";
 
-export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult > => {
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult > => {
     console.log(`lambda: getOneProduct, event: ${JSON.stringify(event)}`);
 
-    const productId: string = event.pathParameters.id;
+    const productId = event.pathParameters?.id;
     if (!productId) {
         return {
             statusCode: 401,

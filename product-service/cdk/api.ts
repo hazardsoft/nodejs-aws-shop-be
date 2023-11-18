@@ -20,7 +20,7 @@ export class ProductsApi extends Construct {
         })
 
         const integrationOptions = <LambdaIntegrationOptions>{
-            allowTestInvoke: true,
+            allowTestInvoke: false,
         }
         const getAllProductsIntegration = new LambdaIntegration(getAllProducts, integrationOptions);
         const getOneProductIntegration = new LambdaIntegration(getOneProduct, integrationOptions);

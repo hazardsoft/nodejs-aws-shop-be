@@ -1,5 +1,6 @@
 import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
-import { Cors, LambdaIntegration, LambdaIntegrationOptions, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { LambdaIntegration, LambdaIntegrationOptions, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { getOneProductMethodResponses, getAllProductsMethodResponses } from "./responses.js";
 import { Construct } from "constructs";
 import { CfnOutput } from "aws-cdk-lib/core";
 
@@ -29,18 +30,18 @@ export class ProductsApi extends Construct {
             restApiName: "Products",
             deployOptions: {
                 stageName: "dev",
-            },
-            defaultCorsPreflightOptions: {
-                allowOrigins: Cors.ALL_ORIGINS,
-                allowMethods: ["GET", "OPTIONS"]
             }
         });
-        
+
         const products = api.root.addResource("products");
-        products.addMethod("GET", getAllProductsIntegration);
+        products.addMethod("GET", getAllProductsIntegration, {
+            methodResponses: getAllProductsMethodResponses(api)
+        });
 
         const oneProduct = products.addResource("{id}");
-        oneProduct.addMethod("GET", getOneProductIntegration);
+        oneProduct.addMethod("GET", getOneProductIntegration, {
+            methodResponses: getOneProductMethodResponses(api)
+        });
 
         new CfnOutput(this, "ApiUrl", {
             value: api.url

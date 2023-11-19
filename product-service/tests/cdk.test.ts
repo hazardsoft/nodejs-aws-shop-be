@@ -1,11 +1,9 @@
-import { describe, test, expect, beforeAll } from "vitest";
-import { ProductService } from "../cdk/index.js";
-import { App, Stack } from "aws-cdk-lib";
+import { describe, test } from "vitest";
+import { productService } from "../cdk/index.js";
 import { Template } from "aws-cdk-lib/assertions";
 
 describe("Tests for Lambdas/API Gateway", () => {
-    const stack = new ProductService(new App(), "ProductService");
-    const template = Template.fromStack(stack);
+    const template = Template.fromStack(productService);
     let resourceType: string;
 
     test("Two Lambda functions are defined", () => {

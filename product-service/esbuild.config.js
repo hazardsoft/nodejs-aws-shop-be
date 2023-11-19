@@ -9,14 +9,14 @@ const options = {
 }
 
 await esbuild.build({
-    entryPoints: ["src/getProducts.ts"],
+    entryPoints: ["src/lambdas/getProducts.ts"],
     outfile: "dist/lambdas/getProducts/getProducts.mjs",
     tsconfig: "tsconfig.json",
     ...options
 })
 
 await esbuild.build({
-    entryPoints: ["src/getOneProduct.ts"],
+    entryPoints: ["src/lambdas/getOneProduct.ts"],
     outfile: "dist/lambdas/getOneProduct/getOneProduct.mjs",
     tsconfig: "tsconfig.json",
     ...options

@@ -8,6 +8,9 @@
     "build": "node esbuild.config.js",
     "cdk:run": "node cdk.out/index.js",
     "cdk": "run-s build cdk:run",
+    "cdk:diff": "cdk diff",
+    "cdk:deploy": "cdk deploy",
+    "cdk:destroy": "cdk destroy",
     "test": "vitest"
   },
   "keywords": [],

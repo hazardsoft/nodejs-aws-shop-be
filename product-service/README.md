@@ -25,5 +25,5 @@ Product Service API is available at https://dw0r0hgmic.execute-api.eu-central-1.
 
 ### Swagger Documentation
 
-Use `openapi.yaml` file (exported from `dev` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)
+Use [openapi.yaml](./openapi.yaml) file (exported from `dev` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)
 ![Imported openapi.yaml file](images/openapi.png)

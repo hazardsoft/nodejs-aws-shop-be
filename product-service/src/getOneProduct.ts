@@ -3,7 +3,7 @@ import { findOne } from "./repository";
 import { ProductApiFailedResponse } from "./types";
 import { enableCors } from "./cors";
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult > => {
+export const handler = async (event: Pick<APIGatewayProxyEvent, "pathParameters">): Promise<APIGatewayProxyResult > => {
     console.log(`lambda: getOneProduct, event: ${JSON.stringify(event)}`);
 
     const productId = event.pathParameters?.id;

@@ -1,4 +1,5 @@
 import data from "./products.json";
+import { Product } from "./types";
 const products = data.products;
 
 const findAll = async (): Promise<Product[]> => {

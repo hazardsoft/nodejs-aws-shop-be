@@ -8,24 +8,24 @@ export const handler = async (event: Pick<APIGatewayProxyEvent, "pathParameters"
 
     const productId = event.pathParameters?.id;
     if (!productId) {
-        return {
+        return enableCors({
             statusCode: 401,
             body: JSON.stringify(<ProductApiFailedResponse>{
                 errorCode: 401,
                 message: "Product id is not defined"
             })
-        };
+        });
     }
 
     const product = await findOne(productId);
     if (!product) {
-        return {
+        return enableCors({
             statusCode: 404,
             body: JSON.stringify(<ProductApiFailedResponse>{
                 errorCode: 404,
                 message: "Product Not Found"
             })
-        }
+        })
     }
 
     return enableCors({

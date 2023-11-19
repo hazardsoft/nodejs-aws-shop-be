@@ -2,7 +2,7 @@ import {App, Stack} from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { ProductsApi } from "./api";
 
-class ProductService extends Stack {
+export class ProductService extends Stack {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 

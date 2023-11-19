@@ -5,7 +5,7 @@ Product Service is responsible for retrieving list of products or a product by i
 ## NPM scripts
 
 * `build` - Builds Lambdas and AWS CDK application
-* 
+  
 * `cdk` - Builds/runs AWS CDK project (no need to call manually, it's used in `cdk.json` config file);
 
 * `cdk:diff` - Runs AWS CDK diff command to illustrate how local template is different to a deployed one (in order to use a user's profile the script needs to be run as `npm run cdk:diff -- --profile={profile_name}`)

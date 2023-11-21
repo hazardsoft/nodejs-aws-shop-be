@@ -1,50 +1,100 @@
-import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
-import { LambdaIntegration, LambdaIntegrationOptions, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { getOneProductMethodResponses, getAllProductsMethodResponses } from "./responses.js";
+import {
+  Function as LambdaFunction,
+  Runtime,
+  Code,
+} from "aws-cdk-lib/aws-lambda";
+import {
+  LambdaIntegration,
+  LambdaIntegrationOptions,
+  RestApi,
+} from "aws-cdk-lib/aws-apigateway";
 import { Construct } from "constructs";
-import { CfnOutput } from "aws-cdk-lib/core";
+import { config } from "./constants.js";
+import { ResponseModels } from "./models.js";
+import { MethodResponses } from "./responses.js";
+export class ProductsServiceApi extends Construct {
+  public readonly getAllProductsFunction: LambdaFunction;
+  public readonly getOneProductFunction: LambdaFunction;
+  public readonly createOneProductFunction: LambdaFunction;
 
-export class ProductsApi extends Construct {
-    constructor(scope: Construct, id: string) {
-        super(scope, id);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
 
-        const getAllProducts = new Function(this, "GetAllProducts", {
-            runtime: Runtime.NODEJS_18_X,
-            code: Code.fromAsset("./dist/lambdas/getProducts"),
-            handler: "getProducts.handler"
-        })
+    this.getAllProductsFunction = new LambdaFunction(this, "GetAllProducts", {
+      runtime: Runtime.NODEJS_18_X,
+      code: Code.fromAsset("./dist/lambdas/getProducts"),
+      handler: "getProducts.handler",
+      environment: {
+        PRODUCTS_TABLE_NAME: config.productsTableName,
+        STOCKS_TABLE_NAME: config.stocksTableName,
+      },
+    });
 
-        const getOneProduct = new Function(this, "GetOneProduct", {
-            runtime: Runtime.NODEJS_18_X,
-            code: Code.fromAsset("./dist/lambdas/getOneProduct"),
-            handler: "getOneProduct.handler"
-        })
+    this.getOneProductFunction = new LambdaFunction(this, "GetOneProduct", {
+      runtime: Runtime.NODEJS_18_X,
+      code: Code.fromAsset("./dist/lambdas/getOneProduct"),
+      handler: "getOneProduct.handler",
+      environment: {
+        PRODUCTS_TABLE_NAME: config.productsTableName,
+        STOCKS_TABLE_NAME: config.stocksTableName,
+      },
+    });
 
-        const integrationOptions = <LambdaIntegrationOptions>{
-            allowTestInvoke: false,
-        }
-        const getAllProductsIntegration = new LambdaIntegration(getAllProducts, integrationOptions);
-        const getOneProductIntegration = new LambdaIntegration(getOneProduct, integrationOptions);
+    this.createOneProductFunction = new LambdaFunction(this, "CreateProduct", {
+      runtime: Runtime.NODEJS_18_X,
+      code: Code.fromAsset("./dist/lambdas/createProduct"),
+      handler: "createProduct.handler",
+      environment: {
+        PRODUCTS_TABLE_NAME: config.productsTableName,
+        STOCKS_TABLE_NAME: config.stocksTableName,
+      },
+    });
 
-        const api = new RestApi(this, "ProductApi", {
-            restApiName: "Products",
-            deployOptions: {
-                stageName: "dev",
-            }
-        });
+    const integrationOptions = <LambdaIntegrationOptions>{
+      allowTestInvoke: false,
+    };
+    const getAllProductsIntegration = new LambdaIntegration(
+      this.getAllProductsFunction,
+      integrationOptions,
+    );
+    const getOneProductIntegration = new LambdaIntegration(
+      this.getOneProductFunction,
+      integrationOptions,
+    );
+    const createProductIntegration = new LambdaIntegration(
+      this.createOneProductFunction,
+      integrationOptions,
+    );
 
-        const products = api.root.addResource("products");
-        products.addMethod("GET", getAllProductsIntegration, {
-            methodResponses: getAllProductsMethodResponses(api)
-        });
+    const api = new RestApi(this, "ProductApi", {
+      restApiName: "Products",
+      deployOptions: {
+        stageName: config.stageName,
+      },
+    });
 
-        const oneProduct = products.addResource("{id}");
-        oneProduct.addMethod("GET", getOneProductIntegration, {
-            methodResponses: getOneProductMethodResponses(api)
-        });
+    const models = new ResponseModels(this, "ResponseModels", {
+      restApi: api,
+    });
+    const responses = new MethodResponses(this, "MethodResponses", {
+      models: {
+        oneProductModel: models.oneProductModel,
+        allProductsModel: models.allProductsModel,
+        productErrorModel: models.productErrorModel,
+      },
+    });
 
-        new CfnOutput(this, "ApiUrl", {
-            value: api.url
-        })
-    }
+    const products = api.root.addResource("products");
+    products.addMethod("GET", getAllProductsIntegration, {
+      methodResponses: responses.getAllProductsMethodResponses,
+    });
+    products.addMethod("POST", createProductIntegration, {
+      methodResponses: responses.createOneProductMethodResponses,
+    });
+
+    const getOneProduct = products.addResource("{id}");
+    getOneProduct.addMethod("GET", getOneProductIntegration, {
+      methodResponses: responses.getOneProductMethodResponses,
+    });
+  }
 }

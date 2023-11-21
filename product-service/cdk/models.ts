@@ -1,74 +1,94 @@
-import { Fn } from "aws-cdk-lib"
-import { JsonSchemaType, Model, RestApi } from "aws-cdk-lib/aws-apigateway"
+import { Fn } from "aws-cdk-lib";
+import { JsonSchemaType, Model, RestApi } from "aws-cdk-lib/aws-apigateway";
+import { Construct } from "constructs";
 
-const createOneProductResponse = (api: RestApi): Model => {
-    return api.addModel("OneProductModel", {
-        contentType: "application/json",
-        modelName: "OneProductModel",
-        schema: {
-            title: "Product",
-            type: JsonSchemaType.OBJECT,
-            properties: {
-                id: { type: JsonSchemaType.STRING },
-                title: { type: JsonSchemaType.STRING },
-                description: { type: JsonSchemaType.STRING },
-                price: { type: JsonSchemaType.INTEGER },
-            },
-            required: ["id", "title", "description", "price"]
-        }
-    })
+export type ResponseModelsProps = {
+  restApi: RestApi;
+};
+
+export class ResponseModels extends Construct {
+  public readonly oneProductModel: Model;
+  public readonly allProductsModel: Model;
+  public readonly productErrorModel: Model;
+
+  constructor(scope: Construct, id: string, props: ResponseModelsProps) {
+    super(scope, id);
+
+    this.oneProductModel = createOneProductModel(this, props);
+    this.allProductsModel = createAllProductsModel(
+      this,
+      props,
+      this.oneProductModel,
+    );
+    this.productErrorModel = createProductErrorModel(this, props);
+  }
 }
 
-const createOneProductErrorResponse = (api: RestApi): Model => {
-    return api.addModel("OneProductInvalidIdModel", {
-        contentType: "application/json",
-        modelName: "OneProductInvalidIdModel",
-        schema: {
-            title: "Error",
-            type: JsonSchemaType.OBJECT,
-            properties: {
-                errorCode: { type: JsonSchemaType.INTEGER },
-                message: { type: JsonSchemaType.STRING },
-            },
-            required: ["errorCode", "message"]
-        }
-    })
-}
+const createOneProductModel = (
+  scope: Construct,
+  props: ResponseModelsProps,
+): Model => {
+  return new Model(scope, "OneProductModel", {
+    restApi: props.restApi,
+    contentType: "application/json",
+    modelName: "OneProductModel",
+    schema: {
+      title: "Product",
+      type: JsonSchemaType.OBJECT,
+      properties: {
+        id: { type: JsonSchemaType.STRING },
+        title: { type: JsonSchemaType.STRING },
+        description: { type: JsonSchemaType.STRING },
+        price: { type: JsonSchemaType.INTEGER },
+      },
+      required: ["id", "title", "description", "price"],
+    },
+  });
+};
 
-const createAllProductsResponse = (api: RestApi, oneProductModel:Model): Model => {
-    return api.addModel("AllProductsModel", {
-        contentType: "application/json",
-        modelName: "AllProductsModel",
-        schema: {
-            title: "Products",
-            type: JsonSchemaType.ARRAY,
-            items: {
-                ref: getModelRef(api, oneProductModel)
-            }
-        }
-    })
-}
+const createAllProductsModel = (
+  scope: Construct,
+  props: ResponseModelsProps,
+  oneProductModel: Model,
+): Model => {
+  return new Model(scope, "AllProductsModel", {
+    restApi: props.restApi,
+    contentType: "application/json",
+    modelName: "AllProductsModel",
+    schema: {
+      title: "Products",
+      type: JsonSchemaType.ARRAY,
+      items: {
+        ref: getModelRef(props.restApi, oneProductModel),
+      },
+    },
+  });
+};
 
-const getModelRef = (api: RestApi, model: Model): string => 
-    Fn.join(
-        '',
-        ['https://apigateway.amazonaws.com/restapis/',
-        api.restApiId,
-        '/models/',
-            model.modelId]);
-    
-let oneProductModel: Model;
-let oneProductErrorModel: Model;
-let allProductsModel: Model;
+const createProductErrorModel = (
+  scope: Construct,
+  props: ResponseModelsProps,
+): Model => {
+  return new Model(scope, "ProductErrorModel", {
+    restApi: props.restApi,
+    contentType: "application/json",
+    modelName: "ProductErrorModel",
+    schema: {
+      title: "Error",
+      type: JsonSchemaType.OBJECT,
+      properties: {
+        errorCode: { type: JsonSchemaType.INTEGER },
+        message: { type: JsonSchemaType.STRING },
+      },
+      required: ["errorCode", "message"],
+    },
+  });
+};
 
-export const getModels = (api: RestApi) => {
-    oneProductModel = oneProductModel ?? createOneProductResponse(api);
-    oneProductErrorModel = oneProductErrorModel ?? createOneProductErrorResponse(api);
-    allProductsModel = allProductsModel ?? createAllProductsResponse(api, oneProductModel);
-
-    return {
-        oneProductModel,
-        oneProductErrorModel,
-        allProductsModel
-    }
-}
+const getModelRef = (api: RestApi, model: Model): string =>
+  Fn.join("", [
+    "https://apigateway.amazonaws.com/restapis/",
+    api.restApiId,
+    "/models/",
+    model.modelId,
+  ]);

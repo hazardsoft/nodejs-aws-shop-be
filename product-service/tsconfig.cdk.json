@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.common.json",
   "compilerOptions": {
-    "outDir": "cdk.out",
+    "outDir": "cdk.out"
   },
-  "include": ["cdk"],
+  "include": ["cdk"]
 }

@@ -1,0 +1,20 @@
+{
+  "stocks": [
+    {
+      "productId": "1",
+      "count": 10
+    },
+    {
+      "productId": "2",
+      "count": 20
+    },
+    {
+      "productId": "3",
+      "count": 5
+    },
+    {
+      "productId": "4",
+      "count": 1
+    }
+  ]
+}

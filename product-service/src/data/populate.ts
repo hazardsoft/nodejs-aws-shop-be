@@ -1,4 +1,7 @@
-import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import {
+  BatchWriteItemCommand,
+  DynamoDBClient,
+} from "@aws-sdk/client-dynamodb";
 import { products } from "./products.json";
 import { stocks } from "./stocks.json";
 import { config } from "../../cdk/constants.js";
@@ -8,33 +11,39 @@ const populateProducts = async (
   dbClient: DynamoDBClient,
   tableName: string,
 ) => {
-  for (const product of products) {
-    await dbClient.send(
-      new PutItemCommand({
-        TableName: tableName,
-        Item: {
-          id: { S: product.id },
-          title: { S: product.title },
-          description: { S: product.description },
-          price: { N: product.price.toString() },
-        },
-      }),
-    );
-  }
+  await dbClient.send(
+    new BatchWriteItemCommand({
+      RequestItems: {
+        [tableName]: products.map((product) => ({
+          PutRequest: {
+            Item: {
+              id: { S: product.id },
+              title: { S: product.title },
+              description: { S: product.description },
+              price: { N: product.price.toString() },
+            },
+          },
+        })),
+      },
+    }),
+  );
 };
 
 const populateStocks = async (dbClient: DynamoDBClient, tableName: string) => {
-  for (const stock of stocks) {
-    await dbClient.send(
-      new PutItemCommand({
-        TableName: tableName,
-        Item: {
-          product_id: { S: stock.productId },
-          count: { N: stock.count.toString() },
-        },
-      }),
-    );
-  }
+  await dbClient.send(
+    new BatchWriteItemCommand({
+      RequestItems: {
+        [tableName]: stocks.map((stock) => ({
+          PutRequest: {
+            Item: {
+              product_id: { S: stock.productId },
+              count: { N: stock.count.toString() },
+            },
+          },
+        })),
+      },
+    }),
+  );
 };
 
 const dbClient = new DynamoDBClient({

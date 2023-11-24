@@ -1,4 +1,4 @@
-import { APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
 import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
@@ -11,8 +11,10 @@ import {
   Stock,
 } from "../types";
 
-export const handler = async (): Promise<APIGatewayProxyResult> => {
-  console.log(`lambda: get all products`);
+export const handler = async (
+  event: APIGatewayProxyEvent,
+): Promise<APIGatewayProxyResult> => {
+  console.log(`lambda: get all products, event: ${JSON.stringify(event)}`);
 
   try {
     const dbClient = new DynamoDBClient();

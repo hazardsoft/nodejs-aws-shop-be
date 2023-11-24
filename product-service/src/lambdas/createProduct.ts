@@ -18,7 +18,7 @@ const stocksTableName: string = process.env.STOCKS_TABLE_NAME ?? "";
 export const createProduct = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-  console.log(`lambda: create product, body ${event.body}`);
+  console.log(`lambda: create product, event: ${JSON.stringify(event)}`);
 
   if (!event.body || validateRequest(event.body)) {
     return enableCors({

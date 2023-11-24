@@ -10,16 +10,18 @@ import { RemovalPolicy } from "aws-cdk-lib";
 import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
 
 export type ProductServiceDBProps = {
-  lambdas: {
-    getAllProductsFunction: LambdaFunction;
-    getOneProductFunction: LambdaFunction;
-    createOneProductFunction: LambdaFunction;
+  functions: {
+    getAllProducts: LambdaFunction;
+    getOneProduct: LambdaFunction;
+    createOneProduct: LambdaFunction;
   };
 };
 
 export class ProductServiceDB extends Construct {
   constructor(scope: Construct, id: string, props: ProductServiceDBProps) {
     super(scope, id);
+
+    const { getAllProducts, getOneProduct, createOneProduct } = props.functions;
 
     const productsTable = new TableV2(this, "Products", {
       tableName: config.productsTableName,
@@ -29,9 +31,9 @@ export class ProductServiceDB extends Construct {
       encryption: TableEncryptionV2.dynamoOwnedKey(),
       removalPolicy: RemovalPolicy.DESTROY,
     });
-    productsTable.grantReadData(props.lambdas.getAllProductsFunction);
-    productsTable.grantReadData(props.lambdas.getOneProductFunction);
-    productsTable.grantWriteData(props.lambdas.createOneProductFunction);
+    productsTable.grantReadData(getAllProducts);
+    productsTable.grantReadData(getOneProduct);
+    productsTable.grantWriteData(createOneProduct);
 
     const stocksTable = new TableV2(this, "Stocks", {
       tableName: config.stocksTableName,
@@ -41,8 +43,8 @@ export class ProductServiceDB extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    stocksTable.grantReadData(props.lambdas.getAllProductsFunction);
-    stocksTable.grantReadData(props.lambdas.getOneProductFunction);
-    stocksTable.grantWriteData(props.lambdas.createOneProductFunction);
+    stocksTable.grantReadData(getAllProducts);
+    stocksTable.grantReadData(getOneProduct);
+    stocksTable.grantWriteData(createOneProduct);
   }
 }

@@ -9,10 +9,10 @@ class ProductService extends Stack {
 
     const api = new ProductsServiceApi(this, "ProductsApi");
     new ProductServiceDB(this, "ProductServiceDB", {
-      lambdas: {
-        getAllProductsFunction: api.getAllProductsFunction,
-        getOneProductFunction: api.getOneProductFunction,
-        createOneProductFunction: api.createOneProductFunction,
+      functions: {
+        getAllProducts: api.getAllProductsFunction,
+        getOneProduct: api.getOneProductFunction,
+        createOneProduct: api.createOneProductFunction,
       },
     });
   }

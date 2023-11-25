@@ -40,8 +40,9 @@ const createOneProductModel = (
         title: { type: JsonSchemaType.STRING },
         description: { type: JsonSchemaType.STRING },
         price: { type: JsonSchemaType.INTEGER },
+        count: { type: JsonSchemaType.INTEGER },
       },
-      required: ["id", "title", "description", "price"],
+      required: ["id", "title", "description", "price", "count"],
     },
   });
 };
@@ -77,10 +78,9 @@ const createProductErrorModel = (
       title: "Error",
       type: JsonSchemaType.OBJECT,
       properties: {
-        errorCode: { type: JsonSchemaType.INTEGER },
         message: { type: JsonSchemaType.STRING },
       },
-      required: ["errorCode", "message"],
+      required: ["message"],
     },
   });
 };

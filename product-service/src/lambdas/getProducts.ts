@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
-import { ProductApiFailedResponse } from "../types";
+import { ProductApiFailedResponse, ServerMessages } from "../types";
 import { getAllProducts } from "../repository";
 
 export const handler = async (
@@ -19,8 +19,8 @@ export const handler = async (
     return enableCors({
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
       body: JSON.stringify(<ProductApiFailedResponse>{
-        errorCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
-        message: "Internal Server Error",
+        message: ServerMessages.INTERNAL_SERVER_ERROR,
+        reason: e instanceof Error ? e.message : "",
       }),
     });
   }

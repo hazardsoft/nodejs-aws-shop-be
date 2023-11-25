@@ -65,9 +65,9 @@ export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
   const { Items: stockItems } = (await dbClient.send(
     new QueryCommand({
       TableName: process.env.STOCKS_TABLE_NAME,
-      KeyConditionExpression: "productId = :productId",
+      KeyConditionExpression: "product_id = :product_id",
       ExpressionAttributeValues: {
-        ":productId": { S: id },
+        ":product_id": { S: id },
       },
     }),
   )) as DBQueryOutput<Stock>;

@@ -6,6 +6,8 @@ import {
   AvailableProduct,
   ProductApiFailedResponse,
   ProductInput,
+  ProductMessages,
+  ServerMessages,
 } from "../src/types.js";
 import { HTTP_STATUS_CODES } from "../src/constants.js";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
@@ -37,7 +39,14 @@ describe("Unit tests for Lambdas", () => {
     count: 15,
   };
 
-  test("Get all products", async () => {
+  const productDao = <ProductInput>{
+    title: mockAvailableProduct.title,
+    description: mockAvailableProduct.description,
+    price: mockAvailableProduct.price,
+    count: mockAvailableProduct.count,
+  };
+
+  test("Get all products (200)", async () => {
     const allProducts: AvailableProduct[] = [mockAvailableProduct];
     mocks.getAllProducts.mockResolvedValueOnce(allProducts);
 
@@ -50,6 +59,25 @@ describe("Unit tests for Lambdas", () => {
     expect(productsResponse).toMatchObject(<APIGatewayProxyResult>{
       statusCode: HTTP_STATUS_CODES.OK,
       body: JSON.stringify(allProducts),
+    });
+  });
+
+  test("Get all products (500)", async () => {
+    const reason =
+      "Mocked repository thown the error while getting all products";
+    mocks.getAllProducts.mockImplementationOnce(() => {
+      throw new Error(reason);
+    });
+
+    const event = { path: "/products" } as APIGatewayProxyEvent;
+    const productsResponse = await getAllProductsFunction(event);
+
+    expect(productsResponse).toMatchObject(<APIGatewayProxyResult>{
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
+      body: JSON.stringify(<ProductApiFailedResponse>{
+        message: ServerMessages.INTERNAL_SERVER_ERROR,
+        reason,
+      }),
     });
   });
 
@@ -83,8 +111,7 @@ describe("Unit tests for Lambdas", () => {
     const error = JSON.parse(productsResponse.body) as ProductApiFailedResponse;
 
     expect(error).toMatchObject(<ProductApiFailedResponse>{
-      errorCode: HTTP_STATUS_CODES.BAD_REQUEST,
-      message: "Product id is not defined",
+      message: ProductMessages.PRODUCT_INVALID_ID,
     });
     expect(productsResponse).toMatchObject(<APIGatewayProxyResult>{
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -105,8 +132,7 @@ describe("Unit tests for Lambdas", () => {
     const error = JSON.parse(productsResponse.body) as ProductApiFailedResponse;
 
     expect(error).toMatchObject(<ProductApiFailedResponse>{
-      errorCode: HTTP_STATUS_CODES.NOT_FOUND,
-      message: "Product Not Found",
+      message: ProductMessages.PRODUCT_NOT_FOUND,
     });
     expect(productsResponse).toMatchObject(<APIGatewayProxyResult>{
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,
@@ -114,15 +140,25 @@ describe("Unit tests for Lambdas", () => {
     });
   });
 
-  test("Create one product (204)", async () => {
-    mocks.createOneProduct.mockResolvedValue(mockAvailableProduct);
+  test("Get one product (500)", async () => {
+    const reason = "Mocked repository thown the error while getting a product";
+    mocks.getOneProduct.mockImplementationOnce(() => {
+      throw new Error(reason);
+    });
+    const event = { pathParameters: { id: mockAvailableProduct.id } };
+    const productsResponse = await getOneProductFunction(event);
 
-    const productDao = <ProductInput>{
-      title: mockAvailableProduct.title,
-      description: mockAvailableProduct.description,
-      price: mockAvailableProduct.price,
-      count: mockAvailableProduct.count,
-    };
+    expect(productsResponse).toMatchObject(<APIGatewayProxyResult>{
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
+      body: JSON.stringify(<ProductApiFailedResponse>{
+        message: ServerMessages.INTERNAL_SERVER_ERROR,
+        reason,
+      }),
+    });
+  });
+
+  test("Create one product (204)", async () => {
+    mocks.createOneProduct.mockResolvedValueOnce(mockAvailableProduct);
 
     const event = { body: JSON.stringify(productDao) } as APIGatewayProxyEvent;
     const productResponse = await createOneProductFunction(event);
@@ -150,14 +186,14 @@ describe("Unit tests for Lambdas", () => {
     const error = JSON.parse(productResponse.body) as AvailableProduct;
 
     expect(error).toMatchObject(<ProductApiFailedResponse>{
-      errorCode: HTTP_STATUS_CODES.BAD_REQUEST,
-      message: "Product payload is absent or incorrect",
+      message: ProductMessages.PRODUCT_INVALID_PAYLOAD,
     });
     expect(productResponse).toMatchObject(<APIGatewayProxyResult>{
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
       body: JSON.stringify(error),
     });
   });
+
   test("Create one product with empty payload (400)", async () => {
     const event = { body: null } as APIGatewayProxyEvent;
     const productResponse = await createOneProductFunction(event);
@@ -165,12 +201,28 @@ describe("Unit tests for Lambdas", () => {
     const error = JSON.parse(productResponse.body) as AvailableProduct;
 
     expect(error).toMatchObject(<ProductApiFailedResponse>{
-      errorCode: HTTP_STATUS_CODES.BAD_REQUEST,
-      message: "Product payload is absent or incorrect",
+      message: ProductMessages.PRODUCT_INVALID_PAYLOAD,
     });
     expect(productResponse).toMatchObject(<APIGatewayProxyResult>{
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
       body: JSON.stringify(error),
+    });
+  });
+
+  test("Create one product (500)", async () => {
+    const reason = "Mocked repository thown the error while creating a product";
+    mocks.createOneProduct.mockImplementationOnce(() => {
+      throw new Error(reason);
+    });
+    const event = { body: JSON.stringify(productDao) } as APIGatewayProxyEvent;
+    const productResponse = await createOneProductFunction(event);
+
+    expect(productResponse).toMatchObject(<APIGatewayProxyResult>{
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
+      body: JSON.stringify(<ProductApiFailedResponse>{
+        message: ServerMessages.INTERNAL_SERVER_ERROR,
+        reason,
+      }),
     });
   });
 });

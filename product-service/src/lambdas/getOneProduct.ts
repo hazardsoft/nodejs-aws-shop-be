@@ -1,5 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { ProductApiFailedResponse } from "../types";
+import {
+  ProductApiFailedResponse,
+  ProductMessages,
+  ServerMessages,
+} from "../types";
 import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
 import { getOneProduct } from "../repository";
@@ -15,8 +19,7 @@ export const handler = async (
     return enableCors({
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
       body: JSON.stringify(<ProductApiFailedResponse>{
-        errorCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        message: "Product id is not defined",
+        message: ProductMessages.PRODUCT_INVALID_ID,
       }),
     });
   }
@@ -32,16 +35,15 @@ export const handler = async (
       return enableCors({
         statusCode: HTTP_STATUS_CODES.NOT_FOUND,
         body: JSON.stringify(<ProductApiFailedResponse>{
-          errorCode: HTTP_STATUS_CODES.NOT_FOUND,
-          message: e.message,
+          message: ProductMessages.PRODUCT_NOT_FOUND,
         }),
       });
     }
     return enableCors({
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
       body: JSON.stringify(<ProductApiFailedResponse>{
-        errorCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
-        message: "Internal Server Error",
+        message: ServerMessages.INTERNAL_SERVER_ERROR,
+        reason: e instanceof Error ? e.message : "",
       }),
     });
   }

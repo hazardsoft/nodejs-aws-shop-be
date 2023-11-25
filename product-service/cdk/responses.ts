@@ -86,6 +86,12 @@ export const createProductMethodResponses = (
       },
     },
     {
+      statusCode: `${HTTP_STATUS_CODES.BAD_REQUEST}`,
+      responseModels: {
+        "application/json": props.models.productErrorModel,
+      },
+    },
+    {
       statusCode: `${HTTP_STATUS_CODES.INTERNAL_SERVER}`,
       responseModels: {
         "application/json": props.models.productErrorModel,

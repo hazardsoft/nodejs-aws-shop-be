@@ -29,19 +29,19 @@ export type DBPutOutput<T> = Omit<PutItemCommandOutput, "Attributes"> & {
   Attributes?: T;
 };
 
-type ProductInvalidInputErrorMessage = "Product id is not defined";
-type ProductNotFoundErrorMessage = "Product Not Found";
-type ProductCreateErrorMessage = "Product payload is absent or incorrect";
-export type ProductErrorMessage =
-  | ProductInvalidInputErrorMessage
-  | ProductNotFoundErrorMessage
-  | ProductCreateErrorMessage;
+export const enum ProductMessages {
+  PRODUCT_NOT_FOUND = "Product not found",
+  PRODUCT_INVALID_ID = "Product id is invalid (absent or incorrect)",
+  PRODUCT_INVALID_PAYLOAD = "Product payload is invalid (absent or incorrect)",
+}
 
-export type InternalServerError = "Internal Server Error";
+export const enum ServerMessages {
+  INTERNAL_SERVER_ERROR = "Internal Server Error",
+}
 
-export type ErrorMessage = ProductErrorMessage | InternalServerError;
+export type ErrorMessage = ProductMessages | ServerMessages;
 
 export type ProductApiFailedResponse = {
-  errorCode: number;
   message: ErrorMessage;
+  reason?: string;
 };

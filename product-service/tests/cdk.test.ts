@@ -7,6 +7,17 @@ describe("Tests for Lambdas/API Gateway", () => {
   const template = Template.fromStack(productService);
   let resourceType: string;
 
+  test("2 DynamoDB tables are defined", () => {
+    resourceType = "AWS::DynamoDB::GlobalTable";
+
+    template.resourceCountIs(resourceType, 2);
+    template.hasResourceProperties(resourceType, {
+      TableName: "Products",
+    });
+    template.hasResourceProperties(resourceType, {
+      TableName: "Stocks",
+    });
+  });
   test("3 Lambda functions are defined", () => {
     resourceType = "AWS::Lambda::Function";
 

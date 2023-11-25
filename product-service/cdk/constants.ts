@@ -1,5 +1,5 @@
 export const config = {
-  stageName: "task4",
+  stageName: "dev",
   productsTableName: "Products",
   stocksTableName: "Stocks",
 } as const;

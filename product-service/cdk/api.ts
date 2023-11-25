@@ -20,34 +20,30 @@ export class ProductsServiceApi extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    const env = {
+      PRODUCTS_TABLE_NAME: config.productsTableName,
+      STOCKS_TABLE_NAME: config.stocksTableName,
+    };
+
     this.getAllProductsFunction = new LambdaFunction(this, "GetAllProducts", {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset("./dist/lambdas/getProducts"),
       handler: "getProducts.handler",
-      environment: {
-        PRODUCTS_TABLE_NAME: config.productsTableName,
-        STOCKS_TABLE_NAME: config.stocksTableName,
-      },
+      environment: env,
     });
 
     this.getOneProductFunction = new LambdaFunction(this, "GetOneProduct", {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset("./dist/lambdas/getOneProduct"),
       handler: "getOneProduct.handler",
-      environment: {
-        PRODUCTS_TABLE_NAME: config.productsTableName,
-        STOCKS_TABLE_NAME: config.stocksTableName,
-      },
+      environment: env,
     });
 
     this.createOneProductFunction = new LambdaFunction(this, "CreateProduct", {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset("./dist/lambdas/createProduct"),
       handler: "createProduct.handler",
-      environment: {
-        PRODUCTS_TABLE_NAME: config.productsTableName,
-        STOCKS_TABLE_NAME: config.stocksTableName,
-      },
+      environment: env,
     });
 
     const integrationOptions = <LambdaIntegrationOptions>{

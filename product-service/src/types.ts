@@ -11,9 +11,32 @@ export type Product = {
   price: number;
 };
 
+export type ProductRecord = {
+  id: {
+    S: string;
+  };
+  title: {
+    S: string;
+  };
+  description: {
+    S: string;
+  };
+  price: {
+    N: string;
+  };
+};
+
 export type Stock = {
-  productId: string;
+  product_id: string;
   count: number;
+};
+export type StockRecord = {
+  product_id: {
+    S: string;
+  };
+  count: {
+    N: string;
+  };
 };
 
 export type AvailableProduct = Product & Pick<Stock, "count">;

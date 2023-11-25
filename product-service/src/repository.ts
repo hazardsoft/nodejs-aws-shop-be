@@ -4,13 +4,16 @@ import {
   ScanCommand,
   TransactWriteItemsCommand,
 } from "@aws-sdk/client-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import {
   AvailableProduct,
   DBQueryOutput,
   DBScanOutput,
   Product,
   ProductInput,
+  ProductRecord,
   Stock,
+  StockRecord,
 } from "./types";
 import { ProductNotFoundError } from "./errors";
 import { randomUUID } from "node:crypto";
@@ -24,19 +27,20 @@ export const getAllProducts = async (): Promise<AvailableProduct[]> => {
     new ScanCommand({
       TableName: productsTableName,
     }),
-  )) as DBScanOutput<Product>;
+  )) as DBScanOutput<ProductRecord>;
 
   const { Items: stockItems } = (await dbClient.send(
     new ScanCommand({
       TableName: stocksTableName,
     }),
-  )) as DBQueryOutput<Stock>;
+  )) as DBScanOutput<StockRecord>;
 
-  const products = productItems ?? [];
-  const stocks = stockItems ?? [];
+  const products: Product[] =
+    productItems?.map((p) => unmarshall(p) as Product) ?? [];
+  const stocks: Stock[] = stockItems?.map((s) => unmarshall(s) as Stock) ?? [];
 
   const availableProducts: AvailableProduct[] = products.map((p) => {
-    const stock = stocks.find((s) => s.productId === p.id);
+    const stock = stocks.find((s) => s.product_id === p.id);
     return {
       ...p,
       count: stock?.count || 0,
@@ -55,12 +59,13 @@ export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
         ":id": { S: id },
       },
     }),
-  )) as DBQueryOutput<Product>;
+  )) as DBQueryOutput<ProductRecord>;
 
-  const product = productItems ? productItems[0] : null;
-  if (!product) {
+  if (!productItems || !productItems.length) {
     throw new ProductNotFoundError();
   }
+
+  const product = unmarshall(productItems[0]) as Product;
 
   const { Items: stockItems } = (await dbClient.send(
     new QueryCommand({
@@ -70,9 +75,11 @@ export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
         ":product_id": { S: id },
       },
     }),
-  )) as DBQueryOutput<Stock>;
+  )) as DBQueryOutput<StockRecord>;
 
-  const stock = stockItems?.find((s) => s.productId === id);
+  const stocks: Stock[] = stockItems?.map((s) => unmarshall(s) as Stock) ?? [];
+
+  const stock = stocks.find((s) => s.product_id === id);
   const availableProduct: AvailableProduct = {
     ...product,
     count: stock?.count || 0,

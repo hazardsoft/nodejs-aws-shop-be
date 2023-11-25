@@ -4,18 +4,11 @@ import {
   ProductApiFailedResponse,
   ProductInput,
 } from "../types";
-import {
-  DynamoDBClient,
-  TransactWriteItemsCommand,
-} from "@aws-sdk/client-dynamodb";
 import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
-import { randomUUID } from "node:crypto";
+import { createOneProduct } from "../repository";
 
-const productsTableName: string = process.env.PRODUCTS_TABLE_NAME ?? "";
-const stocksTableName: string = process.env.STOCKS_TABLE_NAME ?? "";
-
-export const createProduct = async (
+export const handler = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   console.log(`lambda: create product, event: ${JSON.stringify(event)}`);
@@ -32,44 +25,11 @@ export const createProduct = async (
 
   try {
     const productInput = JSON.parse(event.body) as ProductInput;
-    const dbClient = new DynamoDBClient();
-    const newProductId: string = randomUUID();
-
-    await dbClient.send(
-      new TransactWriteItemsCommand({
-        TransactItems: [
-          {
-            Put: {
-              TableName: productsTableName,
-              Item: {
-                id: { S: newProductId },
-                title: { S: productInput.title },
-                description: { S: productInput.description },
-                price: { N: productInput.price.toString() },
-              },
-            },
-          },
-          {
-            Put: {
-              TableName: stocksTableName,
-              Item: {
-                product_id: { S: newProductId },
-                count: {
-                  N: productInput.count.toString(),
-                },
-              },
-            },
-          },
-        ],
-      }),
-    );
+    const createdProduct = await createOneProduct(productInput);
 
     return enableCors({
       statusCode: HTTP_STATUS_CODES.CREATED,
-      body: JSON.stringify(<AvailableProduct>{
-        id: newProductId,
-        ...productInput,
-      }),
+      body: JSON.stringify(createdProduct),
     });
   } catch (e) {
     return enableCors({
@@ -85,6 +45,7 @@ export const createProduct = async (
 const validateRequest = (body: string): boolean => {
   const availableProduct = JSON.parse(body) as AvailableProduct;
   return (
+    !!availableProduct.id ||
     !availableProduct.title ||
     !availableProduct.description ||
     !availableProduct.price ||

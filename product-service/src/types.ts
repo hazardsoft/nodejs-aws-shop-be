@@ -29,16 +29,17 @@ export type DBPutOutput<T> = Omit<PutItemCommandOutput, "Attributes"> & {
   Attributes?: T;
 };
 
-type ProductInputErrorMessage = "Product id is not defined";
-type ProductErrorMessage = "Product Not Found";
+type ProductInvalidInputErrorMessage = "Product id is not defined";
+type ProductNotFoundErrorMessage = "Product Not Found";
 type ProductCreateErrorMessage = "Product payload is absent or incorrect";
-type InternalServerError = "Internal Server Error";
+export type ProductErrorMessage =
+  | ProductInvalidInputErrorMessage
+  | ProductNotFoundErrorMessage
+  | ProductCreateErrorMessage;
 
-type ErrorMessage =
-  | ProductInputErrorMessage
-  | ProductErrorMessage
-  | ProductCreateErrorMessage
-  | InternalServerError;
+export type InternalServerError = "Internal Server Error";
+
+export type ErrorMessage = ProductErrorMessage | InternalServerError;
 
 export type ProductApiFailedResponse = {
   errorCode: number;

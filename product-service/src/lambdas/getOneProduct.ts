@@ -1,14 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import {
-  AvailableProduct,
-  DBQueryOutput,
-  Product,
-  ProductApiFailedResponse,
-  Stock,
-} from "../types";
+import { ProductApiFailedResponse } from "../types";
 import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
-import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { getOneProduct } from "../repository";
+import { ProductNotFoundError } from "../errors";
 
 export const handler = async (
   event: Pick<APIGatewayProxyEvent, "pathParameters">,
@@ -27,49 +22,21 @@ export const handler = async (
   }
 
   try {
-    const dbClient = new DynamoDBClient();
-    const { Items: productItems } = (await dbClient.send(
-      new QueryCommand({
-        TableName: process.env.PRODUCTS_TABLE_NAME,
-        KeyConditionExpression: "id = :id",
-        ExpressionAttributeValues: {
-          ":id": { S: productId },
-        },
-      }),
-    )) as DBQueryOutput<Product>;
-
-    const product = productItems ? productItems[0] : null;
-    if (!product) {
-      return enableCors({
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        body: JSON.stringify(<ProductApiFailedResponse>{
-          errorCode: HTTP_STATUS_CODES.NOT_FOUND,
-          message: "Product Not Found",
-        }),
-      });
-    }
-
-    const { Items: stockItems } = (await dbClient.send(
-      new QueryCommand({
-        TableName: process.env.STOCKS_TABLE_NAME,
-        KeyConditionExpression: "productId = :productId",
-        ExpressionAttributeValues: {
-          ":productId": { S: productId },
-        },
-      }),
-    )) as DBQueryOutput<Stock>;
-
-    const stock = stockItems?.find((s) => s.productId === productId);
-    const availableProduct: AvailableProduct = {
-      ...product,
-      count: stock?.count || 0,
-    };
-
+    const availableProduct = await getOneProduct(productId);
     return enableCors({
       statusCode: HTTP_STATUS_CODES.OK,
       body: JSON.stringify(availableProduct),
     });
   } catch (e) {
+    if (e instanceof ProductNotFoundError) {
+      return enableCors({
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        body: JSON.stringify(<ProductApiFailedResponse>{
+          errorCode: HTTP_STATUS_CODES.NOT_FOUND,
+          message: e.message,
+        }),
+      });
+    }
     return enableCors({
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
       body: JSON.stringify(<ProductApiFailedResponse>{

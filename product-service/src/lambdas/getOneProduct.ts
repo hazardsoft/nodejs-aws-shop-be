@@ -8,6 +8,7 @@ import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
 import { getOneProduct } from "../repository";
 import { ProductNotFoundError } from "../errors";
+import { validate } from "uuid";
 
 export const handler = async (
   event: Pick<APIGatewayProxyEvent, "pathParameters">,
@@ -19,7 +20,15 @@ export const handler = async (
     return enableCors({
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
       body: JSON.stringify(<ProductApiFailedResponse>{
-        message: ProductMessages.PRODUCT_INVALID_ID,
+        message: ProductMessages.PRODUCT_EMPTY_ID,
+      }),
+    });
+  }
+  if (!validate(productId)) {
+    return enableCors({
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      body: JSON.stringify(<ProductApiFailedResponse>{
+        message: ProductMessages.PRODUCT_INVALID_UUID,
       }),
     });
   }

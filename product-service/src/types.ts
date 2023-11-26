@@ -28,7 +28,8 @@ export const enum RepositoryMessages {
 
 export const enum ProductMessages {
   PRODUCT_NOT_FOUND = "Product not found",
-  PRODUCT_INVALID_ID = "Product id is invalid (absent or incorrect)",
+  PRODUCT_EMPTY_ID = "Product id is empty",
+  PRODUCT_INVALID_UUID = "Product id is not UUID",
   PRODUCT_INVALID_PAYLOAD = "Product payload is invalid (absent or incorrect)",
 }
 

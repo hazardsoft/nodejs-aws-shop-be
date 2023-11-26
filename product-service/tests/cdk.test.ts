@@ -36,12 +36,15 @@ describe("Tests for Lambdas/API Gateway", () => {
   test("3 API methods are defined", () => {
     resourceType = "AWS::ApiGateway::Method";
 
-    template.resourceCountIs(resourceType, 3);
+    template.resourceCountIs(resourceType, 4);
     template.hasResourceProperties(resourceType, {
       HttpMethod: "GET",
     });
     template.hasResourceProperties(resourceType, {
       HttpMethod: "POST",
+    });
+    template.hasResourceProperties(resourceType, {
+      HttpMethod: "OPTIONS",
     });
   });
 

@@ -12,7 +12,7 @@ import {
 import { HTTP_STATUS_CODES } from "../src/constants.js";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { ProductNotFoundError } from "../src/errors.js";
-import { randomUUID } from "node:crypto";
+import { v4 as uuidv4 } from "uuid";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -32,7 +32,7 @@ vi.mock("../src/repository.js", () => {
 
 describe("Unit tests for Lambdas", () => {
   const mockAvailableProduct: AvailableProduct = {
-    id: randomUUID(),
+    id: uuidv4(),
     title: "mock title",
     description: "mock description",
     price: 100,
@@ -100,18 +100,37 @@ describe("Unit tests for Lambdas", () => {
     });
   });
 
-  test("Get one product (400)", async () => {
-    const invalidProductId = "";
+  test("Get one product (400, empty product id)", async () => {
+    const emptyProductId = "";
     const productsResponse = await getOneProductFunction({
       pathParameters: {
-        id: invalidProductId,
+        id: emptyProductId,
       },
     });
 
     const error = JSON.parse(productsResponse.body) as ProductApiFailedResponse;
 
     expect(error).toMatchObject(<ProductApiFailedResponse>{
-      message: ProductMessages.PRODUCT_INVALID_ID,
+      message: ProductMessages.PRODUCT_EMPTY_ID,
+    });
+    expect(productsResponse).toMatchObject(<APIGatewayProxyResult>{
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      body: JSON.stringify(error),
+    });
+  });
+
+  test("Get one product (400, invalid UUID)", async () => {
+    const invalidUUID = uuidv4().substring(1);
+    const productsResponse = await getOneProductFunction({
+      pathParameters: {
+        id: invalidUUID,
+      },
+    });
+
+    const error = JSON.parse(productsResponse.body) as ProductApiFailedResponse;
+
+    expect(error).toMatchObject(<ProductApiFailedResponse>{
+      message: ProductMessages.PRODUCT_INVALID_UUID,
     });
     expect(productsResponse).toMatchObject(<APIGatewayProxyResult>{
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -123,10 +142,10 @@ describe("Unit tests for Lambdas", () => {
     mocks.getOneProduct.mockImplementationOnce(() => {
       throw new ProductNotFoundError();
     });
-    const invalidProductId = "incorrectProductId";
+    const nonExistingId = uuidv4();
     const productsResponse = await getOneProductFunction({
       pathParameters: {
-        id: invalidProductId,
+        id: nonExistingId,
       },
     });
     const error = JSON.parse(productsResponse.body) as ProductApiFailedResponse;

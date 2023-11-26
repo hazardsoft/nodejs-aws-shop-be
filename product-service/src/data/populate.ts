@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { randomUUID } from "node:crypto";
+import { v4 as uuidv4 } from "uuid";
 import { config } from "../../cdk/constants.js";
 import "dotenv/config";
 import { Product, Stock } from "../types.js";
@@ -14,7 +14,7 @@ const createProducts = (): Product[] => {
   const products: Product[] = [];
   for (let i = 1; i <= generatedItemsNum; i++) {
     products.push({
-      id: randomUUID(),
+      id: uuidv4(),
       title: `Product ${i}`,
       description: `Description ${i}`,
       price: i,

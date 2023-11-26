@@ -8,7 +8,7 @@ import {
   Stock,
 } from "./types";
 import { ProductNotFoundError, RepositoryError } from "./errors";
-import { randomUUID } from "node:crypto";
+import { v4 as uuidv4 } from "uuid";
 import {
   DynamoDBDocumentClient,
   QueryCommand,
@@ -88,7 +88,7 @@ export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
 export const createOneProduct = async (
   product: ProductInput,
 ): Promise<AvailableProduct> => {
-  const newProductId: string = randomUUID();
+  const newProductId: string = uuidv4();
 
   await dbDocClient.send(
     new TransactWriteCommand({

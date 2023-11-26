@@ -1,8 +1,4 @@
-import {
-  PutItemCommandOutput,
-  QueryCommandOutput,
-  ScanCommandOutput,
-} from "@aws-sdk/client-dynamodb";
+import { QueryCommandOutput, ScanCommandOutput } from "@aws-sdk/lib-dynamodb";
 
 export type Product = {
   id: string;
@@ -11,32 +7,9 @@ export type Product = {
   price: number;
 };
 
-export type ProductRecord = {
-  id: {
-    S: string;
-  };
-  title: {
-    S: string;
-  };
-  description: {
-    S: string;
-  };
-  price: {
-    N: string;
-  };
-};
-
 export type Stock = {
   product_id: string;
   count: number;
-};
-export type StockRecord = {
-  product_id: {
-    S: string;
-  };
-  count: {
-    N: string;
-  };
 };
 
 export type AvailableProduct = Product & Pick<Stock, "count">;
@@ -48,9 +21,10 @@ export type DBScanOutput<T> = Omit<ScanCommandOutput, "Items"> & {
 export type DBQueryOutput<T> = Omit<QueryCommandOutput, "Items"> & {
   Items?: T[];
 };
-export type DBPutOutput<T> = Omit<PutItemCommandOutput, "Attributes"> & {
-  Attributes?: T;
-};
+
+export const enum RepositoryMessages {
+  INTERNAL_REPOSITORY_ERROR = "Internal repository error",
+}
 
 export const enum ProductMessages {
   PRODUCT_NOT_FOUND = "Product not found",

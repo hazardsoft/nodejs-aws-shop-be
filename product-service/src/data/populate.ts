@@ -1,15 +1,18 @@
-import {
-  BatchWriteItemCommand,
-  DynamoDBClient,
-} from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { randomUUID } from "node:crypto";
 import { config } from "../../cdk/constants.js";
 import "dotenv/config";
-import { Product, ProductRecord, Stock, StockRecord } from "../types.js";
+import { Product, Stock } from "../types.js";
+import {
+  DynamoDBDocumentClient,
+  BatchWriteCommand,
+} from "@aws-sdk/lib-dynamodb";
+
+const generatedItemsNum = 5;
 
 const createProducts = (): Product[] => {
   const products: Product[] = [];
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 1; i <= generatedItemsNum; i++) {
     products.push({
       id: randomUUID(),
       title: `Product ${i}`,
@@ -32,42 +35,36 @@ const createStocks = (products: Product[]): Stock[] => {
 };
 
 const populateProducts = async (
-  dbClient: DynamoDBClient,
+  dbDocClient: DynamoDBDocumentClient,
   tableName: string,
   products: Product[],
 ) => {
-  await dbClient.send(
-    new BatchWriteItemCommand({
+  await dbDocClient.send(
+    new BatchWriteCommand({
       RequestItems: {
-        [tableName]: products.map((product) => ({
-          PutRequest: {
-            Item: <ProductRecord>{
-              id: { S: product.id },
-              title: { S: product.title },
-              description: { S: product.description },
-              price: { N: product.price.toString() },
+        [tableName]: products.map((product) => {
+          return {
+            PutRequest: {
+              Item: product,
             },
-          },
-        })),
+          };
+        }),
       },
     }),
   );
 };
 
 const populateStocks = async (
-  dbClient: DynamoDBClient,
+  dbDocClient: DynamoDBDocumentClient,
   tableName: string,
   stocks: Stock[],
 ) => {
-  await dbClient.send(
-    new BatchWriteItemCommand({
+  await dbDocClient.send(
+    new BatchWriteCommand({
       RequestItems: {
         [tableName]: stocks.map((stock) => ({
           PutRequest: {
-            Item: <StockRecord>{
-              product_id: { S: stock.product_id },
-              count: { N: stock.count.toString() },
-            },
+            Item: stock,
           },
         })),
       },
@@ -82,7 +79,8 @@ const dbClient = new DynamoDBClient({
     sessionToken: process.env.AWS_SESSION_TOKEN ?? "",
   },
 });
+const dbDocumentClient = DynamoDBDocumentClient.from(dbClient);
 const products: Product[] = createProducts();
 const stocks: Stock[] = createStocks(products);
-await populateProducts(dbClient, config.productsTableName, products);
-await populateStocks(dbClient, config.stocksTableName, stocks);
+await populateProducts(dbDocumentClient, config.productsTableName, products);
+await populateStocks(dbDocumentClient, config.stocksTableName, stocks);

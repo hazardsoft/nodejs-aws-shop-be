@@ -1,85 +1,83 @@
-import {
-  DynamoDBClient,
-  QueryCommand,
-  ScanCommand,
-  TransactWriteItemsCommand,
-} from "@aws-sdk/client-dynamodb";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   AvailableProduct,
   DBQueryOutput,
   DBScanOutput,
   Product,
   ProductInput,
-  ProductRecord,
   Stock,
-  StockRecord,
 } from "./types";
-import { ProductNotFoundError } from "./errors";
+import { ProductNotFoundError, RepositoryError } from "./errors";
 import { randomUUID } from "node:crypto";
+import {
+  DynamoDBDocumentClient,
+  QueryCommand,
+  ScanCommand,
+  TransactWriteCommand,
+} from "@aws-sdk/lib-dynamodb";
 
 const dbClient = new DynamoDBClient();
+const dbDocClient = DynamoDBDocumentClient.from(dbClient);
 const productsTableName = process.env.PRODUCTS_TABLE_NAME ?? "";
 const stocksTableName = process.env.STOCKS_TABLE_NAME ?? "";
 
 export const getAllProducts = async (): Promise<AvailableProduct[]> => {
-  const { Items: productItems } = (await dbClient.send(
-    new ScanCommand({
-      TableName: productsTableName,
-    }),
-  )) as DBScanOutput<ProductRecord>;
+  try {
+    const [{ Items: productItems }, { Items: stockItems }] = await Promise.all([
+      (await dbDocClient.send(
+        new ScanCommand({
+          TableName: productsTableName,
+        }),
+      )) as DBScanOutput<Product>,
+      (await dbDocClient.send(
+        new ScanCommand({
+          TableName: stocksTableName,
+        }),
+      )) as DBScanOutput<Stock>,
+    ]);
 
-  const { Items: stockItems } = (await dbClient.send(
-    new ScanCommand({
-      TableName: stocksTableName,
-    }),
-  )) as DBScanOutput<StockRecord>;
+    const products = productItems ?? [];
+    const stocks = stockItems ?? [];
 
-  const products: Product[] =
-    productItems?.map((p) => unmarshall(p) as Product) ?? [];
-  const stocks: Stock[] = stockItems?.map((s) => unmarshall(s) as Stock) ?? [];
+    const availableProducts: AvailableProduct[] = products.map((p) => {
+      const stock = stocks.find((s) => s.product_id === p.id);
+      return {
+        ...p,
+        count: stock?.count || 0,
+      };
+    });
 
-  const availableProducts: AvailableProduct[] = products.map((p) => {
-    const stock = stocks.find((s) => s.product_id === p.id);
-    return {
-      ...p,
-      count: stock?.count || 0,
-    };
-  });
-
-  return availableProducts;
+    return availableProducts;
+  } catch (e) {
+    throw new RepositoryError();
+  }
 };
 
 export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
-  const { Items: productItems } = (await dbClient.send(
+  const { Items: products } = (await dbDocClient.send(
     new QueryCommand({
       TableName: productsTableName,
       KeyConditionExpression: "id = :id",
       ExpressionAttributeValues: {
-        ":id": { S: id },
+        ":id": id,
       },
     }),
-  )) as DBQueryOutput<ProductRecord>;
+  )) as DBQueryOutput<Product>;
 
-  if (!productItems || !productItems.length) {
+  if (!products || !products.length) {
     throw new ProductNotFoundError();
   }
+  const product: Product = products[0];
 
-  const product = unmarshall(productItems[0]) as Product;
-
-  const { Items: stockItems } = (await dbClient.send(
+  const { Items: stocks } = (await dbDocClient.send(
     new QueryCommand({
       TableName: process.env.STOCKS_TABLE_NAME,
       KeyConditionExpression: "product_id = :product_id",
-      ExpressionAttributeValues: {
-        ":product_id": { S: id },
-      },
+      ExpressionAttributeValues: { ":product_id": id },
     }),
-  )) as DBQueryOutput<StockRecord>;
+  )) as DBQueryOutput<Stock>;
+  const stock = stocks?.find((s) => s.product_id === id);
 
-  const stocks: Stock[] = stockItems?.map((s) => unmarshall(s) as Stock) ?? [];
-
-  const stock = stocks.find((s) => s.product_id === id);
   const availableProduct: AvailableProduct = {
     ...product,
     count: stock?.count || 0,
@@ -92,17 +90,15 @@ export const createOneProduct = async (
 ): Promise<AvailableProduct> => {
   const newProductId: string = randomUUID();
 
-  await dbClient.send(
-    new TransactWriteItemsCommand({
+  await dbDocClient.send(
+    new TransactWriteCommand({
       TransactItems: [
         {
           Put: {
             TableName: productsTableName,
             Item: {
-              id: { S: newProductId },
-              title: { S: product.title },
-              description: { S: product.description },
-              price: { N: product.price.toString() },
+              ...product,
+              id: newProductId,
             },
           },
         },
@@ -110,10 +106,8 @@ export const createOneProduct = async (
           Put: {
             TableName: stocksTableName,
             Item: {
-              product_id: { S: newProductId },
-              count: {
-                N: product.count.toString(),
-              },
+              product_id: newProductId,
+              count: product.count,
             },
           },
         },

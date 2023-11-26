@@ -90,33 +90,37 @@ export const createOneProduct = async (
 ): Promise<AvailableProduct> => {
   const newProductId: string = uuidv4();
 
-  await dbDocClient.send(
-    new TransactWriteCommand({
-      TransactItems: [
-        {
-          Put: {
-            TableName: productsTableName,
-            Item: {
-              ...product,
-              id: newProductId,
+  try {
+    await dbDocClient.send(
+      new TransactWriteCommand({
+        TransactItems: [
+          {
+            Put: {
+              TableName: productsTableName,
+              Item: {
+                ...product,
+                id: newProductId,
+              },
             },
           },
-        },
-        {
-          Put: {
-            TableName: stocksTableName,
-            Item: {
-              product_id: newProductId,
-              count: product.count,
+          {
+            Put: {
+              TableName: stocksTableName,
+              Item: {
+                product_id: newProductId,
+                count: product.count,
+              },
             },
           },
-        },
-      ],
-    }),
-  );
+        ],
+      }),
+    );
 
-  return {
-    id: newProductId,
-    ...product,
-  };
+    return {
+      id: newProductId,
+      ...product,
+    };
+  } catch (e) {
+    throw new RepositoryError();
+  }
 };

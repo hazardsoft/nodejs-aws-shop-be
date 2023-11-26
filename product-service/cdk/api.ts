@@ -4,6 +4,7 @@ import {
   Code,
 } from "aws-cdk-lib/aws-lambda";
 import {
+  Cors,
   LambdaIntegration,
   LambdaIntegrationOptions,
   RestApi,
@@ -86,6 +87,14 @@ export class ProductsServiceApi extends Construct {
     });
     products.addMethod("POST", createProductIntegration, {
       methodResponses: responses.createOneProductMethodResponses,
+      requestModels: {
+        "application/json": models.createProductModel,
+      },
+    });
+    products.addCorsPreflight({
+      allowOrigins: Cors.ALL_ORIGINS,
+      allowHeaders: Cors.DEFAULT_HEADERS,
+      allowMethods: ["GET", "POST", "OPTIONS"],
     });
 
     const getOneProduct = products.addResource("{id}");

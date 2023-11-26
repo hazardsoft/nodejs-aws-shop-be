@@ -9,6 +9,7 @@ export type ResponseModelsProps = {
 export class ResponseModels extends Construct {
   public readonly oneProductModel: Model;
   public readonly allProductsModel: Model;
+  public readonly createProductModel: Model;
   public readonly productErrorModel: Model;
 
   constructor(scope: Construct, id: string, props: ResponseModelsProps) {
@@ -20,6 +21,7 @@ export class ResponseModels extends Construct {
       props,
       this.oneProductModel,
     );
+    this.createProductModel = createRequestProductModel(this, props);
     this.productErrorModel = createProductErrorModel(this, props);
   }
 }
@@ -81,6 +83,27 @@ const createProductErrorModel = (
         message: { type: JsonSchemaType.STRING },
       },
       required: ["message"],
+    },
+  });
+};
+export const createRequestProductModel = (
+  scope: Construct,
+  props: ResponseModelsProps,
+): Model => {
+  return new Model(scope, "RequestProductModel", {
+    restApi: props.restApi,
+    contentType: "application/json",
+    modelName: "RequestProductModel",
+    schema: {
+      title: "ProductDao",
+      type: JsonSchemaType.OBJECT,
+      properties: {
+        title: { type: JsonSchemaType.STRING },
+        description: { type: JsonSchemaType.STRING },
+        price: { type: JsonSchemaType.INTEGER },
+        count: { type: JsonSchemaType.INTEGER },
+      },
+      required: ["title", "description", "price", "count"],
     },
   });
 };

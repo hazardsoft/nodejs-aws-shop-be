@@ -15,7 +15,7 @@ Product Service is responsible for retrieving list of products or a product by i
 
 - `test` - Runs Lambdas and CDK tests
 
-- `populate` - Populates DynamoDB tables with data from [products.json](./src/data/products.json) and [stocks.json](./src/data/stocks.json) (DynamoDB tables have to be created already); requires `.env` file with AWS Credentials (copy-paste `.env.example`, rename it to `.env` and fill with your credentials)
+- `populate` - Populates DynamoDB `Products` and `Stocks` tables with generated data (DynamoDB tables have to be created already); requires `.env` file with AWS Credentials (copy-paste `.env.example`, rename it to `.env` and fill with your credentials)
 
 ## Deployment
 
@@ -24,11 +24,12 @@ In order to deploy application stack with AWS CDK one needs to run the following
 
 ## Product Service API
 
-Product Service API is available at https://dw0r0hgmic.execute-api.eu-central-1.amazonaws.com/dev:
+Product Service API is available at https://rro55xf8w3.execute-api.eu-central-1.amazonaws.com/dev:
 
-1. To get full list of products use https://dw0r0hgmic.execute-api.eu-central-1.amazonaws.com/dev/products
-2. To get one product by id use https://dw0r0hgmic.execute-api.eu-central-1.amazonaws.com/dev/products/{id}, where {id} is 1..4 (if out-of-range id is used 404 error will be returned)
-
+1. To get full list of products use https://rro55xf8w3.execute-api.eu-central-1.amazonaws.com/dev/products
+2. To get one product by id use https://rro55xf8w3.execute-api.eu-central-1.amazonaws.com/dev/products/{id}, where {id} is UUID of one of the items got in p.1
+3. To create a product use https://rro55xf8w3.execute-api.eu-central-1.amazonaws.com/dev/products (POST)
+   
 ### Swagger Documentation
 
 Use [openapi.yaml](./openapi.yaml) file (exported from `dev` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)

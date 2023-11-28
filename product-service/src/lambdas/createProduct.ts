@@ -1,32 +1,41 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import {
-  AvailableProduct,
   ProductApiFailedResponse,
-  ProductInput,
   ProductMessages,
   ServerMessages,
 } from "../types";
 import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
 import { createOneProduct } from "../repository";
+import { validateProductPayload } from "../utils/validate";
 
 export const handler = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   console.log(`lambda: create product, event: ${JSON.stringify(event)}`);
 
-  if (!event.body || validateRequest(event.body)) {
+  if (!event.body) {
     return enableCors({
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
       body: JSON.stringify(<ProductApiFailedResponse>{
-        message: ProductMessages.PRODUCT_INVALID_PAYLOAD,
+        message: ProductMessages.PRODUCT_EMPTY_PAYLOAD,
       }),
     });
   }
 
   try {
-    const productInput = JSON.parse(event.body) as ProductInput;
-    const createdProduct = await createOneProduct(productInput);
+    const validationResult = validateProductPayload(event.body);
+    if (!validationResult.success) {
+      return enableCors({
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        body: JSON.stringify(<ProductApiFailedResponse>{
+          message: ProductMessages.PRODUCT_INVALID_PAYLOAD,
+          reason: validationResult.issues.toString(),
+        }),
+      });
+    }
+
+    const createdProduct = await createOneProduct(validationResult.data);
 
     return enableCors({
       statusCode: HTTP_STATUS_CODES.CREATED,
@@ -41,15 +50,4 @@ export const handler = async (
       }),
     });
   }
-};
-
-const validateRequest = (body: string): boolean => {
-  const availableProduct = JSON.parse(body) as AvailableProduct;
-  return (
-    !!availableProduct.id ||
-    !availableProduct.title ||
-    !availableProduct.description ||
-    !availableProduct.price ||
-    !availableProduct.count
-  );
 };

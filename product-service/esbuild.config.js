@@ -48,8 +48,8 @@ await esbuild.build({
 });
 
 await esbuild.build({
-  entryPoints: ["src/data/populate.ts"],
-  outfile: "dist/populate.js",
+  entryPoints: ["lib/db/setup.ts"],
+  outfile: "dist/remote-db-setup.js",
   tsconfig: "tsconfig.json",
   ...utilityOptions,
 });

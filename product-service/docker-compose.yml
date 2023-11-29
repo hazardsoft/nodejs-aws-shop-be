@@ -1,0 +1,10 @@
+name: product-service
+services:
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: dynamodb-local
+    env_file:
+      - .env
+    ports:
+      - ${DYNAMODB_PORT}:${DYNAMODB_PORT}
+    command: "-jar DynamoDBLocal.jar -inMemory -sharedDb"

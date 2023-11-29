@@ -3,5 +3,5 @@
   "compilerOptions": {
     "outDir": "dist"
   },
-  "include": ["src", "cdk/responses.ts"]
+  "include": ["src", "lib"]
 }

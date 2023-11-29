@@ -1,4 +1,4 @@
-import { ProductInput, ProductValidationErrors } from "../../src/types";
+import { ProductInput, ProductValidationErrors } from "../../../src/types";
 
 const validProduct: ProductInput = {
   title: "title",

@@ -1,4 +1,3 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   AvailableProduct,
   DBQueryOutput,
@@ -10,26 +9,24 @@ import {
 import { ProductNotFoundError, RepositoryError } from "./errors";
 import { v4 as uuidv4 } from "uuid";
 import {
-  DynamoDBDocumentClient,
   QueryCommand,
   ScanCommand,
   TransactWriteCommand,
 } from "@aws-sdk/lib-dynamodb";
+import dbClient from "../lib/db/client";
 
-const dbClient = new DynamoDBClient();
-const dbDocClient = DynamoDBDocumentClient.from(dbClient);
 const productsTableName = process.env.PRODUCTS_TABLE_NAME ?? "";
 const stocksTableName = process.env.STOCKS_TABLE_NAME ?? "";
 
 export const getAllProducts = async (): Promise<AvailableProduct[]> => {
   try {
     const [{ Items: productItems }, { Items: stockItems }] = await Promise.all([
-      (await dbDocClient.send(
+      (await dbClient.send(
         new ScanCommand({
           TableName: productsTableName,
         }),
       )) as DBScanOutput<Product>,
-      (await dbDocClient.send(
+      (await dbClient.send(
         new ScanCommand({
           TableName: stocksTableName,
         }),
@@ -54,7 +51,7 @@ export const getAllProducts = async (): Promise<AvailableProduct[]> => {
 };
 
 export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
-  const { Items: products } = (await dbDocClient.send(
+  const { Items: products } = (await dbClient.send(
     new QueryCommand({
       TableName: productsTableName,
       KeyConditionExpression: "id = :id",
@@ -69,7 +66,7 @@ export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
   }
   const product: Product = products[0];
 
-  const { Items: stocks } = (await dbDocClient.send(
+  const { Items: stocks } = (await dbClient.send(
     new QueryCommand({
       TableName: process.env.STOCKS_TABLE_NAME,
       KeyConditionExpression: "product_id = :product_id",
@@ -91,7 +88,7 @@ export const createOneProduct = async (
   const newProductId: string = uuidv4();
 
   try {
-    await dbDocClient.send(
+    await dbClient.send(
       new TransactWriteCommand({
         TransactItems: [
           {

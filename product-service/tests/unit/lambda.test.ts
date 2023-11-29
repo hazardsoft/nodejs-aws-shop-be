@@ -1,17 +1,17 @@
 import { describe, expect, test, vi } from "vitest";
-import { handler as getAllProductsFunction } from "../src/lambdas/getProducts.js";
-import { handler as getOneProductFunction } from "../src/lambdas/getOneProduct.js";
-import { handler as createOneProductFunction } from "../src/lambdas/createProduct.js";
+import { handler as getAllProductsFunction } from "../../src/lambdas/getProducts.js";
+import { handler as getOneProductFunction } from "../../src/lambdas/getOneProduct.js";
+import { handler as createOneProductFunction } from "../../src/lambdas/createProduct.js";
 import {
   AvailableProduct,
   ProductApiFailedResponse,
   ProductInput,
   ProductMessages,
   ServerMessages,
-} from "../src/types.js";
-import { HTTP_STATUS_CODES } from "../src/constants.js";
+} from "../../src/types.js";
+import { HTTP_STATUS_CODES } from "../../src/constants.js";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { ProductNotFoundError } from "../src/errors.js";
+import { ProductNotFoundError } from "../../src/errors.js";
 import { v4 as uuidv4 } from "uuid";
 import { invalidProductsTestInput } from "./data/input.js";
 
@@ -23,7 +23,7 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("../src/repository.js", () => {
+vi.mock("../../src/repository.js", () => {
   return {
     getAllProducts: mocks.getAllProducts,
     getOneProduct: mocks.getOneProduct,

@@ -1,6 +1,6 @@
 import { describe, test } from "vitest";
-import { productService } from "../cdk/index.js";
-import { config } from "../cdk/constants.js";
+import { productService } from "../../cdk/index.js";
+import { config } from "../../cdk/constants.js";
 import { Template } from "aws-cdk-lib/assertions";
 
 describe("Tests for Lambdas/API Gateway", () => {

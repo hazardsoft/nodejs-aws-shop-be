@@ -13,8 +13,12 @@
     "cdk:diff": "cdk diff",
     "cdk:deploy": "cdk deploy",
     "cdk:destroy": "cdk destroy",
-    "test": "vitest",
-    "populate": "node dist/populate.js"
+    "populate": "node dist/remote-db-setup.js",
+    "docker:up": "docker compose --env-file=.env up --detach",
+    "docker:down": "docker compose --env-file=.env down",
+    "test:unit": "vitest --config vitest.config.unit.js",
+    "test:integration": "vitest --config vitest.config.integration.js",
+    "test": "run-s build docker:up test:unit test:integration"
   },
   "keywords": [],
   "author": "",

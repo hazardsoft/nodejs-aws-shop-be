@@ -7,8 +7,8 @@ import {
 import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
 import { validateImportProducts } from "../utils/validate";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { generateSignedUrl } from "../bucket";
+import { config } from "../../cdk/constants";
 
 const bucketName = process.env.BUCKET_NAME ?? "";
 
@@ -41,14 +41,10 @@ export const handler = async (
       });
     }
 
-    const s3Client = new S3Client();
-    const putCommand = new PutObjectCommand({
-      Bucket: bucketName,
-      Key: `uploaded/${productsFileName}`,
-    });
-    const url = await getSignedUrl(s3Client, putCommand, {
-      expiresIn: 60,
-    });
+    const url = await generateSignedUrl(
+      bucketName,
+      `${config.bucketUploadedPrefix}/${productsFileName}`,
+    );
 
     console.log(`Signed utl for put command: ${url}`);
 

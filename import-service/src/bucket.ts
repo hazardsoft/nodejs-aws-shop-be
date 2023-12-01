@@ -2,8 +2,10 @@ import {
   CopyObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "node:stream";
 import {
   BucketCopyObjectError,
@@ -13,6 +15,20 @@ import {
 import { HTTP_STATUS_CODES } from "./constants";
 
 const s3Client = new S3Client();
+
+export const generateSignedUrl = async (
+  bucketName: string,
+  key: string,
+): Promise<string> => {
+  const putCommand = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+  });
+  const signedUrl = await getSignedUrl(s3Client, putCommand, {
+    expiresIn: 60,
+  });
+  return signedUrl;
+};
 
 export const getObject = async (options: {
   bucketName: string;

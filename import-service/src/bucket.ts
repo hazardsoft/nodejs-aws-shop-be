@@ -60,7 +60,7 @@ export const copyObject = async (options: {
     bucketName: string;
     key: string;
   };
-}) => {
+}): Promise<void> => {
   const { from, to } = options;
 
   console.log(
@@ -84,7 +84,7 @@ export const copyObject = async (options: {
 export const deleteObject = async (options: {
   bucketName: string;
   key: string;
-}) => {
+}): Promise<void> => {
   const { bucketName, key } = options;
   console.log(`trying to delete object ${bucketName}:${key}`);
   const deleteObjectResult = await s3Client.send(

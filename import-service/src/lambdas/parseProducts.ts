@@ -3,8 +3,6 @@ import { config } from "../../cdk/constants";
 import { getObject, copyObject, deleteObject } from "../bucket";
 import { readProducts } from "../utils/parser";
 
-const targetBucketName = process.env.BUCKET_NAME ?? "";
-
 export const handler = async (event: S3Event): Promise<void> => {
   console.log(`lambda: products file parser, event: ${JSON.stringify(event)}`);
 
@@ -13,11 +11,6 @@ export const handler = async (event: S3Event): Promise<void> => {
     const key = record.s3.object.key;
     console.log(`bucketName: ${bucketName}, key: ${key}`);
 
-    if (targetBucketName !== bucketName) {
-      console.log(
-        `bucketName: ${bucketName} is not equal to targetBucketName: ${targetBucketName}`,
-      );
-    }
     const source = { bucketName, key };
     const stream = await getObject(source);
     const products = await readProducts(stream);

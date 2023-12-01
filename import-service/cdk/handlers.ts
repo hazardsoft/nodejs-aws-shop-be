@@ -20,20 +20,17 @@ export class ImportProductsHandlers extends Construct {
   ) {
     super(scope, id);
 
-    const env = { BUCKET_NAME: props.bucketName };
-
     this.importProductsHandler = new LambdaFunction(this, "ImportProducts", {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset("./dist/lambdas/importProducts"),
       handler: "importProducts.handler",
-      environment: env,
+      environment: { BUCKET_NAME: props.bucketName },
     });
 
     this.parseProductsHandler = new LambdaFunction(this, "ParseProducts", {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset("./dist/lambdas/parseProducts"),
       handler: "parseProducts.handler",
-      environment: env,
     });
   }
 }

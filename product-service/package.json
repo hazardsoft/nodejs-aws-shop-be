@@ -6,25 +6,38 @@
   "type": "module",
   "scripts": {
     "build": "node esbuild.config.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
     "cdk:run": "node cdk.out/index.js",
     "cdk": "run-s build cdk:run",
     "cdk:diff": "cdk diff",
     "cdk:deploy": "cdk deploy",
     "cdk:destroy": "cdk destroy",
-    "test": "vitest"
+    "test": "vitest",
+    "populate": "node dist/populate.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.126",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
     "esbuild": "^0.19.5",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
     "npm-run-all": "^4.1.5",
-    "typescript": "^5.2.2",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.2",
     "vitest": "^0.34.6"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.454.0",
+    "@aws-sdk/lib-dynamodb": "^3.454.0",
     "aws-cdk-lib": "^2.110.0",
-    "constructs": "^10.3.0"
+    "constructs": "^10.3.0",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.1"
   }
 }

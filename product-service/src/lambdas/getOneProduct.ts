@@ -1,36 +1,59 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { findOne } from "../repositories/repository";
-import { ProductApiFailedResponse } from "../types";
+import {
+  ProductApiFailedResponse,
+  ProductMessages,
+  ServerMessages,
+} from "../types";
 import { enableCors } from "../utils/cors";
 import { HTTP_STATUS_CODES } from "../constants";
+import { getOneProduct } from "../repository";
+import { ProductNotFoundError } from "../errors";
+import { validate } from "uuid";
 
-export const handler = async (event: Pick<APIGatewayProxyEvent, "pathParameters">): Promise<APIGatewayProxyResult > => {
-    console.log(`lambda: getOneProduct, event: ${JSON.stringify(event)}`);
+export const handler = async (
+  event: Pick<APIGatewayProxyEvent, "pathParameters">,
+): Promise<APIGatewayProxyResult> => {
+  console.log(`lambda: getOneProduct, event: ${JSON.stringify(event)}`);
 
-    const productId = event.pathParameters?.id?.trim();
-    if (!productId) {
-        return enableCors({
-            statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-            body: JSON.stringify(<ProductApiFailedResponse>{
-                errorCode: HTTP_STATUS_CODES.BAD_REQUEST,
-                message: "Product id is not defined"
-            })
-        });
-    }
-
-    const product = await findOne(productId);
-    if (!product) {
-        return enableCors({
-            statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-            body: JSON.stringify(<ProductApiFailedResponse>{
-                errorCode: HTTP_STATUS_CODES.NOT_FOUND,
-                message: "Product Not Found"
-            })
-        })
-    }
-
+  const productId = event.pathParameters?.id?.trim();
+  if (!productId) {
     return enableCors({
-        statusCode: HTTP_STATUS_CODES.OK,
-        body: JSON.stringify(product)
-    })
-}
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      body: JSON.stringify(<ProductApiFailedResponse>{
+        message: ProductMessages.PRODUCT_EMPTY_ID,
+      }),
+    });
+  }
+  if (!validate(productId)) {
+    return enableCors({
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      body: JSON.stringify(<ProductApiFailedResponse>{
+        message: ProductMessages.PRODUCT_INVALID_UUID,
+      }),
+    });
+  }
+
+  try {
+    const availableProduct = await getOneProduct(productId);
+    return enableCors({
+      statusCode: HTTP_STATUS_CODES.OK,
+      body: JSON.stringify(availableProduct),
+    });
+  } catch (e) {
+    if (e instanceof ProductNotFoundError) {
+      return enableCors({
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        body: JSON.stringify(<ProductApiFailedResponse>{
+          message: ProductMessages.PRODUCT_NOT_FOUND,
+        }),
+      });
+    }
+    return enableCors({
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER,
+      body: JSON.stringify(<ProductApiFailedResponse>{
+        message: ServerMessages.INTERNAL_SERVER_ERROR,
+        reason: e instanceof Error ? e.message : "",
+      }),
+    });
+  }
+};

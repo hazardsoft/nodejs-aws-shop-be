@@ -1,9 +1,9 @@
 openapi: "3.0.1"
 info:
   title: "Products"
-  version: "2023-11-19T21:13:15Z"
+  version: "2023-11-26T08:33:28Z"
 servers:
-- url: "https://dw0r0hgmic.execute-api.eu-central-1.amazonaws.com/{basePath}"
+- url: "https://rro55xf8w3.execute-api.eu-central-1.amazonaws.com/{basePath}"
   variables:
     basePath:
       default: "dev"
@@ -17,49 +17,113 @@ paths:
         schema:
           type: "string"
       responses:
-        "400":
-          description: "400 response"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OneProductInvalidIdModel"
         "404":
           description: "404 response"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OneProductInvalidIdModel"
+                $ref: "#/components/schemas/ProductErrorModel"
         "200":
           description: "200 response"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/OneProductModel"
+        "400":
+          description: "400 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductErrorModel"
+        "500":
+          description: "500 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductErrorModel"
   /products:
     get:
       responses:
+        "500":
+          description: "500 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductErrorModel"
         "200":
           description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AllProductsModel"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestProductModel"
+        required: true
+      responses:
+        "400":
+          description: "400 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductErrorModel"
+        "500":
+          description: "500 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductErrorModel"
+        "201":
+          description: "201 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OneProductModel"
+    options:
+      responses:
+        "204":
+          description: "204 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
 components:
   schemas:
-    OneProductInvalidIdModel:
-      title: "Error"
+    RequestProductModel:
+      title: "ProductDao"
       required:
-      - "errorCode"
-      - "message"
+      - "count"
+      - "description"
+      - "price"
+      - "title"
       type: "object"
       properties:
-        errorCode:
+        price:
           type: "integer"
-        message:
+        count:
+          type: "integer"
+        description:
+          type: "string"
+        title:
           type: "string"
     OneProductModel:
       title: "Product"
       required:
+      - "count"
       - "description"
       - "id"
       - "price"
@@ -67,6 +131,8 @@ components:
       type: "object"
       properties:
         price:
+          type: "integer"
+        count:
           type: "integer"
         description:
           type: "string"
@@ -79,3 +145,11 @@ components:
       type: "array"
       items:
         $ref: "#/components/schemas/OneProductModel"
+    ProductErrorModel:
+      title: "Error"
+      required:
+      - "message"
+      type: "object"
+      properties:
+        message:
+          type: "string"

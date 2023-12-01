@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.common.json",
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "dist"
   },
-  "include": ["src", "cdk/responses.ts"],
+  "include": ["src", "cdk/responses.ts"]
 }

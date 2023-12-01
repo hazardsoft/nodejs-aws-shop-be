@@ -31,6 +31,10 @@ export class ImportServiceBucket extends Construct {
     this.importBucket.grantRead(handler);
   }
 
+  registerDeleteHandler(handler: LambdaFunction): void {
+    this.importBucket.grantDelete(handler);
+  }
+
   registerObjectCreatedHandler(handler: LambdaFunction): void {
     this.importBucket.addEventNotification(
       EventType.OBJECT_CREATED,

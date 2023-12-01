@@ -1,7 +1,7 @@
 import { S3Event } from "aws-lambda";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { Readable } from "node:stream";
-import { CastingContext, parse } from "csv-parse";
+import { config } from "../../cdk/constants";
+import { getObject, copyObject, deleteObject } from "../bucket";
+import { readProducts } from "../utils/parser";
 
 const targetBucketName = process.env.BUCKET_NAME ?? "";
 
@@ -18,37 +18,21 @@ export const handler = async (event: S3Event): Promise<void> => {
         `bucketName: ${bucketName} is not equal to targetBucketName: ${targetBucketName}`,
       );
     }
+    const source = { bucketName, key };
+    const stream = await getObject(source);
+    const products = await readProducts(stream);
+    console.log(`parsed products: ${JSON.stringify(products)}`);
 
-    const s3Client = new S3Client();
-    const getObjectResult = await s3Client.send(
-      new GetObjectCommand({
-        Bucket: bucketName,
-        Key: `${key}`,
-      }),
-    );
-    if (!getObjectResult.Body) {
-      console.log("Body is empty");
-      return;
-    }
-    if (getObjectResult.Body instanceof Readable) {
-      const parser = getObjectResult.Body.pipe(
-        parse({
-          columns: true,
-          cast: (value: string, context: CastingContext) => {
-            if (context.header) return value;
-            switch (context.column) {
-              case "price":
-                return parseFloat(value);
-              case "count":
-                return parseInt(value);
-            }
-            return value;
-          },
-        }),
-      );
-      for await (const row of parser) {
-        console.log(`reading product: ${JSON.stringify(row)}`);
-      }
-    }
+    await copyObject({
+      from: source,
+      to: {
+        bucketName,
+        key: `${key.replace(
+          config.bucketUploadedPrefix,
+          config.bucketParsedPrefix,
+        )}`,
+      },
+    });
+    await deleteObject(source);
   }
 };

@@ -12,6 +12,14 @@ export const ImportProductsSchema = z
   .endsWith(".csv", ProductValidationErrors.FILENAME_INVALID);
 export type ImportProductsInput = z.infer<typeof ImportProductsSchema>;
 
+export const ProductSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  price: z.number(),
+  count: z.number(),
+});
+export type Product = z.infer<typeof ProductSchema>;
+
 export const enum ImportMessages {
   FILENAME_EMPTY = "Filename to import is empty",
   FILENAME_INVALID = "Filename to import is invalid",

@@ -1,5 +1,10 @@
 import { ZodIssue, z } from "zod";
-import { ImportProductsInput, ImportProductsSchema } from "../types";
+import {
+  ImportProductsInput,
+  ImportProductsSchema,
+  Product,
+  ProductSchema,
+} from "../types";
 
 export type ValidationIssue = string;
 export type ValidationResult<T> =
@@ -26,4 +31,10 @@ export const validateImportProducts = (
   payload: unknown,
 ): ValidationResult<ImportProductsInput> => {
   return validatePayload<ImportProductsInput>(payload, ImportProductsSchema);
+};
+
+export const validateProduct = (
+  payload: unknown,
+): ValidationResult<Product> => {
+  return validatePayload<Product>(payload, ProductSchema);
 };

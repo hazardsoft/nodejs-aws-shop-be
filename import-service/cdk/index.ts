@@ -14,9 +14,12 @@ class ImportService extends Stack {
       new ImportProductsHandlers(this, "ImportProductsHandlers", {
         bucketName: bucket.importBucket.bucketName,
       });
-    bucket.registerPutHandler(importProductsHandler);
-    bucket.registerGetHandler(parseProductsHandler);
-    bucket.registerObjectCreatedHandler(parseProductsHandler);
+    bucket.registerPutHandler(importProductsHandler); // required to upload CSV file to S3
+
+    bucket.registerGetHandler(parseProductsHandler); // required to download CSV file from S3
+    bucket.registerDeleteHandler(parseProductsHandler); // required to delete parsed CSV from "uploaded" folder
+    bucket.registerPutHandler(parseProductsHandler); // required to move parsed CSV to "parsed" folder
+    bucket.registerObjectCreatedHandler(parseProductsHandler); // required to be triggered once a file is uploaded to S3 with prefix "uploaded"
 
     new ImportServiceApi(this, "ImportServiceApi", {
       importProductsHandler,

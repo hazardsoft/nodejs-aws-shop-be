@@ -10,7 +10,8 @@ type ImportProductsHandlersProps = {
 };
 
 export class ImportProductsHandlers extends Construct {
-  public readonly importProductsFileHandler: LambdaFunction;
+  public readonly importProductsHandler: LambdaFunction;
+  public readonly parseProductsHandler: LambdaFunction;
 
   constructor(
     scope: Construct,
@@ -19,17 +20,20 @@ export class ImportProductsHandlers extends Construct {
   ) {
     super(scope, id);
 
-    this.importProductsFileHandler = new LambdaFunction(
-      this,
-      "ImportProductsFile",
-      {
-        runtime: Runtime.NODEJS_18_X,
-        code: Code.fromAsset("./dist/lambdas/importProductsFile"),
-        handler: "importProductsFile.handler",
-        environment: {
-          BUCKET_NAME: props.bucketName,
-        },
-      },
-    );
+    const env = { BUCKET_NAME: props.bucketName };
+
+    this.importProductsHandler = new LambdaFunction(this, "ImportProducts", {
+      runtime: Runtime.NODEJS_18_X,
+      code: Code.fromAsset("./dist/lambdas/importProducts"),
+      handler: "importProducts.handler",
+      environment: env,
+    });
+
+    this.parseProductsHandler = new LambdaFunction(this, "ParseProducts", {
+      runtime: Runtime.NODEJS_18_X,
+      code: Code.fromAsset("./dist/lambdas/parseProducts"),
+      handler: "parseProducts.handler",
+      environment: env,
+    });
   }
 }

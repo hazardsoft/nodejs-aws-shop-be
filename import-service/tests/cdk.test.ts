@@ -10,9 +10,12 @@ describe("Tests for Lambdas/API Gateway", () => {
   test("1 Lambda function is defined", () => {
     resourceType = "AWS::Lambda::Function";
 
-    template.resourceCountIs(resourceType, 1);
+    template.resourceCountIs(resourceType, 3);
     template.hasResourceProperties(resourceType, {
-      Handler: "importProductsFile.handler",
+      Handler: "importProducts.handler",
+    });
+    template.hasResourceProperties(resourceType, {
+      Handler: "parseProducts.handler",
     });
   });
 

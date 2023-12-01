@@ -1,6 +1,8 @@
 import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
-import { Bucket, HttpMethods } from "aws-cdk-lib/aws-s3";
+import { Bucket, EventType, HttpMethods } from "aws-cdk-lib/aws-s3";
+import { LambdaDestination } from "aws-cdk-lib/aws-s3-notifications";
 import { Construct } from "constructs";
+import { config } from "./constants";
 
 export class ImportServiceBucket extends Construct {
   public readonly importBucket: Bucket;
@@ -23,5 +25,19 @@ export class ImportServiceBucket extends Construct {
 
   registerPutHandler(handler: LambdaFunction): void {
     this.importBucket.grantPut(handler);
+  }
+
+  registerGetHandler(handler: LambdaFunction): void {
+    this.importBucket.grantRead(handler);
+  }
+
+  registerObjectCreatedHandler(handler: LambdaFunction): void {
+    this.importBucket.addEventNotification(
+      EventType.OBJECT_CREATED,
+      new LambdaDestination(handler),
+      {
+        prefix: config.bucketUploadedPrefix,
+      },
+    );
   }
 }

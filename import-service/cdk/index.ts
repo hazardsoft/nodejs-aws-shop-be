@@ -10,15 +10,16 @@ class ImportService extends Stack {
 
     const bucket = new ImportServiceBucket(this, "ImportServiceBucket");
 
-    const { importProductsFileHandler } = new ImportProductsHandlers(
-      this,
-      "ImportProductsHandlers",
-      { bucketName: bucket.importBucket.bucketName },
-    );
-    bucket.registerPutHandler(importProductsFileHandler);
+    const { importProductsHandler, parseProductsHandler } =
+      new ImportProductsHandlers(this, "ImportProductsHandlers", {
+        bucketName: bucket.importBucket.bucketName,
+      });
+    bucket.registerPutHandler(importProductsHandler);
+    bucket.registerGetHandler(parseProductsHandler);
+    bucket.registerObjectCreatedHandler(parseProductsHandler);
 
     new ImportServiceApi(this, "ImportServiceApi", {
-      importProductsFileHandler,
+      importProductsHandler,
     });
   }
 }

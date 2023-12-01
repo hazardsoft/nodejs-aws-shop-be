@@ -15,6 +15,7 @@ export type ImportProductsInput = z.infer<typeof ImportProductsSchema>;
 export const enum ImportMessages {
   FILENAME_EMPTY = "Filename to import is empty",
   FILENAME_INVALID = "Filename to import is invalid",
+  BUCKET_NAME_MISMATCH = "Bucket name mismatch",
 }
 
 export const enum ServerMessages {

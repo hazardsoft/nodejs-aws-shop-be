@@ -20,8 +20,15 @@ const lambdaOptions = {
 };
 
 await esbuild.build({
-  entryPoints: ["src/lambdas/importProductsFile.ts"],
-  outfile: "dist/lambdas/importProductsFile/importProductsFile.mjs",
+  entryPoints: ["src/lambdas/importProducts.ts"],
+  outfile: "dist/lambdas/importProducts/importProducts.mjs",
+  tsconfig: "tsconfig.json",
+  ...lambdaOptions,
+});
+
+await esbuild.build({
+  entryPoints: ["src/lambdas/parseProducts.ts"],
+  outfile: "dist/lambdas/parseProducts/parseProducts.mjs",
   tsconfig: "tsconfig.json",
   ...lambdaOptions,
 });

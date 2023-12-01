@@ -10,7 +10,7 @@ import { ResponseModels } from "./models.js";
 import { MethodResponses } from "./responses.js";
 
 type ImportServiceApiProps = {
-  importProductsFileHandler: LambdaFunction;
+  importProductsHandler: LambdaFunction;
 };
 export class ImportServiceApi extends Construct {
   constructor(scope: Construct, id: string, props: ImportServiceApiProps) {
@@ -20,7 +20,7 @@ export class ImportServiceApi extends Construct {
       allowTestInvoke: false,
     };
     const importProductsIntegration = new LambdaIntegration(
-      props.importProductsFileHandler,
+      props.importProductsHandler,
       integrationOptions,
     );
 

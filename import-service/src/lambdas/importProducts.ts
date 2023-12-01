@@ -13,7 +13,7 @@ import { config } from "../../cdk/constants";
 const bucketName = process.env.BUCKET_NAME ?? "";
 
 export const handler = async (
-  event: APIGatewayProxyEvent,
+  event: Partial<APIGatewayProxyEvent>,
 ): Promise<APIGatewayProxyResult> => {
   console.log(`lambda: import products file, event: ${JSON.stringify(event)}`);
 

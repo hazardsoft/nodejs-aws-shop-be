@@ -7,6 +7,6 @@ export default defineConfig({
     environment: "node",
     globals: false,
     watch: false,
-    setupFiles: "tests/integration/setup.ts",
+    setupFiles: ["dotenv/config", "tests/integration/setup.ts"],
   },
 });

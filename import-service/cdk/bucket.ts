@@ -3,6 +3,7 @@ import { Bucket, EventType, HttpMethods } from "aws-cdk-lib/aws-s3";
 import { LambdaDestination } from "aws-cdk-lib/aws-s3-notifications";
 import { Construct } from "constructs";
 import { config } from "./constants";
+import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export class ImportServiceBucket extends Construct {
   public readonly importBucket: Bucket;
@@ -24,7 +25,14 @@ export class ImportServiceBucket extends Construct {
   }
 
   registerPutHandler(handler: LambdaFunction): void {
-    this.importBucket.grantPut(handler);
+    // this.importBucket.grantPut(handler);
+    handler.addToRolePolicy(
+      new PolicyStatement({
+        actions: ["s3:PutObject"],
+        resources: [this.importBucket.arnForObjects("*")],
+        effect: Effect.ALLOW,
+      }),
+    );
   }
 
   registerGetHandler(handler: LambdaFunction): void {

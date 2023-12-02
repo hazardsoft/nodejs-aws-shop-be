@@ -3,6 +3,7 @@ import { Construct } from "constructs";
 import { ImportServiceApi } from "./api";
 import { ImportServiceBucket } from "./bucket";
 import { ImportProductsHandlers } from "./handlers";
+import { config } from "./constants";
 
 class ImportService extends Stack {
   constructor(scope: Construct, id: string) {
@@ -14,12 +15,25 @@ class ImportService extends Stack {
       new ImportProductsHandlers(this, "ImportProductsHandlers", {
         bucketName: bucket.importBucket.bucketName,
       });
-    bucket.registerPutHandler(importProductsHandler); // required to upload CSV file to S3
 
-    bucket.registerGetHandler(parseProductsHandler); // required to download CSV file from S3
-    bucket.registerDeleteHandler(parseProductsHandler); // required to delete parsed CSV from "uploaded" folder
-    bucket.registerPutHandler(parseProductsHandler); // required to move parsed CSV to "parsed" folder
-    bucket.registerObjectCreatedHandler(parseProductsHandler); // required to be triggered once a file is uploaded to S3 with prefix "uploaded"
+    bucket.registerPutHandler(
+      importProductsHandler,
+      config.bucketUploadedPrefix,
+    ); // required to upload CSV file to S3
+
+    bucket.registerGetHandler(
+      parseProductsHandler,
+      config.bucketUploadedPrefix,
+    ); // required to download CSV file from S3
+    bucket.registerDeleteHandler(
+      parseProductsHandler,
+      config.bucketUploadedPrefix,
+    ); // required to delete parsed CSV from "uploaded" folder
+    bucket.registerPutHandler(parseProductsHandler, config.bucketParsedPrefix); // required to move parsed CSV to "parsed" folder
+    bucket.registerObjectCreatedHandler(
+      parseProductsHandler,
+      config.bucketUploadedPrefix,
+    ); // required to be triggered once a file is uploaded to S3 with prefix "uploaded"
 
     new ImportServiceApi(this, "ImportServiceApi", {
       importProductsHandler,

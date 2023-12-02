@@ -2,9 +2,13 @@ import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
 import { Bucket, EventType, HttpMethods } from "aws-cdk-lib/aws-s3";
 import { LambdaDestination } from "aws-cdk-lib/aws-s3-notifications";
 import { Construct } from "constructs";
-import { config } from "./constants";
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
+const enum S3Action {
+  GET = "s3:GetObject",
+  PUT = "s3:PutObject",
+  DELETE = "s3:DeleteObject",
+}
 export class ImportServiceBucket extends Construct {
   public readonly importBucket: Bucket;
 
@@ -24,32 +28,44 @@ export class ImportServiceBucket extends Construct {
     });
   }
 
-  registerPutHandler(handler: LambdaFunction): void {
+  registerPutHandler(handler: LambdaFunction, keyPrefix: string): void {
     // this.importBucket.grantPut(handler);
+    handler.addToRolePolicy(this.createAccessPolicy(S3Action.PUT, keyPrefix));
+  }
+
+  registerGetHandler(handler: LambdaFunction, keyPrefix: string): void {
+    // this.importBucket.grantRead(handler);
+    handler.addToRolePolicy(this.createAccessPolicy(S3Action.GET, keyPrefix));
+  }
+
+  registerDeleteHandler(handler: LambdaFunction, keyPrefix: string): void {
+    // this.importBucket.grantDelete(handler);
     handler.addToRolePolicy(
-      new PolicyStatement({
-        actions: ["s3:PutObject"],
-        resources: [this.importBucket.arnForObjects("*")],
-        effect: Effect.ALLOW,
-      }),
+      this.createAccessPolicy(S3Action.DELETE, keyPrefix),
     );
   }
 
-  registerGetHandler(handler: LambdaFunction): void {
-    this.importBucket.grantRead(handler);
-  }
-
-  registerDeleteHandler(handler: LambdaFunction): void {
-    this.importBucket.grantDelete(handler);
-  }
-
-  registerObjectCreatedHandler(handler: LambdaFunction): void {
+  registerObjectCreatedHandler(
+    handler: LambdaFunction,
+    keyPrefix: string,
+  ): void {
     this.importBucket.addEventNotification(
       EventType.OBJECT_CREATED,
       new LambdaDestination(handler),
       {
-        prefix: config.bucketUploadedPrefix,
+        prefix: keyPrefix,
       },
     );
+  }
+
+  private createAccessPolicy(
+    action: S3Action,
+    keyPrefix: string,
+  ): PolicyStatement {
+    return new PolicyStatement({
+      actions: [action],
+      resources: [this.importBucket.arnForObjects(`${keyPrefix}/*`)],
+      effect: Effect.ALLOW,
+    });
   }
 }

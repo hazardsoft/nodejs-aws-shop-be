@@ -1,5 +1,5 @@
 {
-  "name": "product-service",
+  "name": "import-service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,19 +13,13 @@
     "cdk:diff": "cdk diff",
     "cdk:deploy": "cdk deploy",
     "cdk:destroy": "cdk destroy",
-    "populate": "node dist/remote-db-setup.js",
-    "docker:up": "docker compose --env-file=.env up --detach",
-    "docker:down": "docker compose --env-file=.env down",
-    "test:unit": "vitest --config vitest.config.unit.js",
-    "test:integration": "vitest --config vitest.config.integration.js",
-    "test": "run-s build docker:up test:unit test:integration"
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.126",
-    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
     "esbuild": "^0.19.5",
@@ -37,12 +31,11 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.454.0",
-    "@aws-sdk/lib-dynamodb": "^3.454.0",
+    "@aws-sdk/client-s3": "^3.462.0",
+    "@aws-sdk/s3-request-presigner": "^3.462.0",
     "aws-cdk-lib": "^2.110.0",
     "constructs": "^10.3.0",
-    "dotenv": "^16.3.1",
-    "uuid": "^9.0.1",
+    "csv-parse": "^5.5.2",
     "zod": "^3.22.4"
   }
 }

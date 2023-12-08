@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.common.json",
-  "include": ["cdk", "src", "tests", "lib"],
+  "include": ["cdk", "src", "tests"],
   "exclude": ["cdk.out", "dist", "node_modules"]
 }

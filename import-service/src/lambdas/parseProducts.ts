@@ -19,7 +19,9 @@ export const handler = async (event: S3Event): Promise<void> => {
     const products = await readProducts(stream);
     console.log(`parsed products: ${JSON.stringify(products)}`);
 
-    await sendMessage(queueUrl, products);
+    for await (const product of products) {
+      await sendMessage(queueUrl, product);
+    }
 
     await copyObject({
       from: source,

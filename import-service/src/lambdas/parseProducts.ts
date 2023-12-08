@@ -2,6 +2,9 @@ import { S3Event } from "aws-lambda";
 import { config } from "../../cdk/constants";
 import { getObject, copyObject, deleteObject } from "../bucket";
 import { readProducts } from "../utils/parser";
+import { sendMessage } from "../queue";
+
+const queueUrl = process.env.QUEUE_URL ?? "";
 
 export const handler = async (event: S3Event): Promise<void> => {
   console.log(`lambda: products file parser, event: ${JSON.stringify(event)}`);
@@ -15,6 +18,8 @@ export const handler = async (event: S3Event): Promise<void> => {
     const stream = await getObject(source);
     const products = await readProducts(stream);
     console.log(`parsed products: ${JSON.stringify(products)}`);
+
+    await sendMessage(queueUrl, products);
 
     await copyObject({
       from: source,

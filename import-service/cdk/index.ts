@@ -1,10 +1,10 @@
-import { App, Stack } from "aws-cdk-lib";
+import { App, Fn, Stack } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { ImportServiceApi } from "./api";
 import { ImportServiceBucket } from "./bucket";
 import { ImportProductsHandlers } from "./handlers";
 import { config } from "./constants";
-import { ProductsQueue } from "./queue";
+import { ComponentsIds } from "../../shared/constants";
 
 class ImportService extends Stack {
   constructor(scope: Construct, id: string) {
@@ -12,12 +12,12 @@ class ImportService extends Stack {
 
     const bucket = new ImportServiceBucket(this, "ImportServiceBucket");
 
-    const queue = new ProductsQueue(this, "ProductsQueue");
+    const queueUrl = Fn.importValue(<string>ComponentsIds.productsQueueUrl);
 
     const { importProductsHandler, parseProductsHandler } =
       new ImportProductsHandlers(this, "ImportProductsHandlers", {
         bucketName: bucket.importBucket.bucketName,
-        queueUrl: queue.queue.queueUrl,
+        queueUrl,
       });
 
     bucket.registerPutHandler(
@@ -38,8 +38,6 @@ class ImportService extends Stack {
       parseProductsHandler,
       config.bucketUploadedPrefix,
     ); // required to be triggered once a file is uploaded to S3 with prefix "uploaded"
-
-    queue.registerProducer(parseProductsHandler); // registering producer for the queue
 
     new ImportServiceApi(this, "ImportServiceApi", {
       importProductsHandler,

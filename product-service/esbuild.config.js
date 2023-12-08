@@ -41,6 +41,13 @@ await esbuild.build({
 });
 
 await esbuild.build({
+  entryPoints: ["src/lambdas/createManyProducts.ts"],
+  outfile: "dist/lambdas/createManyProducts/createManyProducts.mjs",
+  tsconfig: "tsconfig.json",
+  ...lambdaOptions,
+});
+
+await esbuild.build({
   entryPoints: ["cdk/index.ts"],
   outfile: "cdk.out/index.js",
   tsconfig: "tsconfig.cdk.json",

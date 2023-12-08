@@ -1,4 +1,6 @@
 import { App, Fn, Stack } from "aws-cdk-lib";
+import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
+import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 import { ImportServiceApi } from "./api";
 import { ImportServiceBucket } from "./bucket";
@@ -12,14 +14,31 @@ class ImportService extends Stack {
 
     const bucket = new ImportServiceBucket(this, "ImportServiceBucket");
 
-    const queueUrl = Fn.importValue(<string>ComponentsIds.productsQueueUrl);
+    const productsQueueUrl = Fn.importValue(
+      <string>ComponentsIds.productsQueueUrl,
+    );
+    const productsQueueArn = Fn.importValue(
+      <string>ComponentsIds.productsQueueArn,
+    );
 
     const { importProductsHandler, parseProductsHandler } =
       new ImportProductsHandlers(this, "ImportProductsHandlers", {
         bucketName: bucket.importBucket.bucketName,
-        queueUrl,
+        productsQueueUrl,
       });
 
+    this.configureBucket(bucket, importProductsHandler, parseProductsHandler);
+    this.configureQueueProducer(productsQueueArn, parseProductsHandler);
+
+    new ImportServiceApi(this, "ImportServiceApi", {
+      importProductsHandler,
+    });
+  }
+  private configureBucket(
+    bucket: ImportServiceBucket,
+    importProductsHandler: LambdaFunction,
+    parseProductsHandler: LambdaFunction,
+  ): void {
     bucket.registerPutHandler(
       importProductsHandler,
       config.bucketUploadedPrefix,
@@ -38,10 +57,19 @@ class ImportService extends Stack {
       parseProductsHandler,
       config.bucketUploadedPrefix,
     ); // required to be triggered once a file is uploaded to S3 with prefix "uploaded"
+  }
 
-    new ImportServiceApi(this, "ImportServiceApi", {
-      importProductsHandler,
-    });
+  private configureQueueProducer(
+    queueArn: string,
+    parseProductsHandler: LambdaFunction,
+  ): void {
+    parseProductsHandler.addToRolePolicy(
+      new PolicyStatement({
+        actions: ["sqs:SendMessage"],
+        resources: [queueArn],
+        effect: Effect.ALLOW,
+      }),
+    );
   }
 }
 

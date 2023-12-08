@@ -1,15 +1,13 @@
-import { CfnOutput } from "aws-cdk-lib";
 import {
   Code,
   Function as LambdaFunction,
   Runtime,
 } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
-import { ComponentsIds } from "../../shared/constants";
 
 type ImportProductsHandlersProps = {
   bucketName: string;
-  queueUrl: string;
+  productsQueueUrl: string;
 };
 
 export class ImportProductsHandlers extends Construct {
@@ -34,12 +32,7 @@ export class ImportProductsHandlers extends Construct {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset("./dist/lambdas/parseProducts"),
       handler: "parseProducts.handler",
-      environment: { QUEUE_URL: props.queueUrl },
-    });
-
-    new CfnOutput(this, "ParseProductsHandlerOutput", {
-      value: this.parseProductsHandler.functionArn,
-      exportName: ComponentsIds.parseProductsHandlerArn,
+      environment: { QUEUE_URL: props.productsQueueUrl },
     });
   }
 }

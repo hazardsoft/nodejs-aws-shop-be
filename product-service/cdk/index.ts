@@ -1,11 +1,9 @@
-import { App, Fn, Stack } from "aws-cdk-lib";
-import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
+import { App, Stack } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { ProductsServiceApi } from "./api";
 import { ProductServiceDB } from "./db";
 import { ProductsQueue } from "./queue";
 import { ProductHandlers } from "./handlers";
-import { ComponentsIds } from "../../shared/constants";
 
 class ProductService extends Stack {
   constructor(scope: Construct, id: string) {
@@ -30,18 +28,7 @@ class ProductService extends Stack {
       },
     });
 
-    const parseProductsHandlerArn = Fn.importValue(
-      <string>ComponentsIds.parseProductsHandlerArn,
-    );
-
-    const parseProductsHandler = LambdaFunction.fromFunctionArn(
-      this,
-      "ParseProductsHandler",
-      parseProductsHandlerArn,
-    );
-
     const productsQueue = new ProductsQueue(this, "ProductsQueue");
-    productsQueue.registerProducer(parseProductsHandler);
     productsQueue.registerConsumer(handlers.createManyProducts);
   }
 }

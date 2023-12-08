@@ -16,7 +16,11 @@ const utilityOptions = {
 
 const lambdaOptions = {
   ...baseOptions,
-  external: ["@aws-sdk/client-dynamodb", "@aws-sdk/lib-dynamodb"],
+  external: [
+    "@aws-sdk/client-dynamodb",
+    "@aws-sdk/client-sqs",
+    "@aws-sdk/lib-dynamodb",
+  ],
 };
 
 await esbuild.build({

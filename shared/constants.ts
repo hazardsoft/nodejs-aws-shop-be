@@ -1,6 +1,6 @@
 export const ComponentsIds = {
-    parseProductsHandlerArn: "ParseProductsHandlerArn",
-    productsQueueUrl: "ProductsQueueUrl"
+    productsQueueUrl: "ProductsQueueUrl",
+    productsQueueArn: "ProductsQueueArn"
 } as const;
 
 export const SharedCdkConfig = {

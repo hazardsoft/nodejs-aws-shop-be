@@ -4,12 +4,24 @@ import { ProductsServiceApi } from "./api";
 import { ProductServiceDB } from "./db";
 import { ProductsQueue } from "./queue";
 import { ProductHandlers } from "./handlers";
+import { ProductsTopic } from "./topic";
+import "dotenv/config";
+
+type ProductServiceProps = {
+  subscriberEmail: string;
+};
 
 class ProductService extends Stack {
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: ProductServiceProps) {
     super(scope, id);
 
-    const handlers = new ProductHandlers(this, "ProductHandlers");
+    const topic = new ProductsTopic(this, "ProductsTopic");
+    topic.registerSubscriber(props.subscriberEmail);
+
+    const handlers = new ProductHandlers(this, "ProductHandlers", {
+      productsTopicArn: topic.topic.topicArn,
+    });
+    topic.registerPublisher(handlers.createManyProducts);
 
     new ProductsServiceApi(this, "ProductsApi", {
       handlers: {
@@ -34,6 +46,8 @@ class ProductService extends Stack {
 }
 
 const app = new App();
-const productService = new ProductService(app, "ProductsService");
+const productService = new ProductService(app, "ProductsService", {
+  subscriberEmail: process.env.SNS_SUBSCRIBER_EMAIL ?? "",
+});
 
 export { productService };

@@ -1,20 +1,28 @@
-import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
+import { SQSClient, SendMessageBatchCommand } from "@aws-sdk/client-sqs";
 import { HTTP_STATUS_CODES } from "./constants";
 import { SendMessageError } from "./errors";
+import { Product } from "./types";
 
 const sqsClient = new SQSClient();
 
-export const sendMessage = async (
+export const sendMessageBatch = async (
   queueUrl: string,
-  payload: unknown,
+  products: Product[],
 ): Promise<void> => {
   console.log(
-    `Sending message to queue ${queueUrl}, payload ${JSON.stringify(payload)}`,
+    `Sending batch message to queue ${queueUrl}, products: ${JSON.stringify(
+      products,
+    )}`,
   );
   const queueResult = await sqsClient.send(
-    new SendMessageCommand({
+    new SendMessageBatchCommand({
       QueueUrl: queueUrl,
-      MessageBody: JSON.stringify(payload),
+      Entries: products.map((product, index) => {
+        return {
+          Id: index.toString(),
+          MessageBody: JSON.stringify(product),
+        };
+      }),
     }),
   );
 

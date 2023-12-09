@@ -69,7 +69,7 @@ export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
 
   const { Items: stocks } = (await dbClient.send(
     new QueryCommand({
-      TableName: process.env.STOCKS_TABLE_NAME,
+      TableName: stocksTableName,
       KeyConditionExpression: "product_id = :product_id",
       ExpressionAttributeValues: { ":product_id": id },
     }),

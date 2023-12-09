@@ -6,13 +6,16 @@ import {
 import { Construct } from "constructs";
 import { config } from "./constants.js";
 
+type ProductHandlersProps = {
+  productsTopicArn: string;
+};
 export class ProductHandlers extends Construct {
   public readonly getAllProducts: LambdaFunction;
   public readonly getOneProduct: LambdaFunction;
   public readonly createOneProduct: LambdaFunction;
   public readonly createManyProducts: LambdaFunction;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: ProductHandlersProps) {
     super(scope, id);
 
     const env = {
@@ -45,7 +48,10 @@ export class ProductHandlers extends Construct {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset("./dist/lambdas/createManyProducts"),
       handler: "createManyProducts.handler",
-      environment: env,
+      environment: {
+        ...env,
+        PRODUCTS_TOPIC_ARN: props.productsTopicArn,
+      },
     });
   }
 }

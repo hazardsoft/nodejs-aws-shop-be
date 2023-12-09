@@ -22,7 +22,6 @@ export const readProducts = async (stream: Readable): Promise<Product[]> => {
 
   const products = [];
   for await (const row of parser) {
-    console.log(`parsing product from row ${JSON.stringify(row)}`);
     const productValidationResult = validateProduct(row);
     if (!productValidationResult.success) {
       console.error(

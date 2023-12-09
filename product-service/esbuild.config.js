@@ -19,6 +19,7 @@ const lambdaOptions = {
   external: [
     "@aws-sdk/client-dynamodb",
     "@aws-sdk/client-sqs",
+    "@aws-sdk/client-sns",
     "@aws-sdk/lib-dynamodb",
   ],
 };

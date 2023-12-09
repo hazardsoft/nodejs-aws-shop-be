@@ -71,6 +71,11 @@ export const enum RepositoryMessages {
   INTERNAL_REPOSITORY_ERROR = "Internal repository error",
 }
 
+export const enum TopicMessages {
+  TOPIC_PUBLISH_ERROR = "Topic Publish Error",
+  INTERNAL_TOPIC_ERROR = "Internal topic error",
+}
+
 export const enum ProductMessages {
   PRODUCT_NOT_FOUND = "Product not found",
   PRODUCT_EMPTY_ID = "Product id is empty",

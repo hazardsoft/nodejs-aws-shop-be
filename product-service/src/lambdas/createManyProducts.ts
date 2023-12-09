@@ -1,25 +1,29 @@
 import { SQSEvent } from "aws-lambda";
-import { AvailableProduct } from "../types";
+import { ProductInput } from "../types";
 import { createManyProducts } from "../repository";
+import { publishProducts } from "../topic";
+
+const topicArn = process.env.PRODUCTS_TOPIC_ARN ?? "";
 
 export const handler = async (event: SQSEvent): Promise<void> => {
-  console.log(`handling ${event.Records.length} messages from products queue`);
+  console.log(`handling x${event.Records.length} messages from products queue`);
 
   try {
-    const products: AvailableProduct[] = [];
+    const products: ProductInput[] = [];
 
     for (const record of event.Records) {
       console.log(
-        `handling message: id ${record.messageId}, payload ${record.body}`,
+        `handling message: id ${record.messageId}, payload\n${record.body}`,
       );
       const payload = <unknown>JSON.parse(record.body);
       if (Array.isArray(payload)) {
-        products.push(...(<AvailableProduct[]>payload));
+        products.push(...(<ProductInput[]>payload));
       } else {
-        products.push(<AvailableProduct>payload);
+        products.push(<ProductInput>payload);
       }
     }
-    await createManyProducts(products);
+    const createdProducts = await createManyProducts(products);
+    await publishProducts(topicArn, createdProducts);
   } catch (e) {
     console.error(JSON.stringify(e));
   }

@@ -10,10 +10,21 @@ export const publishProducts = async (
   products: AvailableProduct[],
 ): Promise<void> => {
   console.log(`publishing products to topic ${topicArn}`);
+
+  const noStocksProducts = products.some((p) => p.count === 0 || !p.count);
   const publishResult = await snsClient.send(
     new PublishCommand({
       TopicArn: topicArn,
       Message: `Products are added successfully:\n${JSON.stringify(products)}`,
+      MessageAttributes: {
+        noStock: {
+          DataType: "Number",
+          StringValue: Number(noStocksProducts).toString(),
+        },
+      },
+      Subject: `New products are added (${products.length})${
+        noStocksProducts ? "(some products w/o stock)" : ""
+      }`,
     }),
   );
   console.log(

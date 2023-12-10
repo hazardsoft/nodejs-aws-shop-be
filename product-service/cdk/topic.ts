@@ -1,6 +1,11 @@
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { IFunction } from "aws-cdk-lib/aws-lambda";
-import { Subscription, Topic, SubscriptionProtocol } from "aws-cdk-lib/aws-sns";
+import {
+  Subscription,
+  Topic,
+  SubscriptionProtocol,
+  SubscriptionFilter,
+} from "aws-cdk-lib/aws-sns";
 import { Construct } from "constructs";
 
 export class ProductsTopic extends Construct {
@@ -24,8 +29,19 @@ export class ProductsTopic extends Construct {
     );
   }
 
-  registerSubscriber(email: string): void {
-    new Subscription(this, `ProductsTopicSubscriber-${email}`, {
+  subscribeToNoStockProducts(email: string): void {
+    new Subscription(this, `NoStockProductsTopicSubscriber-${email}`, {
+      protocol: SubscriptionProtocol.EMAIL,
+      topic: this.topic,
+      endpoint: email,
+      filterPolicy: {
+        noStock: new SubscriptionFilter([{ numeric: ["=", 1] }]),
+      },
+    });
+  }
+
+  subscribeToAllProducts(email: string): void {
+    new Subscription(this, `AllProductsTopicSubscriber-${email}`, {
       protocol: SubscriptionProtocol.EMAIL,
       topic: this.topic,
       endpoint: email,

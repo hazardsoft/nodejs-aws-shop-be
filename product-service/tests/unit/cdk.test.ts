@@ -109,7 +109,7 @@ describe("Tests for Lambdas/API Gateway", () => {
     });
 
     resourceType = "AWS::SNS::Subscription";
-    template.resourceCountIs(resourceType, 1);
+    template.resourceCountIs(resourceType, 2);
     template.hasResourceProperties(resourceType, {
       Protocol: "email",
     });

@@ -8,7 +8,8 @@ import { ProductsTopic } from "./topic";
 import "dotenv/config";
 
 type ProductServiceProps = {
-  subscriberEmail: string;
+  allProductsSubscriberEmail: string;
+  noStockProductsSubscriberEmail: string;
 };
 
 class ProductService extends Stack {
@@ -16,7 +17,8 @@ class ProductService extends Stack {
     super(scope, id);
 
     const topic = new ProductsTopic(this, "ProductsTopic");
-    topic.registerSubscriber(props.subscriberEmail);
+    topic.subscribeToAllProducts(props.allProductsSubscriberEmail);
+    topic.subscribeToNoStockProducts(props.noStockProductsSubscriberEmail);
 
     const handlers = new ProductHandlers(this, "ProductHandlers", {
       productsTopicArn: topic.topic.topicArn,
@@ -47,7 +49,10 @@ class ProductService extends Stack {
 
 const app = new App();
 const productService = new ProductService(app, "ProductsService", {
-  subscriberEmail: process.env.SNS_SUBSCRIBER_EMAIL ?? "",
+  allProductsSubscriberEmail:
+    process.env.SNS_ALL_PRODUCTS_SUBSCRIBER_EMAIL ?? "",
+  noStockProductsSubscriberEmail:
+    process.env.SNS_NO_STOCK_PRODUCTS_SUBSCRIBER_EMAIL ?? "",
 });
 
 export { productService };

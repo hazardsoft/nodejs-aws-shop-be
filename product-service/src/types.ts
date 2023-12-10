@@ -73,7 +73,6 @@ export const enum RepositoryMessages {
 
 export const enum TopicMessages {
   TOPIC_PUBLISH_ERROR = "Topic Publish Error",
-  INTERNAL_TOPIC_ERROR = "Internal topic error",
 }
 
 export const enum ProductMessages {

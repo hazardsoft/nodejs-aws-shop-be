@@ -17,9 +17,3 @@ export class TopicPublishError extends Error {
     super(TopicMessages.TOPIC_PUBLISH_ERROR);
   }
 }
-
-export class TopicInternalError extends Error {
-  constructor() {
-    super(TopicMessages.INTERNAL_TOPIC_ERROR);
-  }
-}

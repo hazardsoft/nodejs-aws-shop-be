@@ -22,9 +22,12 @@ export const handler = async (event: SQSEvent): Promise<void> => {
         products.push(<ProductInput>payload);
       }
     }
+    if (!products.length) {
+      return;
+    }
     const createdProducts = await createManyProducts(products);
     await publishProducts(topicArn, createdProducts);
   } catch (e) {
-    console.error(JSON.stringify(e));
+    console.error(`createManyProducts handler failed with ${String(e)}`);
   }
 };

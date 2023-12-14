@@ -7,6 +7,16 @@ describe("Tests for Lambdas/API Gateway", () => {
   const template = Template.fromStack(importService);
   let resourceType: string;
 
+  test("1 API Gateway Authorizer is defined", () => {
+    resourceType = "AWS::ApiGateway::Authorizer";
+
+    template.resourceCountIs(resourceType, 1);
+    template.hasResourceProperties(resourceType, {
+      IdentitySource: "method.request.header.Authorization",
+      Type: "TOKEN",
+    });
+  });
+
   test("1 Lambda function is defined", () => {
     resourceType = "AWS::Lambda::Function";
 

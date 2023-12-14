@@ -1,8 +1,10 @@
-import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
+import { Function as LambdaFunction, IFunction } from "aws-cdk-lib/aws-lambda";
 import {
+  AuthorizationType,
   LambdaIntegration,
   LambdaIntegrationOptions,
   RestApi,
+  TokenAuthorizer,
 } from "aws-cdk-lib/aws-apigateway";
 import { Construct } from "constructs";
 import { config } from "./constants.js";
@@ -11,6 +13,7 @@ import { MethodResponses } from "./responses.js";
 
 type ImportServiceApiProps = {
   importProductsHandler: LambdaFunction;
+  basicAuthHandler: IFunction;
 };
 export class ImportServiceApi extends Construct {
   constructor(scope: Construct, id: string, props: ImportServiceApiProps) {
@@ -41,12 +44,18 @@ export class ImportServiceApi extends Construct {
       },
     });
 
+    const tokenAuthorizer = new TokenAuthorizer(this, "BasicAuthorizer", {
+      handler: props.basicAuthHandler,
+    });
+
     const importResource = api.root.addResource("import");
     importResource.addMethod("GET", importProductsIntegration, {
       methodResponses: responses.importProductsResponses,
       requestParameters: {
         "method.request.querystring.name": true,
       },
+      authorizationType: AuthorizationType.CUSTOM,
+      authorizer: tokenAuthorizer,
     });
   }
 }

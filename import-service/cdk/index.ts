@@ -21,7 +21,7 @@ class ImportService extends Stack {
       <string>ComponentsIds.productsQueueArn,
     );
 
-    const { importProductsHandler, parseProductsHandler } =
+    const { importProductsHandler, parseProductsHandler, basicAuthHandler } =
       new ImportProductsHandlers(this, "ImportProductsHandlers", {
         bucketName: bucket.importBucket.bucketName,
         productsQueueUrl,
@@ -32,6 +32,7 @@ class ImportService extends Stack {
 
     new ImportServiceApi(this, "ImportServiceApi", {
       importProductsHandler,
+      basicAuthHandler,
     });
   }
   private configureBucket(

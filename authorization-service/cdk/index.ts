@@ -1,6 +1,7 @@
 import { App, Stack } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { AuthorizerHandlers } from "./handlers";
+import "dotenv/config";
 
 const userName = process.env.USERNAME ?? "";
 const userPass = process.env.USERPASS ?? "";

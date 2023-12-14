@@ -20,13 +20,9 @@ export const handler = (
 ): PolicyDocument => {
   console.log(`basic authorizer, event: ${JSON.stringify(event)}`);
 
-  const buf = Buffer.from(event.authorizationToken, "base64");
-
-  const authToken = buf.toString("utf8").replace("Basic ", "");
-  console.log(`authToken: ${authToken}`);
-
-  const [uName, uPass] = authToken.split(":");
-  console.log(`uName: ${uName}, uPass: ${uPass}`);
+  const authToken = event.authorizationToken.replace("Basic ", "");
+  const buf = Buffer.from(authToken, "base64");
+  const [uName, uPass] = buf.toString("utf-8").split(":");
 
   const isCorrectCredentials = userName === uName && userPassword === uPass;
   const policy: PolicyDocument = {

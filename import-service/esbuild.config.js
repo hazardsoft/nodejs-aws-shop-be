@@ -16,7 +16,11 @@ const utilityOptions = {
 
 const lambdaOptions = {
   ...baseOptions,
-  external: ["@aws-sdk/client-s3", "@aws-sdk/s3-request-presigner"],
+  external: [
+    "@aws-sdk/client-s3",
+    "@aws-sdk/client-sqs",
+    "@aws-sdk/s3-request-presigner",
+  ],
 };
 
 await esbuild.build({

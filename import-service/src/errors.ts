@@ -19,3 +19,13 @@ export class BucketDeleteObjectError extends Error {
     super(BucketErrors.DELETE_OBJECT_ERROR);
   }
 }
+
+export const enum QueueErrors {
+  SEND_MESSAGE_ERROR = "SendMessageError",
+}
+
+export class SendMessageError extends Error {
+  constructor() {
+    super(QueueErrors.SEND_MESSAGE_ERROR);
+  }
+}

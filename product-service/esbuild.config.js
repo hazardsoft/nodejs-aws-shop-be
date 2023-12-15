@@ -16,7 +16,12 @@ const utilityOptions = {
 
 const lambdaOptions = {
   ...baseOptions,
-  external: ["@aws-sdk/client-dynamodb", "@aws-sdk/lib-dynamodb"],
+  external: [
+    "@aws-sdk/client-dynamodb",
+    "@aws-sdk/client-sqs",
+    "@aws-sdk/client-sns",
+    "@aws-sdk/lib-dynamodb",
+  ],
 };
 
 await esbuild.build({
@@ -36,6 +41,13 @@ await esbuild.build({
 await esbuild.build({
   entryPoints: ["src/lambdas/createProduct.ts"],
   outfile: "dist/lambdas/createProduct/createProduct.mjs",
+  tsconfig: "tsconfig.json",
+  ...lambdaOptions,
+});
+
+await esbuild.build({
+  entryPoints: ["src/lambdas/createManyProducts.ts"],
+  outfile: "dist/lambdas/createManyProducts/createManyProducts.mjs",
   tsconfig: "tsconfig.json",
   ...lambdaOptions,
 });

@@ -12,6 +12,7 @@ import {
   QueryCommand,
   ScanCommand,
   TransactWriteCommand,
+  TransactWriteCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 import dbClient from "../lib/db/client";
 
@@ -68,7 +69,7 @@ export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
 
   const { Items: stocks } = (await dbClient.send(
     new QueryCommand({
-      TableName: process.env.STOCKS_TABLE_NAME,
+      TableName: stocksTableName,
       KeyConditionExpression: "product_id = :product_id",
       ExpressionAttributeValues: { ":product_id": id },
     }),
@@ -82,34 +83,73 @@ export const getOneProduct = async (id: string): Promise<AvailableProduct> => {
   return availableProduct;
 };
 
+type TransactionItems = NonNullable<TransactWriteCommandInput["TransactItems"]>;
+
+export const createManyProducts = async (
+  products: ProductInput[],
+): Promise<AvailableProduct[]> => {
+  try {
+    const allTransactionItems = [];
+    const allProducts: AvailableProduct[] = [];
+
+    for (const product of products) {
+      const [newProductId, transationItems] =
+        createTransactionItemsForOneRecord(product);
+
+      allTransactionItems.push(...transationItems);
+      allProducts.push({
+        id: newProductId,
+        ...product,
+      });
+    }
+    await dbClient.send(
+      new TransactWriteCommand({ TransactItems: allTransactionItems }),
+    );
+    return allProducts;
+  } catch (e) {
+    throw new RepositoryError();
+  }
+};
+
+export const createTransactionItemsForOneRecord = (
+  product: ProductInput,
+): [productId: string, transactionItems: TransactionItems] => {
+  const newProductId: string = uuidv4();
+  const { count, ...productNoCount } = product;
+
+  const transactionItems: TransactionItems = [
+    {
+      Put: {
+        TableName: productsTableName,
+        Item: {
+          ...productNoCount,
+          id: newProductId,
+        },
+      },
+    },
+    {
+      Put: {
+        TableName: stocksTableName,
+        Item: {
+          product_id: newProductId,
+          count,
+        },
+      },
+    },
+  ];
+  return [newProductId, transactionItems];
+};
+
 export const createOneProduct = async (
   product: ProductInput,
 ): Promise<AvailableProduct> => {
-  const newProductId: string = uuidv4();
-
   try {
+    const [newProductId, transactionItems] =
+      createTransactionItemsForOneRecord(product);
+
     await dbClient.send(
       new TransactWriteCommand({
-        TransactItems: [
-          {
-            Put: {
-              TableName: productsTableName,
-              Item: {
-                ...product,
-                id: newProductId,
-              },
-            },
-          },
-          {
-            Put: {
-              TableName: stocksTableName,
-              Item: {
-                product_id: newProductId,
-                count: product.count,
-              },
-            },
-          },
-        ],
+        TransactItems: transactionItems,
       }),
     );
 

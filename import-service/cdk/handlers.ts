@@ -7,6 +7,7 @@ import { Construct } from "constructs";
 
 type ImportProductsHandlersProps = {
   bucketName: string;
+  productsQueueUrl: string;
 };
 
 export class ImportProductsHandlers extends Construct {
@@ -31,6 +32,7 @@ export class ImportProductsHandlers extends Construct {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset("./dist/lambdas/parseProducts"),
       handler: "parseProducts.handler",
+      environment: { QUEUE_URL: props.productsQueueUrl },
     });
   }
 }

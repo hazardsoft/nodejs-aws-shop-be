@@ -1,8 +1,4 @@
-import {
-  Function as LambdaFunction,
-  Runtime,
-  Code,
-} from "aws-cdk-lib/aws-lambda";
+import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
 import {
   Cors,
   LambdaIntegration,
@@ -13,53 +9,31 @@ import { Construct } from "constructs";
 import { config } from "./constants.js";
 import { ResponseModels } from "./models.js";
 import { MethodResponses } from "./responses.js";
+
+type ProductsServiceApiProps = {
+  handlers: {
+    getAllProducts: LambdaFunction;
+    getOneProduct: LambdaFunction;
+    createOneProduct: LambdaFunction;
+  };
+};
 export class ProductsServiceApi extends Construct {
-  public readonly getAllProductsFunction: LambdaFunction;
-  public readonly getOneProductFunction: LambdaFunction;
-  public readonly createOneProductFunction: LambdaFunction;
-
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: ProductsServiceApiProps) {
     super(scope, id);
-
-    const env = {
-      PRODUCTS_TABLE_NAME: config.productsTableName,
-      STOCKS_TABLE_NAME: config.stocksTableName,
-    };
-
-    this.getAllProductsFunction = new LambdaFunction(this, "GetAllProducts", {
-      runtime: Runtime.NODEJS_18_X,
-      code: Code.fromAsset("./dist/lambdas/getProducts"),
-      handler: "getProducts.handler",
-      environment: env,
-    });
-
-    this.getOneProductFunction = new LambdaFunction(this, "GetOneProduct", {
-      runtime: Runtime.NODEJS_18_X,
-      code: Code.fromAsset("./dist/lambdas/getOneProduct"),
-      handler: "getOneProduct.handler",
-      environment: env,
-    });
-
-    this.createOneProductFunction = new LambdaFunction(this, "CreateProduct", {
-      runtime: Runtime.NODEJS_18_X,
-      code: Code.fromAsset("./dist/lambdas/createProduct"),
-      handler: "createProduct.handler",
-      environment: env,
-    });
 
     const integrationOptions = <LambdaIntegrationOptions>{
       allowTestInvoke: false,
     };
     const getAllProductsIntegration = new LambdaIntegration(
-      this.getAllProductsFunction,
+      props.handlers.getAllProducts,
       integrationOptions,
     );
     const getOneProductIntegration = new LambdaIntegration(
-      this.getOneProductFunction,
+      props.handlers.getOneProduct,
       integrationOptions,
     );
     const createProductIntegration = new LambdaIntegration(
-      this.createOneProductFunction,
+      props.handlers.createOneProduct,
       integrationOptions,
     );
 

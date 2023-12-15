@@ -10,10 +10,11 @@ import { RemovalPolicy } from "aws-cdk-lib";
 import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
 
 export type ProductServiceDBProps = {
-  functions: {
+  handlers: {
     getAllProducts: LambdaFunction;
     getOneProduct: LambdaFunction;
     createOneProduct: LambdaFunction;
+    createManyProducts: LambdaFunction;
   };
 };
 
@@ -21,7 +22,12 @@ export class ProductServiceDB extends Construct {
   constructor(scope: Construct, id: string, props: ProductServiceDBProps) {
     super(scope, id);
 
-    const { getAllProducts, getOneProduct, createOneProduct } = props.functions;
+    const {
+      getAllProducts,
+      getOneProduct,
+      createOneProduct,
+      createManyProducts,
+    } = props.handlers;
 
     const productsTable = new TableV2(this, "Products", {
       tableName: config.productsTableName,
@@ -34,6 +40,7 @@ export class ProductServiceDB extends Construct {
     productsTable.grantReadData(getAllProducts);
     productsTable.grantReadData(getOneProduct);
     productsTable.grantWriteData(createOneProduct);
+    productsTable.grantWriteData(createManyProducts);
 
     const stocksTable = new TableV2(this, "Stocks", {
       tableName: config.stocksTableName,
@@ -46,5 +53,6 @@ export class ProductServiceDB extends Construct {
     stocksTable.grantReadData(getAllProducts);
     stocksTable.grantReadData(getOneProduct);
     stocksTable.grantWriteData(createOneProduct);
+    stocksTable.grantWriteData(createManyProducts);
   }
 }

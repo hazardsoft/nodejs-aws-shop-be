@@ -5,6 +5,7 @@ import {
   LambdaIntegrationOptions,
   RestApi,
   TokenAuthorizer,
+  ResponseType,
 } from "aws-cdk-lib/aws-apigateway";
 import { Construct } from "constructs";
 import { config } from "./constants.js";
@@ -33,6 +34,12 @@ export class ImportServiceApi extends Construct {
       restApiName: "Import",
       deployOptions: {
         stageName: config.stageName,
+      },
+    });
+    api.addGatewayResponse("GatewayResponseDefault4XX", {
+      type: ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        "Access-Control-Allow-Origin": "'*'",
       },
     });
 

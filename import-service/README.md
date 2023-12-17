@@ -63,12 +63,33 @@ localStorage.setItem("authorization_token", "aGF6YXJkc29mdDpURVNUX1BBU1NXT1JE")
 
 <img src="./images/parse-function-cloudwatch.png" width=50% height=50%>
    
-### Api Testing
+### Api Testing (Postman)
 
-One can use Postman to test Import Service authorization using [collection](./postman/RS_School-AWS_Developer.postman_collection.json):
+One can use [Postman](https://www.postman.com) to test Import Service authorization using [collection](./postman/RS_School-AWS_Developer.postman_collection.json):
 1. `Import Products (401)` does not send `Authorization` header thus resulting in HTTP 401 Unauthorized status code;
 2. `Import Products (403)` sends `Authorization` header but contains incorrect password thus resulting in HTTP 403 Forbidden status code;
 3. `Import Products (200)` send `Authorization` header containing valid credentials thus resulting in HTTP 200 OK status code.
+
+### Api Testing (Web App + Charles Proxy)
+
+1. `401` status code:
+   1. One can use [Charles Proxy](https://www.charlesproxy.com/latest-release/download.do) to tweak request and remove `Authorization` header just import [Rewrite rule](./charles/remove-auth-header.xml)
+      1. Import rule via menu `Tools` -> `Rewrite` -> `Import`
+
+      <img src="./images/charles-import-rewrite-rule.png" width=50% height=50%>
+
+      2. Imported rule should look like on the screenshot below:
+
+      <img src="./images/charles-imported-rule.png" width=50% height=50%>
+
+      3. Perform products file import as usual, observe alert with status code `401`
+
+      <img src="./images/import-401.png" width=50% height=50%>
+
+2. `403` status code: update `authorization_token` value in Local Storage via Chrome Dev Tools to contain invalid Base64 string (e.g. `aGF6YXJkc29mdDpURVNUX1BBU1NXT1J`)
+
+<img src="./images/import-403.png" width=50% height=50%>
+
 
 ### Swagger Documentation
 

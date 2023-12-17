@@ -1,5 +1,6 @@
 import { Function as LambdaFunction, IFunction } from "aws-cdk-lib/aws-lambda";
 import {
+  Cors,
   LambdaIntegration,
   LambdaIntegrationOptions,
   RestApi,
@@ -69,6 +70,11 @@ export class ImportServiceApi extends Construct {
         "method.request.header.Authorization": true,
       },
       authorizer: tokenAuthorizer,
+    });
+    importResource.addCorsPreflight({
+      allowOrigins: Cors.ALL_ORIGINS,
+      allowHeaders: Cors.DEFAULT_HEADERS,
+      allowMethods: ["GET", "OPTIONS"],
     });
   }
 }

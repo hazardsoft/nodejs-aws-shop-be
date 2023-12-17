@@ -1,7 +1,7 @@
 openapi: "3.0.1"
 info:
   title: "Import"
-  version: "2023-12-17T17:14:02Z"
+  version: "2023-12-17T18:34:11Z"
 servers:
 - url: "https://8rk4roadt1.execute-api.eu-central-1.amazonaws.com/{basePath}"
   variables:
@@ -13,11 +13,6 @@ paths:
       parameters:
       - name: "name"
         in: "query"
-        required: true
-        schema:
-          type: "string"
-      - name: "Authorization"
-        in: "header"
         required: true
         schema:
           type: "string"

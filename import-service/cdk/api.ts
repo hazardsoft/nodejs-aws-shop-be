@@ -74,7 +74,6 @@ export class ImportServiceApi extends Construct {
       methodResponses: responses.importProductsResponses,
       requestParameters: {
         "method.request.querystring.name": true,
-        "method.request.header.Authorization": true,
       },
       authorizer: tokenAuthorizer,
     });

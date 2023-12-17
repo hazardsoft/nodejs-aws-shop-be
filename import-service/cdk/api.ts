@@ -1,7 +1,5 @@
 import { Function as LambdaFunction, IFunction } from "aws-cdk-lib/aws-lambda";
 import {
-  AuthorizationType,
-  Cors,
   LambdaIntegration,
   LambdaIntegrationOptions,
   RestApi,
@@ -11,6 +9,8 @@ import { Construct } from "constructs";
 import { config } from "./constants.js";
 import { ResponseModels } from "./models.js";
 import { MethodResponses } from "./responses.js";
+import { Duration } from "aws-cdk-lib/core";
+import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 
 type ImportServiceApiProps = {
   importProductsHandler: LambdaFunction;
@@ -45,8 +45,20 @@ export class ImportServiceApi extends Construct {
       },
     });
 
-    const tokenAuthorizer = new TokenAuthorizer(this, "BasicAuthorizer", {
+    const assumedAuthRole = new Role(this, "TokenAuthorizerRole", {
+      assumedBy: new ServicePrincipal("apigateway.amazonaws.com"),
+    });
+    assumedAuthRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["lambda:InvokeFunction"],
+        resources: [props.basicAuthHandler.functionArn],
+      }),
+    );
+
+    const tokenAuthorizer = new TokenAuthorizer(this, "TokenAuthorizer", {
       handler: props.basicAuthHandler,
+      resultsCacheTtl: Duration.seconds(0),
+      assumeRole: assumedAuthRole,
     });
 
     const importResource = api.root.addResource("import");
@@ -55,13 +67,7 @@ export class ImportServiceApi extends Construct {
       requestParameters: {
         "method.request.querystring.name": true,
       },
-      authorizationType: AuthorizationType.CUSTOM,
       authorizer: tokenAuthorizer,
-    });
-    importResource.addCorsPreflight({
-      allowOrigins: Cors.ALL_ORIGINS,
-      allowHeaders: Cors.DEFAULT_HEADERS,
-      allowMethods: ["GET", "OPTIONS"],
     });
   }
 }

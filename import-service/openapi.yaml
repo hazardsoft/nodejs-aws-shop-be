@@ -1,7 +1,7 @@
 openapi: "3.0.1"
 info:
   title: "Import"
-  version: "2023-12-17T06:19:46Z"
+  version: "2023-12-17T17:14:02Z"
 servers:
 - url: "https://8rk4roadt1.execute-api.eu-central-1.amazonaws.com/{basePath}"
   variables:
@@ -54,6 +54,21 @@ paths:
                 $ref: "#/components/schemas/RequestImportProductsModel"
       security:
       - ImportServiceImportServiceApiTokenAuthorizer5158D956: []
+    options:
+      responses:
+        "204":
+          description: "204 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
 components:
   schemas:
     ImportProductsErrorModel:

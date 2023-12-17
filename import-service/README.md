@@ -36,6 +36,13 @@ The following format is required (example file can be found at [products.csv](./
 
 ### Upload Products File from FE Application
 
+#### Prerequisites
+Add `authorization_token` `aGF6YXJkc29mdDpURVNUX1BBU1NXT1JE` to local storage e.g. via Chrome Dev Tools by typing the following command in the console:
+```
+localStorage.setItem("authorization_token", "aGF6YXJkc29mdDpURVNUX1BBU1NXT1JE")
+```
+<img src="./images/auth-token.png" width=50% height=50%>
+
 1. Select `Manage Products` menu; 
 
 <img src="./images/manage-products.png" width=50% height=50%>
@@ -56,6 +63,13 @@ The following format is required (example file can be found at [products.csv](./
 
 <img src="./images/parse-function-cloudwatch.png" width=50% height=50%>
    
+### Api Testing
+
+One can use Postman to test Import Service authorization using [collection](./postman/RS_School-AWS_Developer.postman_collection.json):
+1. `Import Products (401)` does not send `Authorization` header thus resulting in HTTP 401 Unauthorized status code;
+2. `Import Products (403)` sends `Authorization` header but contains incorrect password thus resulting in HTTP 403 Forbidden status code;
+3. `Import Products (200)` send `Authorization` header containing valid credentials thus resulting in HTTP 200 OK status code.
+
 ### Swagger Documentation
 
 Use [openapi.yaml](./openapi.yaml) file (exported from `dev` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/

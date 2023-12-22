@@ -49,7 +49,7 @@ export const handler = async (
     console.log(`Signed utl for put command: ${url}`);
 
     return enableCors({
-      statusCode: HTTP_STATUS_CODES.ACCEPTED,
+      statusCode: HTTP_STATUS_CODES.OK,
       body: url,
     });
   } catch (e) {

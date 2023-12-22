@@ -1,6 +1,7 @@
 export const ComponentsIds = {
     productsQueueUrl: "ProductsQueueUrl",
-    productsQueueArn: "ProductsQueueArn"
+    productsQueueArn: "ProductsQueueArn",
+    authorizerLambdaArn: "AuthorizerLambdaArn",
 } as const;
 
 export const SharedCdkConfig = {

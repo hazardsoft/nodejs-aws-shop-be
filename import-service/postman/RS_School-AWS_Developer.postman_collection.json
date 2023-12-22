@@ -1,0 +1,173 @@
+{
+  "info" : {
+    "_postman_id" : "a7e41da2-d71f-460e-be57-7be351065976",
+    "name" : "RS School: AWS Developer",
+    "schema" : "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id" : "2095558",
+    "_collection_link" : "https://winter-desert-623042.postman.co/workspace/Studio-Client-Dev-Workspace~8b888a75-e976-48ff-b999-c3159180427b/collection/2095558-a7e41da2-d71f-460e-be57-7be351065976?action=share&source=collection_link&creator=2095558"
+  },
+  "item" : [
+    {
+      "name" : "Import Products (401)",
+      "event" : [
+        {
+          "listen" : "test",
+          "script" : {
+            "exec" : [
+              ""
+            ],
+            "type" : "text/javascript"
+          }
+        }
+      ],
+      "request" : {
+        "auth" : {
+          "type" : "noauth"
+        },
+        "method" : "GET",
+        "header" : [],
+        "url" : {
+          "raw" : "{{api_url}}/import?name=products.csv",
+          "host" : [
+            "{{api_url}}"
+          ],
+          "path" : [
+            "import"
+          ],
+          "query" : [
+            {
+              "key" : "name",
+              "value" : "products.csv"
+            }
+          ]
+        }
+      },
+      "response" : []
+    },
+    {
+      "name" : "Import Products (403)",
+      "event" : [
+        {
+          "listen" : "test",
+          "script" : {
+            "exec" : [
+              ""
+            ],
+            "type" : "text/javascript"
+          }
+        }
+      ],
+      "request" : {
+        "auth" : {
+          "type" : "basic",
+          "basic" : [
+            {
+              "key" : "password",
+              "value" : "TEST_PASSWOR",
+              "type" : "string"
+            },
+            {
+              "key" : "username",
+              "value" : "hazardsoft",
+              "type" : "string"
+            }
+          ]
+        },
+        "method" : "GET",
+        "header" : [],
+        "url" : {
+          "raw" : "{{api_url}}/import?name=products.csv",
+          "host" : [
+            "{{api_url}}"
+          ],
+          "path" : [
+            "import"
+          ],
+          "query" : [
+            {
+              "key" : "name",
+              "value" : "products.csv"
+            }
+          ]
+        }
+      },
+      "response" : []
+    },
+    {
+      "name" : "Import Products (200)",
+      "event" : [
+        {
+          "listen" : "test",
+          "script" : {
+            "exec" : [
+              ""
+            ],
+            "type" : "text/javascript"
+          }
+        }
+      ],
+      "request" : {
+        "auth" : {
+          "type" : "basic",
+          "basic" : [
+            {
+              "key" : "password",
+              "value" : "TEST_PASSWORD",
+              "type" : "string"
+            },
+            {
+              "key" : "username",
+              "value" : "hazardsoft",
+              "type" : "string"
+            }
+          ]
+        },
+        "method" : "GET",
+        "header" : [],
+        "url" : {
+          "raw" : "{{api_url}}/import?name=products.csv",
+          "host" : [
+            "{{api_url}}"
+          ],
+          "path" : [
+            "import"
+          ],
+          "query" : [
+            {
+              "key" : "name",
+              "value" : "products.csv"
+            }
+          ]
+        }
+      },
+      "response" : []
+    }
+  ],
+  "event" : [
+    {
+      "listen" : "prerequest",
+      "script" : {
+        "type" : "text/javascript",
+        "exec" : [
+          ""
+        ]
+      }
+    },
+    {
+      "listen" : "test",
+      "script" : {
+        "type" : "text/javascript",
+        "exec" : [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable" : [
+    {
+      "key" : "api_url",
+      "value" : "8rk4roadt1.execute-api.eu-central-1.amazonaws.com/dev",
+      "type" : "string"
+    }
+  ]
+}

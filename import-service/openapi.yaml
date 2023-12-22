@@ -1,9 +1,9 @@
 openapi: "3.0.1"
 info:
   title: "Import"
-  version: "2023-12-01T06:43:41Z"
+  version: "2023-12-17T18:34:11Z"
 servers:
-- url: "https://a7d4tysbfj.execute-api.eu-central-1.amazonaws.com/{basePath}"
+- url: "https://8rk4roadt1.execute-api.eu-central-1.amazonaws.com/{basePath}"
   variables:
     basePath:
       default: "dev"
@@ -17,24 +17,53 @@ paths:
         schema:
           type: "string"
       responses:
-        "202":
-          description: "202 response"
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/RequestImportProductsModel"
         "400":
           description: "400 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ImportProductsErrorModel"
         "500":
           description: "500 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ImportProductsErrorModel"
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/RequestImportProductsModel"
+      security:
+      - ImportServiceImportServiceApiTokenAuthorizer5158D956: []
+    options:
+      responses:
+        "204":
+          description: "204 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
 components:
   schemas:
     ImportProductsErrorModel:
@@ -48,3 +77,9 @@ components:
     RequestImportProductsModel:
       title: "SignedUrl"
       type: "string"
+  securitySchemes:
+    ImportServiceImportServiceApiTokenAuthorizer5158D956:
+      type: "apiKey"
+      name: "Authorization"
+      in: "header"
+      x-amazon-apigateway-authtype: "custom"

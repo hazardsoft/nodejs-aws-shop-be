@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import "dotenv/config";
 
 const app: Express = express();
@@ -21,16 +21,20 @@ app.all("/:service", (req: Request, res: Response) => {
     return;
   }
 
-  axios({
+  const reqBody =
+    Object.keys(<unknown>req.body ?? {}).length > 0 ? <unknown>req.body : null;
+
+  const requestConfig: AxiosRequestConfig = {
     url: process.env[serviceName],
     method: req.method,
     headers: req.headers.authorization
       ? { Authorization: req.headers.authorization }
       : {},
     params: req.query,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    data: req.body ? req.body : null,
-  })
+    data: reqBody,
+  };
+
+  axios(requestConfig)
     .then((response) => {
       res.status(response.status).send(response.data);
     })

@@ -4,5 +4,6 @@ services:
     image: hazardsoft/aws-bff-service:latest
     ports:
       - ${EXPOSED_PORT}:${PORT}
-    env_file:
-      - .env.aws
+    environment:
+      - product=${product}
+      - cart=${cart}

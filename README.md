@@ -6,3 +6,6 @@ Please find detailed description in [README](./product-service/README.md) file
 
 # Import Service
 Please find detailed description in [README](./import-service/README.md) file
+
+# BFF Service
+Please find detailed description in [README](./bff-service/README.md) file

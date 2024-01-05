@@ -19,7 +19,10 @@
     "eb:init": "eb init hazardsoft-bff-api --platform='Node.js 18 running on 64bit Amazon Linux 2023'",
     "eb:create": "eb create hazardsoft-bff-api-develop --cname hazardsoft-bff-api-develop --single --instance-types=t2.micro,t2.small",
     "eb:deploy": "eb deploy hazardsoft-bff-api-develop",
-    "eb:destroy": "eb terminate"
+    "eb:destroy": "eb terminate",
+    "cdk:build": "node esbuild.cdk.config.js",
+    "cdk:run": "node cdk.out/index.js",
+    "cdk": "run-s build cdk:build cdk:run"
   },
   "keywords": [],
   "author": "",
@@ -28,9 +31,12 @@
     "@types/node": "^18.19.4",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.17.0",
+    "aws-cdk-lib": "^2.118.0",
+    "constructs": "^10.3.0",
     "esbuild": "^0.19.11",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.0.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.1.0",
     "typescript": "^5.3.3"
   },

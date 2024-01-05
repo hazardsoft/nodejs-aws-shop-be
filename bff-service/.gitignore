@@ -5,6 +5,7 @@
 !.elasticbeanstalk/*.global.yml
 
 dist
+cdk.out
 node_modules
 
 .env*

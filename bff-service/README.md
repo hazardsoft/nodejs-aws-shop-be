@@ -1,7 +1,7 @@
 # BFF Service
 
 Service proxies requests to Product and Cart services.
-Product/Cart endpoints URLs can be found in [.env.aws](.env.aws) file.
+Product/Cart endpoints URLs should be defined in `.env` file created out of [.env.example](.env.example) file.
 
 ## Usage
 

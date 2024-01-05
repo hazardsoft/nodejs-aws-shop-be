@@ -4,9 +4,8 @@
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-dist/
-node_modules/
+dist
+node_modules
 
 .env*
 !.env.example
-!.env.aws

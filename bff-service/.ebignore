@@ -1,2 +1,11 @@
+
+# Ignore everything
 *
-!docker-compose.yml
+
+# Except  
+!dist
+!.ebextensions
+!package*.json
+
+# Ignore node_modules
+node_modules

@@ -22,7 +22,7 @@ The folllowing cases are covered:
 2. `start` - runs BFF service application;
 3. `docker:build` - builds docker image `hazardsoft/aws-bff-service` with BFF service;
 4. `docker:publish` - publishes docker image to public Docker Hub;
-5. `eb:init` - initializes Elastic Beanstalk application;
+5. `eb:init` - initializes Elastic Beanstalk application (pass profile/region upon calling this script, e.g. `npm run eb:init -- --profile {profile} --region {region}`);
 6. `eb:create` - creates environment `develop` in Elastic Beanstalk application;
 7. `eb:deploy` - deployed version of Elastic Beanstalk application to `develop` environment;
 8. `eb:destroy` - destroys `develop` environment of Elastic Beanstalk application.

@@ -1,6 +1,7 @@
 import { Cors } from "aws-cdk-lib/aws-apigateway";
 import { CorsHttpMethod, HttpApi } from "aws-cdk-lib/aws-apigatewayv2";
 import { HttpUrlIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
+import { CfnOutput } from "aws-cdk-lib/core";
 import { Construct } from "constructs";
 
 type BffServiceApiProps = {
@@ -15,7 +16,7 @@ export class BffServiceApi extends Construct {
       props.serverUrl,
     );
 
-    new HttpApi(this, "BffServiceApi", {
+    const api = new HttpApi(this, "BffServiceApi", {
       apiName: "BffServiceApi",
       description: "HTTP proxy to access EB EC2 instance via HTTPS",
       defaultIntegration: proxyIntegration,
@@ -29,6 +30,10 @@ export class BffServiceApi extends Construct {
           CorsHttpMethod.OPTIONS,
         ],
       },
+    });
+
+    new CfnOutput(this, "BffServiceApiUrl", {
+      value: api.apiEndpoint,
     });
   }
 }

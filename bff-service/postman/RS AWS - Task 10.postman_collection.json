@@ -61,12 +61,84 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{bff_api}}/product",
+					"raw": "{{bff_api}}/product?id=1",
 					"host": [
 						"{{bff_api}}"
 					],
 					"path": [
 						"product"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get One Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>ID</th>",
+							"        <th>Title</th>",
+							"        <th>Description</th>",
+							"        <th>Price</th>",
+							"        <th>Count</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response}}",
+							"        <tr>",
+							"            <td>{{id}}</td>",
+							"            <td>{{title}}</td>",
+							"            <td>{{description}}</td>",
+							"            <td>{{price}}</td>",
+							"            <td>{{count}}</td>",
+							"        </tr>",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    return { response: pm.response.json() }",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bff_api}}/product/39e063fc-82fc-4814-bae6-774d211d3d83",
+					"host": [
+						"{{bff_api}}"
+					],
+					"path": [
+						"product",
+						"39e063fc-82fc-4814-bae6-774d211d3d83"
 					]
 				}
 			},
@@ -126,7 +198,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"count\": 99,\n    \"product\": {\n        \"id\": \"39e063fc-82fc-4814-bae6-774d211d3d83\",\n        \"title\": \"Prod 7\",\n        \"description\": \"description 7\",\n        \"price\": 100\n    }\n}",
+					"raw": "{\n    \"count\": 33,\n    \"product\": {\n        \"id\": \"39e063fc-82fc-4814-bae6-774d211d3d83\",\n        \"title\": \"Prod 7\",\n        \"description\": \"description 7\",\n        \"price\": 100\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -140,6 +212,48 @@
 					],
 					"path": [
 						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "hazardsoft",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "TEST_PASSWORD",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"items\": [\n        {\n            \"cart_id\": \"ae090d86-a7c5-44b1-b2be-0343eb98b368\",\n            \"product_id\": \"39e063fc-82fc-4814-bae6-774d211d3d83\",\n            \"count\": 55,\n            \"product\": {\n                \"id\": \"39e063fc-82fc-4814-bae6-774d211d3d83\",\n                \"title\": \"Prod 7\",\n                \"description\": \"description 7\",\n                \"price\": 100\n            }\n        }\n    ],\n    \"address\": {\n        \"firstName\": \"Henadzi\",\n        \"lastName\": \"Shutko\",\n        \"address\": \"Leonida Bedy st.\",\n        \"comment\": \"meaningful comment for the order\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{bff_api}}/cart/checkout",
+					"host": [
+						"{{bff_api}}"
+					],
+					"path": [
+						"cart",
+						"checkout"
 					]
 				}
 			},
@@ -207,6 +321,11 @@
 		{
 			"key": "bff_api",
 			"value": "http://hazardsoft-bff-api-develop.eu-central-1.elasticbeanstalk.com",
+			"type": "string"
+		},
+		{
+			"key": "bff_api_gw",
+			"value": "https://864t4zxcb4.execute-api.eu-central-1.amazonaws.com",
 			"type": "string"
 		}
 	]

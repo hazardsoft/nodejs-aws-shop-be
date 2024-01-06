@@ -1,7 +1,7 @@
 import http, { Server, ServerResponse } from "node:http";
 import { URL } from "node:url";
 import { ServerRequest } from "./types.js";
-import { readJsonBody, respond } from "./utils.js";
+import { parseQuery, readJsonBody, respond } from "./utils.js";
 import { HTTP_STATUS } from "./constants.js";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
@@ -11,37 +11,56 @@ function createServer(port: number): Server {
   const server = http.createServer();
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   server.on("request", async (req: ServerRequest, res: ServerResponse) => {
-    await readJsonBody(req);
+    if (req.method === "OPTIONS") {
+      respond(HTTP_STATUS.NO_CONTENT, null, res);
+      return;
+    }
+    if (req.method === "DELETE") {
+      respond(HTTP_STATUS.METHOD_NOT_ALLOWED, null, res);
+      return;
+    }
+
+    try {
+      req.body = await readJsonBody(req);
+    } catch (e) {
+      req.body = null;
+    }
 
     const originalUrl = new URL(
       req.url as string,
       `http://${req.headers.host}`,
     );
 
-    const serviceName = originalUrl.pathname.substring(1);
-    if (!envKeys.includes(serviceName)) {
+    const originalPathname = originalUrl.pathname.substring(1);
+    const destinationServiceKey = envKeys.find((key) =>
+      originalPathname.startsWith(key),
+    );
+    if (!destinationServiceKey) {
       respond(
         HTTP_STATUS.BAD_GATEWAY,
-        { message: `Service "${serviceName}" not found` },
+        { message: `Service (${originalPathname}) not found` },
         res,
       );
       return;
     }
 
-    const serviceUrl = process.env[serviceName] as string;
+    // /product -> EMPTY
+    // /product/{id} -> {id}
+    // /cart -> EMPTY
+    // /cart/checkout -> /checkout
+    const destinationPathname = originalUrl.pathname.substring(
+      destinationServiceKey.length + 1,
+    );
 
-    const reqParams: Record<string, string> = {};
-    for (const [key, value] of originalUrl.searchParams.entries()) {
-      reqParams[key] = value;
-    }
+    const destinationServiceUrl = `${process.env[destinationServiceKey]}${destinationPathname}`;
 
     const requestConfig: AxiosRequestConfig = {
-      url: serviceUrl,
+      url: destinationServiceUrl,
       method: req.method,
       headers: req.headers.authorization
         ? { Authorization: req.headers.authorization }
         : {},
-      params: reqParams,
+      params: parseQuery(originalUrl.searchParams),
       data: req.body,
     };
 

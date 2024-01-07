@@ -1,11 +1,19 @@
 import http, { Server, ServerResponse } from "node:http";
 import { URL } from "node:url";
-import { ServerRequest } from "./types.js";
+import { Product, ServerRequest } from "./types.js";
 import { parseQuery, readJsonBody, respond } from "./utils.js";
 import { HTTP_STATUS } from "./constants.js";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import {
+  getProducts,
+  setProducts,
+  hasProducts,
+  isCacheExpired,
+} from "./cache.js";
+import { match } from "path-to-regexp";
 
 const envKeys = Object.keys(process.env);
+const matchProducts = match("/product", { decode: decodeURIComponent });
 
 function createServer(port: number): Server {
   const server = http.createServer();
@@ -44,6 +52,15 @@ function createServer(port: number): Server {
       return;
     }
 
+    const isProducts =
+      req.method === "GET" && matchProducts(originalUrl.pathname);
+    if (isProducts) {
+      if (hasProducts() && !isCacheExpired()) {
+        respond(HTTP_STATUS.OK, getProducts(), res);
+        return;
+      }
+    }
+
     // /product -> EMPTY
     // /product/{id} -> {id}
     // /cart -> EMPTY
@@ -66,6 +83,9 @@ function createServer(port: number): Server {
 
     axios(requestConfig)
       .then((response) => {
+        if (isProducts) {
+          setProducts(response.data as Product[]);
+        }
         respond(response.status, response.data, res);
       })
       .catch((e) => {

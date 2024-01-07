@@ -1,4 +1,5 @@
 export const enum HTTP_STATUS {
+  OK = 200,
   NO_CONTENT = 204,
   METHOD_NOT_ALLOWED = 405,
   INTERNAL_SERVER_ERROR = 500,

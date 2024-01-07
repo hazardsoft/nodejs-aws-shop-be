@@ -1,31 +1,4 @@
 import { ServerResponse } from "node:http";
-import { ServerRequest } from "./types";
-
-export const readJsonBody = async (req: ServerRequest): Promise<unknown> => {
-  if (req.headers["content-type"] !== "application/json") {
-    return;
-  }
-  const data: Buffer[] = [];
-  return new Promise((resolve, reject) => {
-    req.on("data", (chunk: Buffer) => {
-      data.push(chunk);
-    });
-    req.on("error", (e) => {
-      reject(e);
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    req.on("end", () => {
-      const bufferContent = Buffer.concat(data).toString();
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        resolve(JSON.parse(bufferContent));
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
-};
 
 export const parseQuery = (
   searchParams: URLSearchParams,

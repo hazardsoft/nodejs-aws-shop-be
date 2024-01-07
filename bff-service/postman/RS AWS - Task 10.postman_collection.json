@@ -315,16 +315,16 @@
 	"variable": [
 		{
 			"key": "bff_api_local",
-			"value": "http://localhost:3000",
+			"value": "http://localhost:4000",
 			"type": "string"
 		},
 		{
-			"key": "bff_api",
+			"key": "bff_api_be",
 			"value": "http://hazardsoft-bff-api-develop.eu-central-1.elasticbeanstalk.com",
 			"type": "string"
 		},
 		{
-			"key": "bff_api_gw",
+			"key": "bff_api",
 			"value": "https://864t4zxcb4.execute-api.eu-central-1.amazonaws.com",
 			"type": "string"
 		}

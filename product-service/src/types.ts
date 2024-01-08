@@ -14,6 +14,7 @@ export const enum ProductValidationErrors {
   COUNT_REQUIRED = "Count is required",
   COUNT_TOO_LOW = "Count must be greater or equal 0",
   COUNT_MUST_BE_NUMBER = "Count must be a number",
+  IMAGE_MUST_BE_URL = "Image must be a valid URL",
 }
 
 export const ProductInputSchema = z.object({
@@ -43,6 +44,12 @@ export const ProductInputSchema = z.object({
     })
     .nonnegative(ProductValidationErrors.COUNT_TOO_LOW)
     .int(),
+  image: z
+    .string({
+      invalid_type_error: ProductValidationErrors.IMAGE_MUST_BE_URL,
+    })
+    .url()
+    .optional(),
 });
 export type ProductInput = z.infer<typeof ProductInputSchema>;
 
@@ -51,6 +58,7 @@ export type Product = {
   title: string;
   description: string;
   price: number;
+  image?: string;
 };
 
 export type Stock = {

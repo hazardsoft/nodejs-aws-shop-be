@@ -17,6 +17,7 @@ export const ProductSchema = z.object({
   description: z.string(),
   price: z.number(),
   count: z.number(),
+  image: z.string().url().optional(),
 });
 export type Product = z.infer<typeof ProductSchema>;
 

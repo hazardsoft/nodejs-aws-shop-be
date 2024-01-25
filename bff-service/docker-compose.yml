@@ -1,0 +1,9 @@
+name: bff-api
+services:
+  bff-service:
+    image: hazardsoft/aws-bff-service:latest
+    ports:
+      - ${EXPOSED_PORT}:${PORT}
+    environment:
+      - product=${product}
+      - cart=${cart}

@@ -1,11 +1,11 @@
 import { App, Stack } from 'aws-cdk-lib'
 import type { Construct } from 'constructs'
-
+import { ProductServiceHandlers } from './constructs/handlers.js'
 class ProductService extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id)
 
-    console.log('ProductService')
+    new ProductServiceHandlers(this, 'ProductServiceHandlers')
   }
 }
 

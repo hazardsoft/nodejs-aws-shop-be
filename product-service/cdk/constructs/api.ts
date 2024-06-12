@@ -6,6 +6,8 @@ import {
 } from 'aws-cdk-lib/aws-apigateway'
 import { type IFunction } from 'aws-cdk-lib/aws-lambda'
 import { Construct } from 'constructs'
+import { ProductsServiceModels } from './models.js'
+import { ProductsServiceResponses } from './responses.js'
 
 interface ProductServiceApiProps {
   handlers: {
@@ -33,17 +35,29 @@ export class ProductServiceApi extends Construct {
     const api = new RestApi(this, 'ProductApi', {
       restApiName: 'Products'
     })
-
-    const productsEndpoint = api.root.addResource('products')
-    productsEndpoint.addMethod('GET', getAllProductsIntegration)
-
-    const oneProductEndpoint = productsEndpoint.addResource('{id}')
-    oneProductEndpoint.addMethod('GET', getOneProductIntegration)
-
     api.root.addCorsPreflight({
       allowOrigins: Cors.ALL_ORIGINS,
       allowHeaders: Cors.DEFAULT_HEADERS,
       allowMethods: ['GET']
+    })
+    const { oneProduct, manyProducts } = new ProductsServiceModels(this, 'ProductsServiceModels', {
+      api
+    })
+    const apiResponses = new ProductsServiceResponses(this, 'ProductsServiceResponses', {
+      models: {
+        oneProduct,
+        manyProducts
+      }
+    })
+
+    const productsEndpoint = api.root.addResource('products')
+    const oneProductEndpoint = productsEndpoint.addResource('{id}')
+
+    productsEndpoint.addMethod('GET', getAllProductsIntegration, {
+      methodResponses: apiResponses.manyProductsResponses
+    })
+    oneProductEndpoint.addMethod('GET', getOneProductIntegration, {
+      methodResponses: apiResponses.oneProductResponses
     })
   }
 }

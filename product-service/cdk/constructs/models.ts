@@ -1,4 +1,4 @@
-import { JsonSchemaType, Model, IModel, IRestApi } from 'aws-cdk-lib/aws-apigateway'
+import { JsonSchemaType, Model, type IModel, type IRestApi } from 'aws-cdk-lib/aws-apigateway'
 import { Construct } from 'constructs'
 
 export interface ProductsServiceModelsProps {

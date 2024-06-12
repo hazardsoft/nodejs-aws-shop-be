@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": ["cdk"],
+  "exclude": [],
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.cdk.tsbuildinfo",
+    "paths": {
+      "cdk/*": ["./cdk/*"]
+    }
+  }
+}

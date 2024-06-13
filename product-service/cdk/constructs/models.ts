@@ -1,3 +1,4 @@
+import { Fn } from 'aws-cdk-lib'
 import { JsonSchemaType, Model, type IModel, type IRestApi } from 'aws-cdk-lib/aws-apigateway'
 import { Construct } from 'constructs'
 
@@ -18,7 +19,7 @@ export class ProductsServiceModels extends Construct {
     super(scope, id)
 
     this.oneProduct = this.createOneProductModel(props.api)
-    this.manyProducts = this.createManyProductsModel(props.api)
+    this.manyProducts = this.createManyProductsModel(props.api, this.oneProduct)
   }
 
   private createOneProductModel(api: IRestApi): Model {
@@ -26,6 +27,7 @@ export class ProductsServiceModels extends Construct {
       restApi: api,
       modelName: ModelNames.oneProduct,
       schema: {
+        title: ModelNames.oneProduct,
         type: JsonSchemaType.OBJECT,
         properties: {
           id: { type: JsonSchemaType.STRING },
@@ -40,16 +42,25 @@ export class ProductsServiceModels extends Construct {
     })
   }
 
-  private createManyProductsModel(api: IRestApi): IModel {
+  private createManyProductsModel(api: IRestApi, oneProductModel: IModel): IModel {
     return new Model(this, 'ManyProductsModel', {
       restApi: api,
       modelName: ModelNames.manyProducts,
       schema: {
+        title: ModelNames.manyProducts,
         type: JsonSchemaType.ARRAY,
         items: {
-          ref: `#/definitions/${ModelNames.oneProduct}`
+          ref: this.getModelRef(api, oneProductModel)
         }
       }
     })
   }
+
+  private getModelRef = (api: IRestApi, model: IModel): string =>
+    Fn.join('', [
+      'https://apigateway.amazonaws.com/restapis/',
+      api.restApiId,
+      '/models/',
+      model.modelId
+    ])
 }

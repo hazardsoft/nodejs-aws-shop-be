@@ -1,8 +1,10 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import products from '../data/products.json'
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  console.log(`getProductsById: ${event.path} ${event.pathParameters}`)
+export const handler = async (
+  event: Pick<APIGatewayProxyEvent, 'pathParameters'>
+): Promise<APIGatewayProxyResult> => {
+  console.log(`getProductsById: ${event.pathParameters}`)
 
   const productId = event.pathParameters?.id?.trim()
   if (!productId) {

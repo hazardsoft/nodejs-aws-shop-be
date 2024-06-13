@@ -9,3 +9,7 @@ export interface Product {
   count: number
   image: ImageUrl
 }
+
+export interface ProductError {
+  message: string
+}

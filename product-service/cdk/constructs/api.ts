@@ -35,13 +35,18 @@ export class ProductServiceApi extends Construct {
     const api = new RestApi(this, 'ProductApi', {
       restApiName: 'Products'
     })
-    const { oneProduct, manyProducts } = new ProductsServiceModels(this, 'ProductsServiceModels', {
-      api
-    })
+    const { oneProduct, manyProducts, error } = new ProductsServiceModels(
+      this,
+      'ProductsServiceModels',
+      {
+        api
+      }
+    )
     const apiResponses = new ProductsServiceResponses(this, 'ProductsServiceResponses', {
       models: {
         oneProduct,
-        manyProducts
+        manyProducts,
+        error
       }
     })
 

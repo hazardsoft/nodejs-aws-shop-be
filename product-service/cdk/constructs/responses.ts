@@ -5,6 +5,7 @@ interface ProductsServiceResponsesProps {
   models: {
     oneProduct: IModel
     manyProducts: IModel
+    error: IModel
   }
 }
 
@@ -25,6 +26,18 @@ export class ProductsServiceResponses extends Construct {
         statusCode: '200',
         responseModels: {
           'application/json': props.models.oneProduct
+        }
+      },
+      {
+        statusCode: '400',
+        responseModels: {
+          'application/json': props.models.error
+        }
+      },
+      {
+        statusCode: '404',
+        responseModels: {
+          'application/json': props.models.error
         }
       }
     ]

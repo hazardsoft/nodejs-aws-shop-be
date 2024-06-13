@@ -7,19 +7,22 @@ export interface ProductsServiceModelsProps {
 }
 
 const ModelNames = {
-  oneProduct: 'OneProduct',
-  manyProducts: 'ManyProducts'
+  oneProduct: 'OneProductModel',
+  manyProducts: 'ManyProductsModel',
+  error: 'ErrorModel'
 }
 
 export class ProductsServiceModels extends Construct {
   public readonly manyProducts: IModel
   public readonly oneProduct: IModel
+  public readonly error: IModel
 
   constructor(scope: Construct, id: string, props: ProductsServiceModelsProps) {
     super(scope, id)
 
     this.oneProduct = this.createOneProductModel(props.api)
     this.manyProducts = this.createManyProductsModel(props.api, this.oneProduct)
+    this.error = this.createErrorModel(props.api)
   }
 
   private createOneProductModel(api: IRestApi): Model {
@@ -52,6 +55,21 @@ export class ProductsServiceModels extends Construct {
         items: {
           ref: this.getModelRef(api, oneProductModel)
         }
+      }
+    })
+  }
+
+  private createErrorModel(api: IRestApi): IModel {
+    return new Model(this, 'ErrorModel', {
+      restApi: api,
+      modelName: ModelNames.error,
+      schema: {
+        title: ModelNames.error,
+        type: JsonSchemaType.OBJECT,
+        properties: {
+          message: { type: JsonSchemaType.STRING }
+        },
+        required: ['message']
       }
     })
   }

@@ -33,3 +33,7 @@ N.B. REST API returns mock data stored in [products.json](src/data/products.json
 
 Use [Products-prod-oas30.json](./docs/Products-prod-oas30.json) file (exported from `prod` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)
 ![Imported openapi.yaml file](images/swagger.png)
+
+### Postman
+
+Use [task3.postman_collection.json](./postman/task3.postman_collection.json) collection to test REST API endpoints with [Postman](https://www.postman.com)

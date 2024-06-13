@@ -1,10 +1,10 @@
 import type { APIGatewayProxyResult } from 'aws-lambda'
 import { describe, expect, test } from 'vitest'
-import products from '../src/data/products.json'
+import mockProducts from '../src/data/products.json'
 import { Product, ProductError } from '../src/types.js'
 import { handler } from '../src/lambdas/getProductsById.js'
 
-const mockProduct: Product = products.products[0]
+const mockProduct: Product = mockProducts.products[0]
 
 describe('Get one product test', () => {
   test('Get one product successfully', async () => {
@@ -12,10 +12,10 @@ describe('Get one product test', () => {
     const product = JSON.parse(response.body)
 
     expect(product).toEqual(mockProduct)
-    expect(response).toMatchObject(({
+    expect(response).toMatchObject({
       statusCode: 200,
       body: JSON.stringify(mockProduct)
-    } as APIGatewayProxyResult))
+    } as APIGatewayProxyResult)
   })
 
   test('Get one product returns 400', async () => {
@@ -24,10 +24,10 @@ describe('Get one product test', () => {
       message: 'Invalid product id'
     }
 
-    expect(response).toMatchObject(({
+    expect(response).toMatchObject({
       statusCode: 400,
       body: JSON.stringify(error)
-    } as APIGatewayProxyResult))
+    } as APIGatewayProxyResult)
   })
 
   test('Get one product returns 404', async () => {
@@ -37,9 +37,9 @@ describe('Get one product test', () => {
       message: 'Product not found'
     }
 
-    expect(response).toMatchObject(({
+    expect(response).toMatchObject({
       statusCode: 404,
       body: JSON.stringify(error)
-    } as APIGatewayProxyResult))
+    } as APIGatewayProxyResult)
   })
 })

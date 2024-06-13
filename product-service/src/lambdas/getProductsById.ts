@@ -4,7 +4,7 @@ import products from '../data/products.json'
 export const handler = async (
   event: Pick<APIGatewayProxyEvent, 'pathParameters'>
 ): Promise<APIGatewayProxyResult> => {
-  console.log(`getProductsById: ${event.pathParameters}`)
+  console.log('getProductsById:', event.pathParameters)
 
   const productId = event.pathParameters?.id?.trim()
   if (!productId) {

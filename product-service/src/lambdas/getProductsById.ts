@@ -6,8 +6,8 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   console.log('getProductsById:', event.pathParameters)
 
-  const productId = event.pathParameters?.id?.trim()
-  if (!productId) {
+  const productId = event.pathParameters?.id
+  if (!productId || !decodeURI(productId).trim()) {
     return {
       statusCode: 400,
       body: JSON.stringify({

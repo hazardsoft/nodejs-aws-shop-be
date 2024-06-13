@@ -19,6 +19,19 @@ describe('Get one product test', () => {
   })
 
   test('Get one product returns 400', async () => {
+    const emptyProductId = '%20'
+    const response = await handler({ pathParameters: { id: emptyProductId } })
+    const error: ProductError = {
+      message: 'Invalid product id'
+    }
+
+    expect(response).toMatchObject({
+      statusCode: 400,
+      body: JSON.stringify(error)
+    } as APIGatewayProxyResult)
+  })
+
+  test('Get one product returns 400 (2nd case)', async () => {
     const response = await handler({ pathParameters: { id: undefined } })
     const error: ProductError = {
       message: 'Invalid product id'

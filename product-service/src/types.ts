@@ -5,7 +5,7 @@ type ImageUrl = string
 
 export interface Product {
   id: ProductId
-  name: string
+  title: string
   description: string
   price: number
   count: number

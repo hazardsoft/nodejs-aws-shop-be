@@ -34,13 +34,13 @@ export class ProductsServiceModels extends Construct {
         type: JsonSchemaType.OBJECT,
         properties: {
           id: { type: JsonSchemaType.STRING },
-          name: { type: JsonSchemaType.STRING },
+          title: { type: JsonSchemaType.STRING },
           description: { type: JsonSchemaType.STRING },
           price: { type: JsonSchemaType.NUMBER },
           count: { type: JsonSchemaType.INTEGER },
           image: { type: JsonSchemaType.STRING }
         },
-        required: ['id', 'name', 'description', 'price', 'count', 'image']
+        required: ['id', 'title', 'description', 'price', 'count', 'image']
       }
     })
   }

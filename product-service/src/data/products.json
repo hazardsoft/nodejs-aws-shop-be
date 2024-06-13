@@ -2,7 +2,7 @@
   "products": [
     {
       "id": "1",
-      "name": "The Peripheral",
+      "title": "The Peripheral",
       "description": "William Gibson",
       "price": 15,
       "count": 1,
@@ -10,7 +10,7 @@
     },
     {
       "id": "2",
-      "name": "Brave New World",
+      "title": "Brave New World",
       "description": "Aldous Huxley",
       "price": 16,
       "count": 1,
@@ -18,7 +18,7 @@
     },
     {
       "id": "3",
-      "name": "The Illustrated Man",
+      "title": "The Illustrated Man",
       "description": "Ray Bradbury",
       "price": 17,
       "count": 1,
@@ -26,7 +26,7 @@
     },
     {
       "id": "4",
-      "name": "Do Androids Dream of Electric Sheep?",
+      "title": "Do Androids Dream of Electric Sheep?",
       "description": "Philip K. Dick",
       "price": 18,
       "count": 1,
@@ -34,7 +34,7 @@
     },
     {
       "id": "5",
-      "name": "Neuromancer",
+      "title": "Neuromancer",
       "description": "William Gibson",
       "price": 19,
       "count": 1,

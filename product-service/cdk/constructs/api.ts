@@ -35,11 +35,6 @@ export class ProductServiceApi extends Construct {
     const api = new RestApi(this, 'ProductApi', {
       restApiName: 'Products'
     })
-    api.root.addCorsPreflight({
-      allowOrigins: Cors.ALL_ORIGINS,
-      allowHeaders: Cors.DEFAULT_HEADERS,
-      allowMethods: ['GET']
-    })
     const { oneProduct, manyProducts } = new ProductsServiceModels(this, 'ProductsServiceModels', {
       api
     })
@@ -50,12 +45,23 @@ export class ProductServiceApi extends Construct {
       }
     })
 
-    const productsEndpoint = api.root.addResource('products')
-    const oneProductEndpoint = productsEndpoint.addResource('{id}')
-
+    // Adds /products endpoint
+    const productsEndpoint = api.root.addResource('products', {
+      // by default /products endpoint and all resources under will inherit default CORS settings
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowHeaders: Cors.DEFAULT_HEADERS,
+        allowMethods: ['GET']
+      }
+    })
+    // Adds "GET" method
     productsEndpoint.addMethod('GET', getAllProductsIntegration, {
       methodResponses: apiResponses.manyProductsResponses
     })
+
+    // Adds /products/{id} endpoint
+    const oneProductEndpoint = productsEndpoint.addResource('{id}')
+    // Adds "GET" method
     oneProductEndpoint.addMethod('GET', getOneProductIntegration, {
       methodResponses: apiResponses.oneProductResponses
     })

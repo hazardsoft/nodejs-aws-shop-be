@@ -15,12 +15,12 @@ await esbuild.build({
   ...options
 })
 await esbuild.build({
-  entryPoints: ['src/lambdas/getProductsList.ts'],
-  outfile: 'dist/lambdas/getProductsList/getProductsList.mjs',
+  entryPoints: ['src/handlers/getProductsList.ts'],
+  outfile: 'dist/handlers/getProductsList/getProductsList.mjs',
   ...options
 })
 await esbuild.build({
-  entryPoints: ['src/lambdas/getProductsById.ts'],
-  outfile: 'dist/lambdas/getProductsById/getProductsById.mjs',
+  entryPoints: ['src/handlers/getProductsById.ts'],
+  outfile: 'dist/handlers/getProductsById/getProductsById.mjs',
   ...options
 })

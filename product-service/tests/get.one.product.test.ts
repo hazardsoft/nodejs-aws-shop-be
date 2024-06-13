@@ -2,7 +2,8 @@ import type { APIGatewayProxyResult } from 'aws-lambda'
 import { describe, expect, test } from 'vitest'
 import mockProducts from '../src/data/products.json'
 import { Product, ProductError } from '../src/types.js'
-import { handler } from '../src/lambdas/getProductsById.js'
+import { handler } from '../src/handlers/getProductsById.js'
+import { corsHeaders } from '../src/helpers/response.js'
 
 const mockProduct: Product = mockProducts.products[0]
 
@@ -14,6 +15,7 @@ describe('Get one product test', () => {
     expect(product).toEqual(mockProduct)
     expect(response).toMatchObject({
       statusCode: 200,
+      headers: corsHeaders,
       body: JSON.stringify(mockProduct)
     } as APIGatewayProxyResult)
   })
@@ -27,6 +29,7 @@ describe('Get one product test', () => {
 
     expect(response).toMatchObject({
       statusCode: 400,
+      headers: corsHeaders,
       body: JSON.stringify(error)
     } as APIGatewayProxyResult)
   })
@@ -39,6 +42,7 @@ describe('Get one product test', () => {
 
     expect(response).toMatchObject({
       statusCode: 400,
+      headers: corsHeaders,
       body: JSON.stringify(error)
     } as APIGatewayProxyResult)
   })
@@ -52,6 +56,7 @@ describe('Get one product test', () => {
 
     expect(response).toMatchObject({
       statusCode: 404,
+      headers: corsHeaders,
       body: JSON.stringify(error)
     } as APIGatewayProxyResult)
   })

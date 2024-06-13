@@ -1,3 +1,5 @@
+import type { APIGatewayProxyResult } from 'aws-lambda'
+
 type ProductId = string
 type ImageUrl = string
 
@@ -13,3 +15,5 @@ export interface Product {
 export interface ProductError {
   message: string
 }
+
+export type ProductResponse = Pick<APIGatewayProxyResult, 'statusCode' | 'body' | 'headers'>

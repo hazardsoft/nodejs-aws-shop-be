@@ -13,7 +13,11 @@
     "cdk:run": "node cdk.out/index.js",
     "cdk:diff": "cdk diff",
     "cdk:deploy": "cdk deploy",
-    "cdk:destroy": "cdk destroy"
+    "cdk:destroy": "cdk destroy",
+    "docker:up": "docker compose up --detach",
+    "docker:down": "docker compose down",
+    "dynamodb:run:scripts": "node dist/scripts/index.mjs",
+    "dynamodb": "run-s build dynamodb:run:scripts"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
@@ -29,7 +33,9 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.598.0",
     "@aws-sdk/client-lambda": "^3.438.0",
+    "@aws-sdk/lib-dynamodb": "^3.598.0",
     "aws-cdk-lib": "^2.144.0",
     "constructs": "^10.0.0"
   }

@@ -8,8 +8,12 @@ export interface Product {
   title: string
   description: string
   price: number
-  count: number
   image: ImageUrl
+}
+
+export interface Stock {
+  product_id: ProductId
+  count: number
 }
 
 export interface ProductError {

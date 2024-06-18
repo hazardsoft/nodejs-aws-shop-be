@@ -24,3 +24,8 @@ await esbuild.build({
   outfile: 'dist/handlers/getProductsById/getProductsById.mjs',
   ...options
 })
+await esbuild.build({
+  entryPoints: ['src/scripts/index.ts'],
+  outfile: 'dist/scripts/index.mjs',
+  ...options
+})

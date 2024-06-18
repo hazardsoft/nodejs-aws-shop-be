@@ -1,0 +1,44 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "title": "The Peripheral",
+      "description": "William Gibson",
+      "price": 15,
+      "count": 1,
+      "image": "https://www.dropbox.com/scl/fi/86ygbkrhtngnhji1h16x3/the-peripheral.jpeg?rlkey=l7rcibcq7bzek12q3wmni7f1e&dl=1"
+    },
+    {
+      "id": "2",
+      "title": "Brave New World",
+      "description": "Aldous Huxley",
+      "price": 16,
+      "count": 1,
+      "image": "https://www.dropbox.com/scl/fi/gm512kqsp8tzabjpvv1z4/brave-new-world.jpeg?rlkey=9qgw8srdd2il7nm9i4kaodupq&dl=1"
+    },
+    {
+      "id": "3",
+      "title": "The Illustrated Man",
+      "description": "Ray Bradbury",
+      "price": 17,
+      "count": 1,
+      "image": "https://www.dropbox.com/scl/fi/kdkh9kfsqtrf1pemzhaul/the-illustrated-man.jpeg?rlkey=ufesz7pm2w09scteg6e4shkcl&dl=1"
+    },
+    {
+      "id": "4",
+      "title": "Do Androids Dream of Electric Sheep?",
+      "description": "Philip K. Dick",
+      "price": 18,
+      "count": 1,
+      "image": "https://www.dropbox.com/scl/fi/u50wp9zij847iy29w943k/do-androids-dream-of-electric-sheep.jpeg?rlkey=gkik06so05h6k94k8gpgkzwqq&dl=1"
+    },
+    {
+      "id": "5",
+      "title": "Neuromancer",
+      "description": "William Gibson",
+      "price": 19,
+      "count": 1,
+      "image": "https://www.dropbox.com/scl/fi/f3to22i7a6xvq85vhqye6/neuromancer.jpeg?rlkey=tvvx5n6cxu93wu66rez1lmpyq&dl=1"
+    }
+  ]
+}

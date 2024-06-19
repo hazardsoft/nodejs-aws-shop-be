@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from 'vitest'
 import data from '@/data/products.json'
 import { handler } from '@/handlers/getProductsList.js'
 import { corsHeaders } from '@/helpers/response.js'
-import { ProductsFailToGetAll } from '@/errors'
+import { FailedToGetAllProducts } from '@/errors.js'
 
 const mocks = vi.hoisted(() => {
   return {
@@ -30,7 +30,7 @@ describe('Get many products test', () => {
   })
 
   test('Get all products fails', async () => {
-    const error = new ProductsFailToGetAll('Failed to get products')
+    const error = new FailedToGetAllProducts('Failed to get products')
     mocks.getProducts.mockRejectedValueOnce(error)
 
     const response = await handler({ path: '/products' })

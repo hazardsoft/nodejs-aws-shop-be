@@ -1,7 +1,7 @@
 import type { APIGatewayProxyResult } from 'aws-lambda'
 
-type ProductId = string
-type ImageUrl = string
+export type ProductId = string
+export type ImageUrl = string
 
 export interface Product {
   id: ProductId

@@ -1,6 +1,7 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import products from '@/data/products.json'
 import { createResponse } from '@/helpers/response.js'
+import { getProductById } from '@/repository.js'
+import { ProductInvalidId, ProductNotFound } from '@/errors.js'
 
 export const handler = async (
   event: Pick<APIGatewayProxyEvent, 'pathParameters'>
@@ -12,23 +13,29 @@ export const handler = async (
     return createResponse({
       statusCode: 400,
       body: JSON.stringify({
-        message: 'Invalid product id'
+        message: new ProductInvalidId().message
       })
     })
   }
 
-  const product = products.products.find((p) => p.id === productId)
-  if (!product) {
+  try {
+    const product = await getProductById(productId)
     return createResponse({
-      statusCode: 404,
-      body: JSON.stringify({
-        message: 'Product not found'
+      statusCode: 200,
+      body: JSON.stringify(product)
+    })
+  } catch (e) {
+    if (e instanceof ProductNotFound) {
+      return createResponse({
+        statusCode: 404,
+        body: JSON.stringify({
+          message: e.message
+        })
       })
+    }
+    return createResponse({
+      statusCode: 500,
+      body: JSON.stringify(e)
     })
   }
-
-  return createResponse({
-    statusCode: 200,
-    body: JSON.stringify(product)
-  })
 }

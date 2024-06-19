@@ -1,4 +1,4 @@
-import type { ProductResponse } from '../types.js'
+import type { ProductResponse } from '@/types.js'
 import type { APIGatewayProxyResult } from 'aws-lambda'
 
 type Headers = Record<string, string>

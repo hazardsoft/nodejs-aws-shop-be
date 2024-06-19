@@ -1,5 +1,5 @@
 import { CreateTableCommand } from '@aws-sdk/client-dynamodb'
-import { client } from './client.js'
+import { client } from '@/helpers/client.js'
 
 export const createProductsTable = async () => {
   const command = new CreateTableCommand({

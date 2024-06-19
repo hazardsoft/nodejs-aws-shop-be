@@ -1,8 +1,8 @@
-import { main as listTables } from './list-tables.js'
-import { createProductsTable, createStocksTable } from './create-tables.js'
-import { main as describeTable } from './describe-tables.js'
-import { populateProducts, populateStocks } from './populate-tables.js'
-import data from '../data/products.json'
+import { main as listTables } from '@/scripts/list-tables.js'
+import { createProductsTable, createStocksTable } from '@/scripts/create-tables.js'
+import { main as describeTable } from '@/scripts/describe-tables.js'
+import { populateProducts, populateStocks } from '@/scripts/populate-tables.js'
+import data from '@/data/products.json'
 import type { Stock } from '@/types.js'
 
 // Get list of tables

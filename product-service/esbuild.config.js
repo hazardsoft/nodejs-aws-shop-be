@@ -6,7 +6,8 @@ const options = {
   platform: 'node',
   packages: 'external',
   sourcemap: false,
-  minify: false
+  minify: false,
+  tsconfig: 'tsconfig.app.json'
 }
 
 await esbuild.build({

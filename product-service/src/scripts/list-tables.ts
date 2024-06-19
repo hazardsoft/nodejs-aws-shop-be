@@ -1,5 +1,5 @@
 import { ListTablesCommand } from '@aws-sdk/client-dynamodb'
-import { client } from './client.js'
+import { client } from '@/helpers/client.js'
 
 export const main = async () => {
   const command = new ListTablesCommand({})

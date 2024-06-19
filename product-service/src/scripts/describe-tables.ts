@@ -1,5 +1,5 @@
 import { DescribeTableCommand } from '@aws-sdk/client-dynamodb'
-import { client } from './client.js'
+import { client } from '@/helpers/client.js'
 
 export const main = async (tableName: string) => {
   const command = new DescribeTableCommand({

@@ -36,4 +36,4 @@ Use [Products-prod-oas30.json](./docs/Products-prod-oas30.json) file (exported f
 
 ### Postman
 
-Use [task3.postman_collection.json](./postman/task3.postman_collection.json) collection to test REST API endpoints with [Postman](https://www.postman.com)
+Use [postman_collection.json](./postman/postman_collection.json) collection to test REST API endpoints with [Postman](https://www.postman.com)

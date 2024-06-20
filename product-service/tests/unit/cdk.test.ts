@@ -1,6 +1,6 @@
 import { Template } from 'aws-cdk-lib/assertions'
 import { describe, test } from 'vitest'
-import { productService } from '../cdk/index.js'
+import { productService } from '../../cdk/index.js'
 
 describe('Test AWS CDK stack', () => {
   const template = Template.fromStack(productService)

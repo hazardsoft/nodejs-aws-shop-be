@@ -28,7 +28,7 @@ export const enum ProductValidationErrors {
 const ProductIdSchema = z.string().uuid(ProductValidationErrors.ID_MUST_BE_UUID)
 const ImageUrlSchema = z.string().url(ProductValidationErrors.IMAGE_MUST_BE_URL)
 
-const ProductSchema = z.object({
+export const ProductSchema = z.object({
   id: ProductIdSchema,
   title: z
     .string({
@@ -51,7 +51,7 @@ const ProductSchema = z.object({
   image: ImageUrlSchema
 })
 
-const StockSchema = z.object({
+export const StockSchema = z.object({
   product_id: z.string().uuid(),
   count: z
     .number({
@@ -62,7 +62,7 @@ const StockSchema = z.object({
     .int(ProductValidationErrors.COUNT_MUST_BE_INTEGER)
 })
 
-const AvailableProductSchema = ProductSchema.merge(StockSchema).omit({ product_id: true })
+export const AvailableProductSchema = ProductSchema.merge(StockSchema).omit({ product_id: true })
 export const ProductInputSchema = AvailableProductSchema.omit({ id: true })
 
 export type ProductId = z.infer<typeof ProductIdSchema>

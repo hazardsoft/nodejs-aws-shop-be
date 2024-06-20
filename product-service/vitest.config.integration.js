@@ -3,12 +3,13 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    include: 'tests/**.test.ts',
+    include: 'tests/integration/**.test.ts',
     threads: true,
     environment: 'node',
     globals: false,
     watch: false,
-    clearMocks: true
+    clearMocks: true,
+    setupFiles: ['src/scripts/index.ts']
   },
   resolve: {
     alias: {

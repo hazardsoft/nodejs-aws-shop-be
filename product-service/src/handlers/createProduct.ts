@@ -14,12 +14,12 @@ export const handler = async (
       throw new ProductInvalidInput()
     }
 
-    const productInput = validateProduct(JSON.parse(event.body))
-    if (!productInput) {
-      throw new ProductInvalidInput()
+    const validationResult = validateProduct(JSON.parse(event.body))
+    if (!validationResult.success) {
+      throw new ProductInvalidInput(validationResult.issues)
     }
 
-    const product = await createProduct(productInput)
+    const product = await createProduct(validationResult.data)
     return createResponse({
       statusCode: 201,
       body: JSON.stringify(product)
@@ -28,7 +28,7 @@ export const handler = async (
     if (e instanceof ProductInvalidInput) {
       return createResponse({
         statusCode: 400,
-        body: JSON.stringify({ message: e.message })
+        body: JSON.stringify({ message: e.message, issues: e.issues })
       })
     }
     if (e instanceof Error) {

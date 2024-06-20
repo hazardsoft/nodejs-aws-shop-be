@@ -1,3 +1,5 @@
+import type { ValidationIssue } from '@/helpers/validate.js'
+
 export class ProductNotFound extends Error {
   constructor(id: string) {
     super(`Product with id ${id} not found`)
@@ -11,7 +13,7 @@ export class ProductInvalidId extends Error {
 }
 
 export class ProductInvalidInput extends Error {
-  constructor() {
+  constructor(public readonly issues?: ValidationIssue[]) {
     super('Invalid product input')
   }
 }

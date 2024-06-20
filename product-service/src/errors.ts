@@ -9,3 +9,9 @@ export class ProductInvalidId extends Error {
     super(`Invalid product id: ${id}`)
   }
 }
+
+export class ProductInvalidInput extends Error {
+  constructor() {
+    super('Invalid product input')
+  }
+}

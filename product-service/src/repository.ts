@@ -1,7 +1,13 @@
-import type { AvailableProduct, Product, ProductId, Stock } from '@/types.js'
+import type { AvailableProduct, Product, ProductId, ProductInput, Stock } from '@/types.js'
 import { docClient } from '@/helpers/client.js'
 import { ProductNotFound } from '@/errors.js'
-import { ScanCommand, BatchGetCommand, type ScanCommandOutput } from '@aws-sdk/lib-dynamodb'
+import {
+  ScanCommand,
+  BatchGetCommand,
+  type ScanCommandOutput,
+  TransactWriteCommand
+} from '@aws-sdk/lib-dynamodb'
+import { v4 as uuidv4 } from 'uuid'
 
 type DBScanOutput<T> = Omit<ScanCommandOutput, 'Items'> & { Items?: T[] }
 
@@ -65,5 +71,42 @@ export const getProductById = async (id: ProductId): Promise<AvailableProduct> =
     count: stock.count
   }
   console.log(`product with id ${id}: `, availableProduct)
+  return availableProduct
+}
+
+export const createProduct = async (input: ProductInput) => {
+  const id = uuidv4()
+
+  const command = new TransactWriteCommand({
+    TransactItems: [
+      {
+        Put: {
+          TableName: 'Products',
+          Item: {
+            id,
+            ...input
+          }
+        }
+      },
+      {
+        Put: {
+          TableName: 'Stocks',
+          Item: {
+            product_id: id,
+            count: input.count
+          }
+        }
+      }
+    ],
+    ReturnConsumedCapacity: 'TOTAL'
+  })
+
+  const response = await docClient.send(command)
+  console.log('product created: ', response)
+
+  const availableProduct: AvailableProduct = {
+    id,
+    ...input
+  }
   return availableProduct
 }

@@ -2,6 +2,7 @@ import { type IFunction } from 'aws-cdk-lib/aws-lambda'
 import { Construct } from 'constructs'
 import { AttributeType, Billing, TableEncryptionV2, TableV2 } from 'aws-cdk-lib/aws-dynamodb'
 import { RemovalPolicy } from 'aws-cdk-lib/core'
+import { env } from '../config.js'
 
 interface ProductServiceDBProps {
   handlers: {
@@ -20,7 +21,7 @@ export class ProductServiceDB extends Construct {
 
     // Products table
     this.products = new TableV2(this, 'Products', {
-      tableName: 'Products',
+      tableName: env.PRODUCTS_TABLE_NAME,
       partitionKey: { name: 'id', type: AttributeType.STRING },
       billing: Billing.onDemand(),
       encryption: TableEncryptionV2.dynamoOwnedKey(),
@@ -30,7 +31,7 @@ export class ProductServiceDB extends Construct {
 
     // Stocks table
     this.stocks = new TableV2(this, 'Stocks', {
-      tableName: 'Stocks',
+      tableName: env.STOCKS_TABLE_NAME,
       partitionKey: { name: 'product_id', type: AttributeType.STRING },
       billing: Billing.onDemand(),
       encryption: TableEncryptionV2.dynamoOwnedKey(),

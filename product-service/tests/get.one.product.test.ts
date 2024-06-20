@@ -59,4 +59,13 @@ describe('Get one product test', () => {
     expect(JSON.parse(response.body)).toMatchObject({ message: error.message })
     expect(mocks.getProductById).toHaveBeenCalledOnce()
   })
+
+  test('Get one product fails', async () => {
+    const error = new Error('Failed to get product by id')
+    mocks.getProductById.mockRejectedValueOnce(error)
+    const response = await handler({ pathParameters: { id: mockProduct.id } })
+
+    expect(response.statusCode).toBe(500)
+    expect(JSON.parse(response.body)).toMatchObject({ message: error.message })
+  })
 })

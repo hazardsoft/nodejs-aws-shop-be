@@ -1,7 +1,6 @@
 import { describe, expect, test, vi } from 'vitest'
 import data from '@/data/products.json'
 import { handler } from '@/handlers/getProductsList.js'
-import { corsHeaders } from '@/helpers/response.js'
 
 const mocks = vi.hoisted(() => {
   return {

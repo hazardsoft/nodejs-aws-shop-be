@@ -2,13 +2,14 @@ import { Function as LambdaFunction, Runtime, Code, type IFunction } from 'aws-c
 import { Construct } from 'constructs'
 
 export class ProductServiceHandlers extends Construct {
-  public readonly getAllProducts: IFunction
+  public readonly getManyProducts: IFunction
   public readonly getOneProduct: IFunction
+  public readonly createOneProduct: IFunction
 
   constructor(scope: Construct, id: string) {
     super(scope, id)
 
-    this.getAllProducts = new LambdaFunction(this, 'GetAllProducts', {
+    this.getManyProducts = new LambdaFunction(this, 'GetAllProducts', {
       runtime: Runtime.NODEJS_20_X,
       code: Code.fromAsset('./dist/handlers/getProductsList'),
       handler: 'getProductsList.handler'
@@ -18,6 +19,12 @@ export class ProductServiceHandlers extends Construct {
       runtime: Runtime.NODEJS_20_X,
       code: Code.fromAsset('./dist/handlers/getProductsById'),
       handler: 'getProductsById.handler'
+    })
+
+    this.createOneProduct = new LambdaFunction(this, 'CreateOneProduct', {
+      runtime: Runtime.NODEJS_20_X,
+      code: Code.fromAsset('./dist/handlers/createProduct'),
+      handler: 'createProduct.handler'
     })
   }
 }

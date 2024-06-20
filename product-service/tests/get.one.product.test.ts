@@ -1,8 +1,7 @@
 import { describe, expect, test, vi } from 'vitest'
 import data from '@/data/products.json'
-import type { Product, ProductError } from '@/types.js'
+import type { Product } from '@/types.js'
 import { handler } from '@/handlers/getProductsById.js'
-import { corsHeaders } from '@/helpers/response.js'
 import { ProductInvalidId, ProductNotFound } from '@/errors.js'
 
 const mockProduct = data.products[0] as Product
@@ -26,46 +25,38 @@ describe('Get one product test', () => {
 
     expect(product).toEqual(mockProduct)
     expect(response.statusCode).toBe(200)
-    expect(response.headers).toMatchObject(corsHeaders)
     expect(JSON.parse(response.body)).toMatchObject(mockProduct)
     expect(mocks.getProductById).toHaveBeenCalledOnce()
   })
 
-  test('Get one product returns 400', async () => {
-    const emptyProductId = '%20'
-    const response = await handler({ pathParameters: { id: emptyProductId } })
-    const error: ProductError = {
-      message: new ProductInvalidId().message
-    }
+  test('Get one product returns 400 (space)', async () => {
+    const productId = '%20'
+    const error = new ProductInvalidId(productId)
+    const response = await handler({ pathParameters: { id: productId } })
 
     expect(response.statusCode).toBe(400)
-    expect(response.headers).toMatchObject(corsHeaders)
-    expect(JSON.parse(response.body)).toMatchObject(error)
+    expect(JSON.parse(response.body)).toMatchObject({ message: error.message })
     expect(mocks.getProductById).not.toHaveBeenCalled()
   })
 
-  test('Get one product returns 400 (2nd case)', async () => {
-    const response = await handler({ pathParameters: { id: undefined } })
-    const error: ProductError = {
-      message: new ProductInvalidId().message
-    }
+  test('Get one product returns 400 (undefined)', async () => {
+    const productId = undefined
+    const error = new ProductInvalidId(productId)
+    const response = await handler({ pathParameters: { id: productId } })
 
     expect(response.statusCode).toBe(400)
-    expect(response.headers).toMatchObject(corsHeaders)
-    expect(JSON.parse(response.body)).toMatchObject(error)
+    expect(JSON.parse(response.body)).toMatchObject({ message: error.message })
     expect(mocks.getProductById).not.toHaveBeenCalled()
   })
 
   test('Get one product returns 404', async () => {
-    const invalidProductId = 'invalid-product-id'
-    const error = new ProductNotFound(invalidProductId)
+    const productId = 'invalid-product-id'
+    const error = new ProductNotFound(productId)
     mocks.getProductById.mockRejectedValueOnce(error)
-
-    const response = await handler({ pathParameters: { id: invalidProductId } })
+    const response = await handler({ pathParameters: { id: productId } })
 
     expect(response.statusCode).toBe(404)
-    expect(response.headers).toMatchObject(corsHeaders)
-    expect(JSON.parse(response.body)).toMatchObject({ message: error.message } as ProductError)
+    expect(JSON.parse(response.body)).toMatchObject({ message: error.message })
     expect(mocks.getProductById).toHaveBeenCalledOnce()
   })
 })

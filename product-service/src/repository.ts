@@ -1,6 +1,6 @@
 import type { AvailableProduct, Product, ProductId, Stock } from '@/types.js'
 import { docClient } from '@/helpers/client.js'
-import { FailedToGetProductById, ProductNotFound } from '@/errors.js'
+import { ProductNotFound } from '@/errors.js'
 import { ScanCommand, BatchGetCommand, type ScanCommandOutput } from '@aws-sdk/lib-dynamodb'
 
 type DBScanOutput<T> = Omit<ScanCommandOutput, 'Items'> & { Items?: T[] }
@@ -47,7 +47,7 @@ export const getProductById = async (id: ProductId): Promise<AvailableProduct> =
 
   const response = await docClient.send(command)
   if (!response.Responses) {
-    throw new FailedToGetProductById(id)
+    throw new ProductNotFound(id)
   }
 
   const products = response.Responses['Products'] as Product[]

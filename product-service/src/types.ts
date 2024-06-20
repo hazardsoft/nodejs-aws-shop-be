@@ -20,7 +20,6 @@ export type AvailableProduct = Product & Pick<Stock, 'count'>
 
 export interface ProductError {
   message: string
-  cause?: unknown
 }
 
 export type ProductResponse = Pick<APIGatewayProxyResult, 'statusCode' | 'body' | 'headers'>

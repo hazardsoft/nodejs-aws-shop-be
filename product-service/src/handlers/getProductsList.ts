@@ -1,7 +1,6 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { createResponse } from '@/helpers/response.js'
 import { getProducts } from '@/repository.js'
-import type { ProductError } from '@/types.js'
 
 export const handler = async (
   event: Pick<APIGatewayProxyEvent, 'path'>
@@ -15,10 +14,12 @@ export const handler = async (
       body: JSON.stringify(products)
     })
   } catch (e) {
-    const error: ProductError =
-      e instanceof Error
-        ? { message: e.message, cause: e.cause }
-        : { message: 'Error trying to get all products' }
-    return createResponse({ statusCode: 500, body: JSON.stringify(error) })
+    if (e instanceof Error) {
+      return createResponse({ statusCode: 500, body: JSON.stringify({ message: e.message }) })
+    }
+    return createResponse({
+      statusCode: 500,
+      body: JSON.stringify({ message: 'get products: unknown error' })
+    })
   }
 }

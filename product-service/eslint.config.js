@@ -3,7 +3,14 @@ import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
 export default [
-  { languageOptions: { globals: globals.node } },
+  {
+    languageOptions: {
+      globals: globals.node
+    }
+  },
+  {
+    ignores: ['cdk.out', 'dist']
+  },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   ...tseslint.configs.strict,

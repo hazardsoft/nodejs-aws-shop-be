@@ -2,8 +2,7 @@ import { describe, expect, test, vi } from 'vitest'
 import data from '@/data/products.json'
 import { ProductValidationErrors, type AvailableProduct } from '@/types.js'
 import { handler } from '@/handlers/createProduct.js'
-import { ProductInvalidInput } from '@/errors.js'
-import { validateProduct } from '@/helpers/validate'
+import { ProductCreationFail, ProductInvalidInput } from '@/errors.js'
 
 const mocks = vi.hoisted(() => {
   return {
@@ -52,7 +51,7 @@ describe('Create one product tests', () => {
   })
 
   test('Create product fails', async () => {
-    const error = new Error('Something went wrong')
+    const error = new ProductCreationFail()
     mocks.createProduct.mockRejectedValue(error)
 
     const response = await handler({ body: JSON.stringify(data.products[0]) })

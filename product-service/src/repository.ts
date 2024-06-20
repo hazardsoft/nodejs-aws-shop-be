@@ -1,6 +1,6 @@
 import type { AvailableProduct, Product, ProductId, ProductInput, Stock } from '@/types.js'
 import { docClient } from '@/helpers/client.js'
-import { ProductNotFound } from '@/errors.js'
+import { ProductCreationFail, ProductNotFound } from '@/errors.js'
 import {
   ScanCommand,
   BatchGetCommand,
@@ -102,7 +102,9 @@ export const createProduct = async (input: ProductInput) => {
   })
 
   const response = await docClient.send(command)
-  console.log('product created: ', response)
+  if (response.$metadata.httpStatusCode !== 200) {
+    throw new ProductCreationFail()
+  }
 
   const availableProduct: AvailableProduct = {
     id,

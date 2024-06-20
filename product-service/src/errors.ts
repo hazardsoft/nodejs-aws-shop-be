@@ -17,3 +17,9 @@ export class ProductInvalidInput extends Error {
     super('Invalid product input')
   }
 }
+
+export class ProductCreationFail extends Error {
+  constructor() {
+    super('Failed to create product')
+  }
+}

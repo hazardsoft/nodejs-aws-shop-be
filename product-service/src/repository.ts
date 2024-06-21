@@ -11,8 +11,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 type DBScanOutput<T> = Omit<ScanCommandOutput, 'Items'> & { Items?: T[] }
 
-const productsTableName = process.env.PRODUCTS_TABLE_NAME ?? ''
-const stocksTableName = process.env.STOCKS_TABLE_NAME ?? ''
+const productsTableName = process.env.PRODUCTS_TABLE_NAME ?? 'Products'
+const stocksTableName = process.env.STOCKS_TABLE_NAME ?? 'Stocks'
 
 const scan = async <T>(tableName: string): Promise<DBScanOutput<T>> => {
   const command = new ScanCommand({ TableName: tableName })
@@ -20,8 +20,12 @@ const scan = async <T>(tableName: string): Promise<DBScanOutput<T>> => {
 }
 
 export const getProducts = async (): Promise<AvailableProduct[]> => {
-  const products = (await scan<Product>(productsTableName)).Items ?? []
-  const stocks = (await scan<Stock>(stocksTableName)).Items ?? []
+  const [{ Items: productItems }, { Items: stockItems }] = await Promise.all([
+    scan<Product>(productsTableName),
+    scan<Stock>(stocksTableName)
+  ])
+  const products = productItems ?? []
+  const stocks = stockItems ?? []
 
   const availableProducts: AvailableProduct[] = products.map((product) => {
     const stock = stocks.find((stock) => stock.product_id === product.id)

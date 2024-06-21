@@ -2,7 +2,7 @@
   "openapi" : "3.0.1",
   "info" : {
     "title" : "Products",
-    "version" : "2024-06-20T12:37:09Z"
+    "version" : "2024-06-21T08:38:29Z"
   },
   "servers" : [ {
     "url" : "https://hp8wur0lsa.execute-api.eu-central-1.amazonaws.com/{basePath}",
@@ -204,19 +204,32 @@
         "type" : "object",
         "properties" : {
           "image" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "image uri",
+            "format" : "uri"
           },
           "price" : {
-            "type" : "number"
+            "multipleOf" : 0.01,
+            "minimum" : 0,
+            "exclusiveMinimum" : true,
+            "type" : "number",
+            "description" : "product price in USD"
           },
           "count" : {
-            "type" : "integer"
+            "minimum" : 0,
+            "exclusiveMinimum" : false,
+            "type" : "integer",
+            "description" : "number of products in stock"
           },
           "description" : {
-            "type" : "string"
+            "minLength" : 3,
+            "type" : "string",
+            "description" : "product description (min 3 characters)"
           },
           "title" : {
-            "type" : "string"
+            "minLength" : 3,
+            "type" : "string",
+            "description" : "product name (min 3 characters)"
           }
         }
       },

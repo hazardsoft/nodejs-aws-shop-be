@@ -5,11 +5,15 @@ import {
   ScanCommand,
   BatchGetCommand,
   type ScanCommandOutput,
-  TransactWriteCommand
+  TransactWriteCommand,
+  type BatchGetCommandOutput
 } from '@aws-sdk/lib-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
 
 type DBScanOutput<T> = Omit<ScanCommandOutput, 'Items'> & { Items?: T[] }
+type DBBatchGetItemOutput<T> = Omit<BatchGetCommandOutput, 'Responses'> & {
+  Responses?: Record<string, T[]>
+}
 
 const productsTableName = process.env.PRODUCTS_TABLE_NAME ?? 'Products'
 const stocksTableName = process.env.STOCKS_TABLE_NAME ?? 'Stocks'
@@ -20,12 +24,22 @@ const scan = async <T>(tableName: string): Promise<DBScanOutput<T>> => {
 }
 
 export const getProducts = async (): Promise<AvailableProduct[]> => {
-  const [{ Items: productItems }, { Items: stockItems }] = await Promise.all([
-    scan<Product>(productsTableName),
-    scan<Stock>(stocksTableName)
-  ])
-  const products = productItems ?? []
-  const stocks = stockItems ?? []
+  const products = (await scan<Product>(productsTableName)).Items ?? []
+
+  const getStocksCommand = new BatchGetCommand({
+    RequestItems: {
+      [stocksTableName]: {
+        Keys: products.map(({ id }) => {
+          return {
+            product_id: id
+          }
+        })
+      }
+    }
+  })
+
+  const stocksResponse = (await docClient.send(getStocksCommand)) as DBBatchGetItemOutput<Stock>
+  const stocks = (stocksResponse.Responses && stocksResponse.Responses[stocksTableName]) ?? []
 
   const availableProducts: AvailableProduct[] = products.map((product) => {
     const stock = stocks.find((stock) => stock.product_id === product.id)

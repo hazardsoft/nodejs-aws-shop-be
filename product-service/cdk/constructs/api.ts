@@ -8,6 +8,7 @@ import { type IFunction } from 'aws-cdk-lib/aws-lambda'
 import { Construct } from 'constructs'
 import { ProductsServiceModels } from './models.js'
 import { ProductsServiceResponses } from './responses.js'
+import { ProductServiceGatewayResponses } from './apiGatewayResponses.js'
 
 interface ProductServiceApiProps {
   handlers: {
@@ -40,6 +41,12 @@ export class ProductServiceApi extends Construct {
     const api = new RestApi(this, 'ProductApi', {
       restApiName: 'Products'
     })
+
+    api.addGatewayResponse(
+      'CreateOneProductBadRequestBody',
+      ProductServiceGatewayResponses.options.BAD_REQUEST_BODY
+    )
+
     const { getOneProduct, getManyProducts, createOneProduct, error } = new ProductsServiceModels(
       this,
       'ProductsServiceModels',
@@ -62,9 +69,10 @@ export class ProductServiceApi extends Construct {
       defaultCorsPreflightOptions: {
         allowOrigins: Cors.ALL_ORIGINS,
         allowHeaders: Cors.DEFAULT_HEADERS,
-        allowMethods: ['GET', 'POST']
+        allowMethods: ['GET', 'POST', 'OPTIONS']
       }
     })
+
     // Adds "GET" method
     productsEndpoint.addMethod('GET', getAllProductsIntegration, {
       methodResponses: apiResponses.getManyProductsResponses
@@ -74,6 +82,10 @@ export class ProductServiceApi extends Construct {
       methodResponses: apiResponses.createOneProductResponses,
       requestModels: {
         'application/json': createOneProduct
+      },
+      requestValidatorOptions: {
+        validateRequestBody: true,
+        validateRequestParameters: false
       }
     })
 

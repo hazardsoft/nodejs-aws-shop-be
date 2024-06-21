@@ -56,11 +56,30 @@ export class ProductsServiceModels extends Construct {
         title: ModelNames.createOneProduct,
         type: JsonSchemaType.OBJECT,
         properties: {
-          title: { type: JsonSchemaType.STRING },
-          description: { type: JsonSchemaType.STRING },
-          price: { type: JsonSchemaType.NUMBER },
-          count: { type: JsonSchemaType.INTEGER },
-          image: { type: JsonSchemaType.STRING }
+          title: {
+            type: JsonSchemaType.STRING,
+            description: 'product name (min 3 characters)',
+            minLength: 3
+          },
+          description: {
+            type: JsonSchemaType.STRING,
+            description: 'product description (min 3 characters)',
+            minLength: 3
+          },
+          price: {
+            type: JsonSchemaType.NUMBER,
+            description: 'product price in USD',
+            multipleOf: 0.01,
+            minimum: 0,
+            exclusiveMinimum: true
+          },
+          count: {
+            type: JsonSchemaType.INTEGER,
+            description: 'number of products in stock',
+            minimum: 0,
+            exclusiveMinimum: false
+          },
+          image: { type: JsonSchemaType.STRING, description: 'image uri', format: 'uri' }
         },
         required: ['title', 'description', 'price', 'count', 'image']
       }

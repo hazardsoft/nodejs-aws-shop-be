@@ -9,7 +9,7 @@ export default [
     }
   },
   {
-    ignores: ['cdk.out', 'dist']
+    ignores: ['cdk.out', 'dist', 'docs']
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,

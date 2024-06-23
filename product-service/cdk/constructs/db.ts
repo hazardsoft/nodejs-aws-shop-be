@@ -27,7 +27,6 @@ export class ProductServiceDB extends Construct {
       encryption: TableEncryptionV2.dynamoOwnedKey(),
       removalPolicy: RemovalPolicy.DESTROY
     })
-    this.configureAccess(this.products, props.handlers)
 
     // Stocks table
     this.stocks = new TableV2(this, 'Stocks', {
@@ -37,12 +36,17 @@ export class ProductServiceDB extends Construct {
       encryption: TableEncryptionV2.dynamoOwnedKey(),
       removalPolicy: RemovalPolicy.DESTROY
     })
-    this.configureAccess(this.stocks, props.handlers)
-  }
 
-  private configureAccess(table: TableV2, handlers: ProductServiceDBProps['handlers']) {
-    table.grantReadData(handlers.getOneProduct)
-    table.grantReadData(handlers.getManyProducts)
-    table.grantWriteData(handlers.createOneProduct)
+    // granular permission to create a product
+    this.products.grant(props.handlers.createOneProduct, 'dynamodb:PutItem')
+    this.stocks.grant(props.handlers.createOneProduct, 'dynamodb:PutItem')
+
+    // granular permission to get all products
+    this.products.grant(props.handlers.getManyProducts, 'dynamodb:Scan')
+    this.stocks.grant(props.handlers.getManyProducts, 'dynamodb:BatchGetItem')
+
+    // granular permission to get a product by id
+    this.products.grant(props.handlers.getOneProduct, 'dynamodb:BatchGetItem')
+    this.stocks.grant(props.handlers.getOneProduct, 'dynamodb:BatchGetItem')
   }
 }

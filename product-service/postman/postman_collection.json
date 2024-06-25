@@ -30,13 +30,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{api-url}}/products/1",
+					"raw": "{{api-url}}/products/3f8e598c-1176-451f-99cc-70648eeed201",
 					"host": [
 						"{{api-url}}"
 					],
 					"path": [
 						"products",
-						"1"
+						"3f8e598c-1176-451f-99cc-70648eeed201"
 					]
 				}
 			},
@@ -73,6 +73,58 @@
 					"path": [
 						"products",
 						" "
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create One Product (201)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Product from Postman\",\n    \"description\": \"Description from Postman\",\n    \"price\": 99.99,\n    \"count\": 99,\n    \"image\": \"https://images.unsplash.com/photo-1718712760956-3e527953827b?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/products",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create One Product (400)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Product from Postman\",\n    \"description\": \"Description from Postman\",\n    \"price\": 99.99,\n    \"image\": \"https://images.unsplash.com/photo-1718712760956-3e527953827b?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/products",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"products"
 					]
 				}
 			},

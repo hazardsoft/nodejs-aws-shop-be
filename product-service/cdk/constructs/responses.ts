@@ -3,29 +3,32 @@ import { Construct } from 'constructs'
 
 interface ProductsServiceResponsesProps {
   models: {
-    oneProduct: IModel
-    manyProducts: IModel
+    getOneProduct: IModel
+    getManyProducts: IModel
+    createOneProduct: IModel
     error: IModel
   }
 }
 
 export class ProductsServiceResponses extends Construct {
-  public readonly oneProductResponses: MethodResponse[]
-  public readonly manyProductsResponses: MethodResponse[]
+  public readonly getOneProductResponses: MethodResponse[]
+  public readonly getManyProductsResponses: MethodResponse[]
+  public readonly createOneProductResponses: MethodResponse[]
 
   constructor(scope: Construct, id: string, props: ProductsServiceResponsesProps) {
     super(scope, id)
 
-    this.oneProductResponses = this.createOneProductResponses(props)
-    this.manyProductsResponses = this.createManyProductsResponses(props)
+    this.getOneProductResponses = this.createGetOneProductResponses(props)
+    this.getManyProductsResponses = this.createGetManyProductsResponses(props)
+    this.createOneProductResponses = this.createCreateOneProductResponses(props)
   }
 
-  private createOneProductResponses(props: ProductsServiceResponsesProps): MethodResponse[] {
+  private createGetOneProductResponses(props: ProductsServiceResponsesProps): MethodResponse[] {
     return [
       {
         statusCode: '200',
         responseModels: {
-          'application/json': props.models.oneProduct
+          'application/json': props.models.getOneProduct
         }
       },
       {
@@ -39,16 +42,51 @@ export class ProductsServiceResponses extends Construct {
         responseModels: {
           'application/json': props.models.error
         }
+      },
+      {
+        statusCode: '500',
+        responseModels: {
+          'application/json': props.models.error
+        }
       }
     ]
   }
 
-  private createManyProductsResponses(props: ProductsServiceResponsesProps): MethodResponse[] {
+  private createGetManyProductsResponses(props: ProductsServiceResponsesProps): MethodResponse[] {
     return [
       {
         statusCode: '200',
         responseModels: {
-          'application/json': props.models.manyProducts
+          'application/json': props.models.getManyProducts
+        }
+      },
+      {
+        statusCode: '500',
+        responseModels: {
+          'application/json': props.models.error
+        }
+      }
+    ]
+  }
+
+  private createCreateOneProductResponses(props: ProductsServiceResponsesProps): MethodResponse[] {
+    return [
+      {
+        statusCode: '201',
+        responseModels: {
+          'application/json': props.models.getOneProduct
+        }
+      },
+      {
+        statusCode: '400',
+        responseModels: {
+          'application/json': props.models.error
+        }
+      },
+      {
+        statusCode: '500',
+        responseModels: {
+          'application/json': props.models.error
         }
       }
     ]

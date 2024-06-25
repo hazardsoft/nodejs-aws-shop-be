@@ -13,7 +13,27 @@ Product Service is responsible for retrieving list of products or a product by i
 
 - `cdk:destroy` - Runs AWS CDK destroy command to destroy previously deployed stack (in order to use a user's profile the script needs to be run as `npm run cdk:destroy -- --profile={profile_name}`)
 
-- `test` - Runs unit tests
+- `test` - Runs tests:
+
+  - `test:unit` - Runs unit tests
+  - `test:integration` - Runs integration tests (DynamoDB local run via Docker)
+
+- `dynamodb` - Populates DynamoDB with initial data (data for `Products`/`Stocks` tables is taken from [products.json](src/data/products.json))
+- `docker:up` - Starts DynamoDB local service (see [docker-compose.yml](./docker-compose.yml) for implementation details)
+- `docker:down` - Stops DynamoDB local service
+
+## Environment
+
+NPM script `dynamodb:populate` uses `.env` file in order to access DynamoDB (required for _**remote**_ access only).
+Copy-paste `.env.example` file, rename it to `.env` and fill with values of `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+Credentials can be created with the following steps:
+
+1. Log into AWS Console;
+2. Click on a profile name in the top right corner of the screen and select `Security credentials`;
+3. Scroll down to `Access keys` section;
+4. Click on `Create access key` button;
+5. After creation copy values of `Access key` and `Secret access key`;
+6. Once remote DynamoDB is populated delete previously created access key.
 
 ## Deployment
 
@@ -27,8 +47,8 @@ Product Service API is available at https://hp8wur0lsa.execute-api.eu-central-1.
 1. To get full list of products use https://hp8wur0lsa.execute-api.eu-central-1.amazonaws.com/prod/products
 2. To get one product by id use https://hp8wur0lsa.execute-api.eu-central-1.amazonaws.com/prod/products/{id}, where {id} is id of one of the items got in p.1
 
-N.B. REST API returns mock data stored in [products.json](src/data/products.json)
-   
+N.B. Previously used mock data from [products.json](src/data/products.json) is replaced with read/write operations from/to AWS DynamoDB
+
 ### Swagger Documentation
 
 Use [Products-prod-oas30.json](./docs/Products-prod-oas30.json) file (exported from `prod` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)
@@ -36,4 +56,4 @@ Use [Products-prod-oas30.json](./docs/Products-prod-oas30.json) file (exported f
 
 ### Postman
 
-Use [task3.postman_collection.json](./postman/task3.postman_collection.json) collection to test REST API endpoints with [Postman](https://www.postman.com)
+Use [postman_collection.json](./postman/postman_collection.json) collection to test REST API endpoints with [Postman](https://www.postman.com)

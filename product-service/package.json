@@ -8,17 +8,26 @@
     "prebuild": "rm -rf dist",
     "build": "node esbuild.config.js",
     "start": "node cdk.out/index.js",
-    "test": "vitest",
+    "test:unit": "vitest --config vitest.config.unit.js",
+    "test:integration:run": "vitest --config vitest.config.integration.js",
+    "test:integration": "run-s docker:up test:integration:run",
+    "test": "run-s test:unit",
     "cdk": "run-s lint build cdk:run",
     "cdk:run": "node cdk.out/index.js",
     "cdk:diff": "cdk diff",
     "cdk:deploy": "cdk deploy",
-    "cdk:destroy": "cdk destroy"
+    "cdk:destroy": "cdk destroy",
+    "docker:up": "docker compose up --detach",
+    "docker:down": "docker compose down",
+    "dynamodb:populate": "env-cmd --file .env node dist/scripts/index.mjs",
+    "dynamodb": "run-s build dynamodb:populate"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
     "@types/aws-lambda": "^8.10.125",
     "@types/node": "^20.13.0",
+    "@types/uuid": "^9.0.8",
+    "env-cmd": "^10.1.0",
     "esbuild": "^0.21.4",
     "eslint": "^8.57.0",
     "globals": "^15.3.0",
@@ -29,8 +38,12 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.598.0",
     "@aws-sdk/client-lambda": "^3.438.0",
+    "@aws-sdk/lib-dynamodb": "^3.598.0",
     "aws-cdk-lib": "^2.144.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
   }
 }

@@ -8,24 +8,27 @@ export interface ProductsServiceModelsProps {
 
 const ModelNames = {
   oneProduct: 'OneProductModel',
+  createOneProduct: 'CreateOneProductModel',
   manyProducts: 'ManyProductsModel',
   error: 'ErrorModel'
 }
 
 export class ProductsServiceModels extends Construct {
-  public readonly manyProducts: IModel
-  public readonly oneProduct: IModel
+  public readonly getManyProducts: IModel
+  public readonly getOneProduct: IModel
+  public readonly createOneProduct: IModel
   public readonly error: IModel
 
   constructor(scope: Construct, id: string, props: ProductsServiceModelsProps) {
     super(scope, id)
 
-    this.oneProduct = this.createOneProductModel(props.api)
-    this.manyProducts = this.createManyProductsModel(props.api, this.oneProduct)
+    this.getOneProduct = this.createGetOneProductModel(props.api)
+    this.getManyProducts = this.createGetManyProductsModel(props.api, this.getOneProduct)
+    this.createOneProduct = this.createCreateOneProductModel(props.api)
     this.error = this.createErrorModel(props.api)
   }
 
-  private createOneProductModel(api: IRestApi): Model {
+  private createGetOneProductModel(api: IRestApi): Model {
     return new Model(this, 'OneProductModel', {
       restApi: api,
       modelName: ModelNames.oneProduct,
@@ -45,7 +48,45 @@ export class ProductsServiceModels extends Construct {
     })
   }
 
-  private createManyProductsModel(api: IRestApi, oneProductModel: IModel): IModel {
+  private createCreateOneProductModel(api: IRestApi): Model {
+    return new Model(this, 'CreateOneProductModel', {
+      restApi: api,
+      modelName: ModelNames.createOneProduct,
+      schema: {
+        title: ModelNames.createOneProduct,
+        type: JsonSchemaType.OBJECT,
+        properties: {
+          title: {
+            type: JsonSchemaType.STRING,
+            description: 'product name (min 3 characters)',
+            minLength: 3
+          },
+          description: {
+            type: JsonSchemaType.STRING,
+            description: 'product description (min 3 characters)',
+            minLength: 3
+          },
+          price: {
+            type: JsonSchemaType.NUMBER,
+            description: 'product price in USD',
+            multipleOf: 0.01,
+            minimum: 0,
+            exclusiveMinimum: true
+          },
+          count: {
+            type: JsonSchemaType.INTEGER,
+            description: 'number of products in stock',
+            minimum: 0,
+            exclusiveMinimum: false
+          },
+          image: { type: JsonSchemaType.STRING, description: 'image uri', format: 'uri' }
+        },
+        required: ['title', 'description', 'price', 'count', 'image']
+      }
+    })
+  }
+
+  private createGetManyProductsModel(api: IRestApi, oneProductModel: IModel): IModel {
     return new Model(this, 'ManyProductsModel', {
       restApi: api,
       modelName: ModelNames.manyProducts,
@@ -67,7 +108,8 @@ export class ProductsServiceModels extends Construct {
         title: ModelNames.error,
         type: JsonSchemaType.OBJECT,
         properties: {
-          message: { type: JsonSchemaType.STRING }
+          message: { type: JsonSchemaType.STRING },
+          issues: { type: JsonSchemaType.ARRAY, items: { type: JsonSchemaType.STRING } }
         },
         required: ['message']
       }

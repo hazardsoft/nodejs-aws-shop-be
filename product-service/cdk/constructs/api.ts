@@ -8,11 +8,13 @@ import { type IFunction } from 'aws-cdk-lib/aws-lambda'
 import { Construct } from 'constructs'
 import { ProductsServiceModels } from './models.js'
 import { ProductsServiceResponses } from './responses.js'
+import { ProductServiceGatewayResponses } from './apiGatewayResponses.js'
 
 interface ProductServiceApiProps {
   handlers: {
-    getAllProducts: IFunction
+    getManyProducts: IFunction
     getOneProduct: IFunction
+    createOneProduct: IFunction
   }
 }
 
@@ -24,18 +26,28 @@ export class ProductServiceApi extends Construct {
       allowTestInvoke: false
     }
     const getAllProductsIntegration = new LambdaIntegration(
-      props.handlers.getAllProducts,
+      props.handlers.getManyProducts,
       integrationOptions
     )
     const getOneProductIntegration = new LambdaIntegration(
       props.handlers.getOneProduct,
       integrationOptions
     )
+    const createOneProductIntegration = new LambdaIntegration(
+      props.handlers.createOneProduct,
+      integrationOptions
+    )
 
     const api = new RestApi(this, 'ProductApi', {
       restApiName: 'Products'
     })
-    const { oneProduct, manyProducts, error } = new ProductsServiceModels(
+
+    api.addGatewayResponse(
+      'CreateOneProductBadRequestBody',
+      ProductServiceGatewayResponses.options.BAD_REQUEST_BODY
+    )
+
+    const { getOneProduct, getManyProducts, createOneProduct, error } = new ProductsServiceModels(
       this,
       'ProductsServiceModels',
       {
@@ -44,8 +56,9 @@ export class ProductServiceApi extends Construct {
     )
     const apiResponses = new ProductsServiceResponses(this, 'ProductsServiceResponses', {
       models: {
-        oneProduct,
-        manyProducts,
+        getOneProduct,
+        getManyProducts,
+        createOneProduct,
         error
       }
     })
@@ -56,19 +69,31 @@ export class ProductServiceApi extends Construct {
       defaultCorsPreflightOptions: {
         allowOrigins: Cors.ALL_ORIGINS,
         allowHeaders: Cors.DEFAULT_HEADERS,
-        allowMethods: ['GET']
+        allowMethods: ['GET', 'POST', 'OPTIONS']
       }
     })
+
     // Adds "GET" method
     productsEndpoint.addMethod('GET', getAllProductsIntegration, {
-      methodResponses: apiResponses.manyProductsResponses
+      methodResponses: apiResponses.getManyProductsResponses
+    })
+    // Adds "POST" method
+    productsEndpoint.addMethod('POST', createOneProductIntegration, {
+      methodResponses: apiResponses.createOneProductResponses,
+      requestModels: {
+        'application/json': createOneProduct
+      },
+      requestValidatorOptions: {
+        validateRequestBody: true,
+        validateRequestParameters: false
+      }
     })
 
     // Adds /products/{id} endpoint
     const oneProductEndpoint = productsEndpoint.addResource('{id}')
     // Adds "GET" method
     oneProductEndpoint.addMethod('GET', getOneProductIntegration, {
-      methodResponses: apiResponses.oneProductResponses
+      methodResponses: apiResponses.getOneProductResponses
     })
   }
 }

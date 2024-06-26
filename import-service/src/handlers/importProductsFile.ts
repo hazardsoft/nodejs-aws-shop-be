@@ -1,11 +1,13 @@
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { FilenameInvalidInput } from '@/errors.js'
 import { createResponse } from '@/helpers/response.js'
-import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { generatePresignUrl } from '@/helpers/sign'
+import { generatePresignUrl } from '@/helpers/sign.js'
 
 const BUCKET_NAME: string = process.env.BUCKET_NAME ?? ''
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler = async (
+  event: Pick<APIGatewayProxyEvent, 'queryStringParameters'>
+): Promise<APIGatewayProxyResult> => {
   console.log('get presigned url:', event.queryStringParameters, 'bucket name:', BUCKET_NAME)
 
   try {

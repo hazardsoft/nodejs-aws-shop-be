@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { FilenameInvalidInput } from '@/errors.js'
 import { createResponse } from '@/helpers/response.js'
-import { generatePresignUrl } from '@/helpers/sign.js'
+import { generatePresignUrl } from '@/helpers/bucket.js'
 
 const BUCKET_NAME: string = process.env.BUCKET_NAME ?? ''
 

@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => {
   }
 })
 
-vi.mock('@/helpers/sign.js', () => ({
+vi.mock('@/helpers/bucket.js', () => ({
   generatePresignUrl: mocks.generatePresignUrl
 }))
 

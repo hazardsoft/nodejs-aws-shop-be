@@ -33,3 +33,8 @@ await esbuild.build({
   outfile: 'dist/handlers/importProductsFile/importProductsFile.mjs',
   ...lambdaOptions
 })
+await esbuild.build({
+  entryPoints: ['src/handlers/importFileParser.ts'],
+  outfile: 'dist/handlers/importFileParser/importFileParser.mjs',
+  ...lambdaOptions
+})

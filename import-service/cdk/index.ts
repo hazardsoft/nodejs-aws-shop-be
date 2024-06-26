@@ -13,11 +13,9 @@ class ImportService extends Stack {
     const { getPresignedUrl } = new ImportServiceHandlers(this, 'ImportServiceHandlers', {
       bucketName: bucketConstruct.uploadBucket.bucketName
     })
-    new ImportServiceApi(this, 'ImportServiceApi', {
-      handlers: {
-        getPresignedUrl
-      }
-    })
+    bucketConstruct.grantPut(getPresignedUrl)
+
+    new ImportServiceApi(this, 'ImportServiceApi', { handlers: { getPresignedUrl } })
   }
 }
 

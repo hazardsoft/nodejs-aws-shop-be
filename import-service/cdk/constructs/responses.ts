@@ -23,7 +23,7 @@ export class ImportServiceResponses extends Construct {
       {
         statusCode: '200',
         responseModels: {
-          'text/plain': props.models.presignedUrl
+          'application/json': props.models.presignedUrl
         }
       },
       {

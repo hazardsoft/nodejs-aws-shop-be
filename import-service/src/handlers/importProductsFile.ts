@@ -15,7 +15,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       throw new FilenameInvalidInput()
     }
 
-    const presignedUrl = await generatePresignUrl(BUCKET_NAME, `upload/${filename}`)
+    const presignedUrl = await generatePresignUrl(BUCKET_NAME, `uploaded/${filename}`)
     return createResponse({
       statusCode: 200,
       body: presignedUrl

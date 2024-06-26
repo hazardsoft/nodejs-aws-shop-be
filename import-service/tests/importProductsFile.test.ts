@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from 'vitest'
 import { handler } from '@/handlers/importProductsFile.js'
 import { config } from './setup.js'
 import { FilenameInvalidInput } from '@/errors.js'
+import { FilenameValidationErrors } from '@/types.js'
 
 const mocks = vi.hoisted(() => {
   return {
@@ -32,9 +33,27 @@ describe('Get presigned url for CSV file upload tests', () => {
     expect(mocks.generatePresignUrl).toHaveLastReturnedWith(presignedUrl)
   })
 
-  test('should return 400 if file name is invalid', async () => {
-    const invalidFilename = ''
+  test('should return 400 if file name is empty', async () => {
+    const emptyFilename = ''
     const error = new FilenameInvalidInput()
+
+    const result = await handler({
+      queryStringParameters: {
+        name: emptyFilename
+      }
+    })
+
+    expect(result.statusCode).toBe(400)
+    expect(JSON.parse(result.body)).toMatchObject({
+      message: error.message
+    })
+    expect(mocks.generatePresignUrl).not.toHaveBeenCalled()
+  })
+
+  test('should return 400 if file name is invalid', async () => {
+    const invalidFilename = '.csv'
+    const issues = [FilenameValidationErrors.FILE_MUST_BE_CSV]
+    const error = new FilenameInvalidInput(issues)
 
     const result = await handler({
       queryStringParameters: {
@@ -44,7 +63,8 @@ describe('Get presigned url for CSV file upload tests', () => {
 
     expect(result.statusCode).toBe(400)
     expect(JSON.parse(result.body)).toMatchObject({
-      message: error.message
+      message: error.message,
+      issues: error.issues
     })
     expect(mocks.generatePresignUrl).not.toHaveBeenCalled()
   })

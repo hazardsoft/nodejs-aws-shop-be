@@ -2,6 +2,7 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { FilenameInvalidInput } from '@/errors.js'
 import { createResponse } from '@/helpers/response.js'
 import { generatePresignUrl } from '@/helpers/bucket.js'
+import { validateFilename } from '@/helpers/validate.js'
 
 const BUCKET_NAME: string = process.env.BUCKET_NAME ?? ''
 
@@ -13,8 +14,9 @@ export const handler = async (
   try {
     const filename = event.queryStringParameters?.name ?? ''
 
-    if (!filename) {
-      throw new FilenameInvalidInput()
+    const validationResult = validateFilename(filename)
+    if (!validationResult.success) {
+      throw new FilenameInvalidInput(validationResult.issues)
     }
 
     const presignedUrl = await generatePresignUrl(BUCKET_NAME, `uploaded/${filename}`)
@@ -26,7 +28,7 @@ export const handler = async (
     if (e instanceof FilenameInvalidInput) {
       return createResponse({
         statusCode: 400,
-        body: JSON.stringify({ message: e.message })
+        body: JSON.stringify({ message: e.message, issues: e.issues })
       })
     }
     if (e instanceof Error) {

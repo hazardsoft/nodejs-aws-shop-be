@@ -1,5 +1,7 @@
+import type {ValidationIssue} from "@/helpers/validate.js"
+
 export class FilenameInvalidInput extends Error {
-  constructor() {
+  constructor(public readonly issues?: ValidationIssue[]) {
     super('Invalid filename')
   }
 }

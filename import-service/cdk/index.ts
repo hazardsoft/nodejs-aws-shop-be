@@ -3,6 +3,7 @@ import type { Construct } from 'constructs'
 import { ImportServiceHandlers } from './constructs/handlers.js'
 import { ImportServiceApi } from './constructs/api.js'
 import { ImportServiceBucket } from './constructs/bucket.js'
+import { bucket } from './config.js'
 
 class ImportService extends Stack {
   constructor(scope: Construct, id: string) {
@@ -17,9 +18,14 @@ class ImportService extends Stack {
         bucketName: bucketConstruct.uploadBucket.bucketName
       }
     )
-    bucketConstruct.grantPut(getPresignedUrl)
-    bucketConstruct.grantGet(parseProducts)
-    bucketConstruct.notify(parseProducts)
+    // presign handler should be able to put objects only
+    bucketConstruct.grantPut(getPresignedUrl, bucket.uploadKeyPrefix)
+
+    // parse products handler should be able to get/put/delete objects
+    bucketConstruct.notify(parseProducts, bucket.uploadKeyPrefix)
+    bucketConstruct.grantGet(parseProducts, bucket.uploadKeyPrefix)
+    bucketConstruct.grantPut(parseProducts, bucket.parseKeyPrefix)
+    bucketConstruct.grantDelete(parseProducts, bucket.uploadKeyPrefix)
 
     new ImportServiceApi(this, 'ImportServiceApi', { handlers: { getPresignedUrl } })
   }

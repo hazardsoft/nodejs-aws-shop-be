@@ -22,6 +22,5 @@ export const parseProducts = async (stream: Readable): Promise<ProductInput[]> =
   for await (const chunk of data) {
     products.push(chunk)
   }
-  console.log('parsed products:', products)
   return products
 }

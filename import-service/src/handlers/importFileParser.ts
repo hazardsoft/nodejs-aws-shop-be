@@ -4,8 +4,8 @@ import type {
   S3EventRecord as LibS3EventRecord
 } from 'aws-lambda'
 import { createResponse } from '@/helpers/response.js'
-import { FailedToReadObject } from '@/errors.js'
-import { read } from '@/helpers/bucket.js'
+import { FailedToCopyObject, FailedToDeleteObject, FailedToReadObject } from '@/errors.js'
+import { copyObject, deleteObject, readObject } from '@/helpers/bucket.js'
 import type { ProductInput } from '@/types.js'
 import { parseProducts } from '@/helpers/parser.js'
 
@@ -23,13 +23,26 @@ export const handler = async (event: S3Event): Promise<APIGatewayProxyResult> =>
   console.log('Event: ', event.Records)
 
   try {
-    const products: ProductInput[] = []
+    const allProducts: ProductInput[] = []
 
     for await (const record of event.Records) {
       const { bucket, object } = record.s3
-      const stream = await read(bucket.name, object.key)
-      products.push(...(await parseProducts(stream)))
+      const stream = await readObject({ bucket: bucket.name, key: object.key })
+      const products = await parseProducts(stream)
+      console.log('parsed products:', products)
+      allProducts.push(...products)
+
+      console.log('copying object')
+      // once parsed move file from /uploaded to /parsed
+      await copyObject(
+        { bucket: bucket.name, key: object.key },
+        { bucket: bucket.name, key: `${object.key.replace('uploaded', 'parsed')}` }
+      )
+      console.log('deleting object')
+      // delete original file from /uploaded
+      await deleteObject({ bucket: bucket.name, key: object.key })
     }
+    console.log('all parsed products:', allProducts)
     return createResponse({
       statusCode: 200,
       body: JSON.stringify({ message: 'ok' })
@@ -38,6 +51,18 @@ export const handler = async (event: S3Event): Promise<APIGatewayProxyResult> =>
     if (err instanceof FailedToReadObject) {
       return createResponse({
         statusCode: 404,
+        body: JSON.stringify({ message: err.message })
+      })
+    }
+    if (err instanceof FailedToCopyObject) {
+      return createResponse({
+        statusCode: 500,
+        body: JSON.stringify({ message: err.message })
+      })
+    }
+    if (err instanceof FailedToDeleteObject) {
+      return createResponse({
+        statusCode: 500,
         body: JSON.stringify({ message: err.message })
       })
     }

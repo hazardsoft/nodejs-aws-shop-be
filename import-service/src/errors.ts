@@ -9,3 +9,15 @@ export class FailedToReadObject extends Error {
     super(`Failed to read object ${id}`)
   }
 }
+
+export class FailedToCopyObject extends Error {
+  constructor(id: string) {
+    super(`Failed to copy object ${id}`)
+  }
+}
+
+export class FailedToDeleteObject extends Error {
+  constructor(id: string) {
+    super(`Failed to delete object ${id}`)
+  }
+}

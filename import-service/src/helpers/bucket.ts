@@ -32,24 +32,22 @@ export const readObject = async ({ bucket, key }: ObjectPath): Promise<Readable>
   return response.Body
 }
 
-export const deleteObject = async ({ bucket, key }: ObjectPath): Promise<Readable> => {
+export const deleteObject = async ({ bucket, key }: ObjectPath): Promise<void> => {
   const command = new DeleteObjectCommand({ Bucket: bucket, Key: key })
-  const response = (await client.send(command)) as S3GetObjectCommandOutput
-  if (response.$metadata.httpStatusCode !== 200) {
+  const response = await client.send(command)
+  if (response.$metadata.httpStatusCode !== 204) {
     throw new FailedToDeleteObject(key)
   }
-  return response.Body
 }
 
-export const copyObject = async (from: ObjectPath, to: ObjectPath): Promise<Readable> => {
+export const copyObject = async (from: ObjectPath, to: ObjectPath): Promise<void> => {
   const command = new CopyObjectCommand({
     Bucket: to.bucket,
     Key: to.key,
     CopySource: `${from.bucket}/${from.key}`
   })
-  const response = (await client.send(command)) as S3GetObjectCommandOutput
+  const response = await client.send(command)
   if (response.$metadata.httpStatusCode !== 200) {
     throw new FailedToCopyObject(from.key)
   }
-  return response.Body
 }

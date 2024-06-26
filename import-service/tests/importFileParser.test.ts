@@ -71,8 +71,8 @@ describe('Parse products CSV', () => {
     expect(result.statusCode).toBe(404)
     expect(JSON.parse(result.body)).toMatchObject({ message: error.message })
     expect(mocks.readObject).not.toHaveReturned()
-    expect(mocks.copyObject).not.toHaveReturned()
-    expect(mocks.deleteObject).not.toHaveReturned()
+    expect(mocks.copyObject).not.toHaveBeenCalled()
+    expect(mocks.deleteObject).not.toHaveBeenCalled()
   })
 
   test('should return 500 in case of unknown error', async () => {
@@ -84,7 +84,7 @@ describe('Parse products CSV', () => {
     expect(result.statusCode).toBe(500)
     expect(JSON.parse(result.body)).toMatchObject({ message: error.message })
     expect(mocks.readObject).not.toHaveReturned()
-    expect(mocks.copyObject).not.toHaveReturned()
-    expect(mocks.deleteObject).not.toHaveReturned()
+    expect(mocks.copyObject).not.toHaveBeenCalled()
+    expect(mocks.deleteObject).not.toHaveBeenCalled()
   })
 })

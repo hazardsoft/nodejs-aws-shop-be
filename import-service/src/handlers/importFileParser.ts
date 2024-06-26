@@ -29,16 +29,14 @@ export const handler = async (event: S3Event): Promise<APIGatewayProxyResult> =>
       const { bucket, object } = record.s3
       const stream = await readObject({ bucket: bucket.name, key: object.key })
       const products = await parseProducts(stream)
-      console.log('parsed products:', products)
+      console.log('parsed chunk of products:', products)
       allProducts.push(...products)
 
-      console.log('copying object')
       // once parsed move file from /uploaded to /parsed
       await copyObject(
         { bucket: bucket.name, key: object.key },
         { bucket: bucket.name, key: `${object.key.replace('uploaded', 'parsed')}` }
       )
-      console.log('deleting object')
       // delete original file from /uploaded
       await deleteObject({ bucket: bucket.name, key: object.key })
     }

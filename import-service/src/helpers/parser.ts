@@ -1,12 +1,13 @@
 import type { Readable } from 'node:stream'
-import csv from 'csv-parser'
+import { parse, type CastingContext } from 'csv-parse'
 import type { ProductInput } from '@/types.js'
 
-export const parse = async (stream: Readable): Promise<ProductInput[]> => {
+export const parseProducts = async (stream: Readable): Promise<ProductInput[]> => {
   const data = stream.pipe(
-    csv({
-      mapValues: ({ header, value }) => {
-        switch (header) {
+    parse({
+      columns: true,
+      cast: (value: string, context: CastingContext) => {
+        switch (context.column) {
           case 'price':
             return parseFloat(value)
           case 'count':

@@ -7,7 +7,7 @@ import { createResponse } from '@/helpers/response.js'
 import { FailedToReadObject } from '@/errors.js'
 import { read } from '@/helpers/bucket.js'
 import type { ProductInput } from '@/types.js'
-import { parse } from '@/helpers/parser.js'
+import { parseProducts } from '@/helpers/parser.js'
 
 type S3Bucket = Pick<LibS3EventRecord['s3']['bucket'], 'name'>
 type S3Object = Pick<LibS3EventRecord['s3']['object'], 'key'>
@@ -28,7 +28,7 @@ export const handler = async (event: S3Event): Promise<APIGatewayProxyResult> =>
     for await (const record of event.Records) {
       const { bucket, object } = record.s3
       const stream = await read(bucket.name, object.key)
-      products.push(...(await parse(stream)))
+      products.push(...(await parseProducts(stream)))
     }
     return createResponse({
       statusCode: 200,

@@ -28,6 +28,9 @@ describe('Get presigned url for CSV file upload tests', () => {
 
     expect(result.statusCode).toBe(200)
     expect(result.body).toBe(presignedUrl)
+    expect(result.headers).toMatchObject({
+      'Content-Type': 'text/plain'
+    })
     expect(mocks.generatePresignUrl).toHaveBeenCalledOnce()
     expect(mocks.generatePresignUrl).toHaveBeenCalledWith(config.bucketName, key)
     expect(mocks.generatePresignUrl).toHaveLastReturnedWith(presignedUrl)

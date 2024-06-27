@@ -22,7 +22,10 @@ export const handler = async (
     const presignedUrl = await generatePresignUrl(BUCKET_NAME, `uploaded/${filename}`)
     return createResponse({
       statusCode: 200,
-      body: presignedUrl
+      body: presignedUrl,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
     })
   } catch (e) {
     if (e instanceof FilenameInvalidInput) {

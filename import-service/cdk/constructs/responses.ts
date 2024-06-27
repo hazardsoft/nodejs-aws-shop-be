@@ -3,7 +3,6 @@ import { Construct } from 'constructs'
 
 interface ImportServiceResponsesProps {
   models: {
-    getPresignedUrl: IModel
     presignedUrl: IModel
     error: IModel
   }
@@ -23,7 +22,7 @@ export class ImportServiceResponses extends Construct {
       {
         statusCode: '200',
         responseModels: {
-          'application/json': props.models.presignedUrl
+          'text/plain': props.models.presignedUrl
         }
       },
       {

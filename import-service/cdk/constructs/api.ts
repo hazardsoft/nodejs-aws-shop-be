@@ -35,14 +35,9 @@ export class ImportServiceApi extends Construct {
       ImportServiceGatewayResponses.options.BAD_REQUEST_BODY
     )
 
-    const { getPresignedUrl, presignedUrl, error } = new ImportServiceModels(
-      this,
-      'ImportServiceModels',
-      { api }
-    )
+    const { presignedUrl, error } = new ImportServiceModels(this, 'ImportServiceModels', { api })
     const apiResponses = new ImportServiceResponses(this, 'ImportServiceResponses', {
       models: {
-        getPresignedUrl,
         presignedUrl,
         error
       }
@@ -61,9 +56,6 @@ export class ImportServiceApi extends Construct {
     // Adds "POST" method
     importEndpoint.addMethod('GET', getPresignedUrlIntegration, {
       methodResponses: apiResponses.getPresignedUrlResponses,
-      requestModels: {
-        'application/json': getPresignedUrl
-      },
       requestParameters: {
         'method.request.querystring.name': true
       },

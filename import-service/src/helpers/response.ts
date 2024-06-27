@@ -8,11 +8,11 @@ const corsHeaders: Headers = {
 }
 
 const createResponse = (
-  payload: Pick<APIGatewayProxyResult, 'statusCode' | 'body'>
+  payload: Pick<APIGatewayProxyResult, 'statusCode' | 'body' | 'headers'>
 ): APIGatewayProxyResult => {
   return {
     ...payload,
-    headers: corsHeaders
+    headers: payload.headers ? { ...payload.headers, ...corsHeaders } : corsHeaders
   }
 }
 

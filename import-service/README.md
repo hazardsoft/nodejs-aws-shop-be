@@ -27,10 +27,18 @@ Product Service API is available at https://sjova0c3h3.execute-api.eu-central-1.
 1. To get presigned url for file upload use GET https://sjova0c3h3.execute-api.eu-central-1.amazonaws.com/prod/import?name={filename}, where {filename} is a valid CSV file name, e.g. `products.csv`;
 2. To upload CSV file with products use PUT {presigned_url}, where {presegned_url} is returned in p.1 (performed by FE application).
 
+### CloudWatch
+
+Result of import api can be seen in CloudWatch only (temporarily).
+1. A user uploads CSV file with products via FE application ![website-upload.png](./images/website-upload.png)
+2. Opens CloudWatch Logs in AWS ![cloudwatch-logs.png](./images/cloudwatch-logs.png)
+3. To reach the goal presigned url is created ![cloudwatch-get-presigned-url.png](./images/cloudwatch-get-presigned-url.png)
+4. Presigned url is used to upload a CSV file to S3 bucket, once uploaded S3 notifies responsible Lambda and uploaded object is parsed to the products ![cloudwatch-parse-products.png](./images/cloudwatch-parse-products.png)
+
 ### OpenAPI Documentation
 
 Use [Import-prod-oas30.json](./docs/Import-prod-oas30.json) file (exported from `prod` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)
-![Imported openapi.yaml file](images/swagger.png)
+![Imported openapi.yaml file](images/openapi-import.png)
 
 ### Postman
 

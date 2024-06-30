@@ -39,10 +39,7 @@ describe('Parse products CSV', () => {
   test('should parse products CSV', async () => {
     mocks.readObject.mockResolvedValueOnce(productsStream)
 
-    const result = await handler(event)
-
-    expect(result.statusCode).toBe(200)
-    expect(JSON.parse(result.body)).toMatchObject({ message: 'ok' })
+    await handler(event)
 
     expect(mocks.readObject).toHaveBeenCalledOnce()
     expect(mocks.readObject).toHaveBeenCalledWith({ bucket: config.bucketName, key })
@@ -60,29 +57,33 @@ describe('Parse products CSV', () => {
     expect(mocks.deleteObject).toHaveReturned()
   })
 
-  test('should return 404 if failed to read s3 object', async () => {
+  test('should throw FailedToReadObject error if failed to read s3 object', async () => {
     const key = `uploaded/${config.fileName}`
 
     const error = new FailedToReadObject(key)
     mocks.readObject.mockRejectedValueOnce(error)
 
-    const result = await handler(event)
+    try {
+      await handler(event)
+    } catch (err) {
+      expect(err).toStrictEqual(error)
+    }
 
-    expect(result.statusCode).toBe(404)
-    expect(JSON.parse(result.body)).toMatchObject({ message: error.message })
     expect(mocks.readObject).not.toHaveReturned()
     expect(mocks.copyObject).not.toHaveBeenCalled()
     expect(mocks.deleteObject).not.toHaveBeenCalled()
   })
 
-  test('should return 500 in case of unknown error', async () => {
+  test('should throw Error in case of unknown error', async () => {
     const error = new Error('Internal server error')
     mocks.readObject.mockRejectedValueOnce(error)
 
-    const result = await handler(event)
+    try {
+      await handler(event)
+    } catch (err) {
+      expect(err).toStrictEqual(error)
+    }
 
-    expect(result.statusCode).toBe(500)
-    expect(JSON.parse(result.body)).toMatchObject({ message: error.message })
     expect(mocks.readObject).not.toHaveReturned()
     expect(mocks.copyObject).not.toHaveBeenCalled()
     expect(mocks.deleteObject).not.toHaveBeenCalled()

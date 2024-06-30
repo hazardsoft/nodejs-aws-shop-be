@@ -2,9 +2,11 @@
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ["task-4", "main"]
+    branches: ["main"]
+    paths:
+      - 'import-service/docs/**'
+      - 'product-service/docs/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -31,13 +33,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Upload artifact
+
+      - name: Prepare services OpenAPI docs
+        run: |
+          mkdir docs
+          cp -r import-service/docs docs/import
+          cp -r product-service/docs docs/products
+
+      - name: Upload Product Service OpenAPI docs
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: './product-service/docs'
+          path: 'docs'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "dc6718a5-4a61-43e9-ab0a-12b0c43c92bf",
+		"name": "RS AWS: Import Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2095558",
+		"_collection_link": "https://winter-desert-623042.postman.co/workspace/Studio-Client-Dev-Workspace~8b888a75-e976-48ff-b999-c3159180427b/collection/2095558-dc6718a5-4a61-43e9-ab0a-12b0c43c92bf?action=share&source=collection_link&creator=2095558"
+	},
+	"item": [
+		{
+			"name": "Upload CSV (200)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "postman-cloud:///1ef33951-fe30-44d0-9b6c-eefe094d263c"
+					}
+				},
+				"url": {
+					"raw": "{{presigned-url}}",
+					"host": [
+						"{{presigned-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Presigned Url (200)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const presignedUrl = pm.response.text()",
+							"pm.collectionVariables.set(\"presigned-url\", presignedUrl);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/import?name=products.csv",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"import"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "products.csv"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api-url",
+			"value": "https://sjova0c3h3.execute-api.eu-central-1.amazonaws.com/prod",
+			"type": "string"
+		},
+		{
+			"key": "presigned-url",
+			"value": ""
+		}
+	]
+}

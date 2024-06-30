@@ -49,10 +49,10 @@ Product Service API is available at https://hp8wur0lsa.execute-api.eu-central-1.
 
 N.B. Previously used mock data from [products.json](src/data/products.json) is replaced with read/write operations from/to AWS DynamoDB
 
-### Swagger Documentation
+### OpenAPI Documentation
 
 Use [Products-prod-oas30.json](./docs/Products-prod-oas30.json) file (exported from `prod` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)
-![Imported openapi.yaml file](images/swagger.png)
+![Imported openapi.yaml file](images/openapi-products.png)
 
 ### Postman
 

@@ -3,14 +3,14 @@ import type { Construct } from 'constructs'
 import { ProductServiceHandlers } from './constructs/handlers.js'
 import { ProductServiceApi } from './constructs/api.js'
 import { ProductServiceDB } from './constructs/db.js'
+import { ProductServiceQueue } from './constructs/queue.js'
 class ProductService extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id)
 
-    const { getManyProducts, getOneProduct, createOneProduct } = new ProductServiceHandlers(
-      this,
-      'ProductServiceHandlers'
-    )
+    const { getManyProducts, getOneProduct, createOneProduct, catalogBatchProcess } =
+      new ProductServiceHandlers(this, 'ProductServiceHandlers')
+
     new ProductServiceApi(this, 'ProductServiceApi', {
       handlers: {
         getManyProducts,
@@ -25,6 +25,9 @@ class ProductService extends Stack {
         createOneProduct
       }
     })
+
+    const queue = new ProductServiceQueue(this, 'ProductServiceQueue')
+    queue.addTrigger(catalogBatchProcess)
   }
 }
 

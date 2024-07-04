@@ -1,12 +1,13 @@
 import { Template } from 'aws-cdk-lib/assertions'
 import { describe, test } from 'vitest'
 import { productService } from '../../cdk/index.js'
+import { queue } from '../../cdk/config.js'
 
 describe('Test AWS CDK stack', () => {
   const template = Template.fromStack(productService)
 
   test('Lambda handlers are created', () => {
-    template.resourceCountIs('AWS::Lambda::Function', 3)
+    template.resourceCountIs('AWS::Lambda::Function', 4)
     template.hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'getProductsList.handler'
     })
@@ -15,6 +16,22 @@ describe('Test AWS CDK stack', () => {
     })
     template.hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'createProduct.handler'
+    })
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Handler: 'catalogBatchProcess.handler'
+    })
+  })
+
+  test('Queue is created', () => {
+    template.resourceCountIs('AWS::SQS::Queue', 1)
+    template.hasResourceProperties('AWS::SQS::Queue', {
+      QueueName: queue.name
+    })
+
+    template.resourceCountIs('AWS::Lambda::EventSourceMapping', 1)
+    template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      BatchSize: queue.batchSize,
+      MaximumBatchingWindowInSeconds: queue.maxBatchingWindowInSeconds
     })
   })
 
@@ -26,7 +43,6 @@ describe('Test AWS CDK stack', () => {
     template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       TableName: 'Stocks'
     })
-   
   })
 
   test('REST API is created', () => {

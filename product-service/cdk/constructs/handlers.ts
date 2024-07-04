@@ -1,11 +1,12 @@
 import { Function as LambdaFunction, Runtime, Code, type IFunction } from 'aws-cdk-lib/aws-lambda'
-import { env } from 'cdk/config'
+import { env } from '../config.js'
 import { Construct } from 'constructs'
 
 export class ProductServiceHandlers extends Construct {
   public readonly getManyProducts: IFunction
   public readonly getOneProduct: IFunction
   public readonly createOneProduct: IFunction
+  public readonly catalogBatchProcess: IFunction
 
   constructor(scope: Construct, id: string) {
     super(scope, id)
@@ -29,6 +30,12 @@ export class ProductServiceHandlers extends Construct {
       code: Code.fromAsset('./dist/handlers/createProduct'),
       handler: 'createProduct.handler',
       environment: env
+    })
+
+    this.catalogBatchProcess = new LambdaFunction(this, 'CatalogBatchProcess', {
+      runtime: Runtime.NODEJS_20_X,
+      code: Code.fromAsset('./dist/handlers/catalogBatchProcess'),
+      handler: 'catalogBatchProcess.handler'
     })
   }
 }

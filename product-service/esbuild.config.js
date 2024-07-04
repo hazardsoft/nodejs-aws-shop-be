@@ -48,3 +48,8 @@ await esbuild.build({
   outfile: 'dist/handlers/createProduct/createProduct.mjs',
   ...lambdaOptions
 })
+await esbuild.build({
+  entryPoints: ['src/handlers/catalogBatchProcess.ts'],
+  outfile: 'dist/handlers/catalogBatchProcess/catalogBatchProcess.mjs',
+  ...lambdaOptions
+})

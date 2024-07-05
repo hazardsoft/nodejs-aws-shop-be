@@ -1,7 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions'
 import { describe, test } from 'vitest'
 import { productService } from '../../cdk/index.js'
-import { queue } from '../../cdk/config.js'
+import { config } from '../../cdk/config.js'
 
 describe('Test AWS CDK stack', () => {
   const template = Template.fromStack(productService)
@@ -25,13 +25,13 @@ describe('Test AWS CDK stack', () => {
   test('Queue is created', () => {
     template.resourceCountIs('AWS::SQS::Queue', 1)
     template.hasResourceProperties('AWS::SQS::Queue', {
-      QueueName: queue.name
+      QueueName: config.queue.name
     })
 
     template.resourceCountIs('AWS::Lambda::EventSourceMapping', 1)
     template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      BatchSize: queue.batchSize,
-      MaximumBatchingWindowInSeconds: queue.maxBatchingWindowInSeconds
+      BatchSize: config.queue.batchSize,
+      MaximumBatchingWindowInSeconds: config.queue.maxBatchingWindowInSeconds
     })
   })
 

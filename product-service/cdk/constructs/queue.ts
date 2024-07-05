@@ -27,7 +27,6 @@ export class ProductServiceQueue extends Construct {
   }
 
   addTrigger(handler: IFunction): void {
-    this.queue.grantConsumeMessages(handler)
     handler.addEventSource(
       new SqsEventSource(this.queue, {
         batchSize: config.queue.batchSize,

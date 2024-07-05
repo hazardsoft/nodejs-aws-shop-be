@@ -8,7 +8,10 @@ import {
   TransactWriteCommand,
   type BatchGetCommandOutput
 } from '@aws-sdk/lib-dynamodb'
-import { v4 as uuidv4 } from 'uuid'
+import {
+  createOneProductTransaction,
+  createManyProductsTransaction
+} from '@/helpers/transaction.js'
 
 type DBScanOutput<T> = Omit<ScanCommandOutput, 'Items'> & { Items?: T[] }
 type DBBatchGetItemOutput<T> = Omit<BatchGetCommandOutput, 'Responses'> & {
@@ -95,41 +98,31 @@ export const getProductById = async (id: ProductId): Promise<AvailableProduct> =
   return availableProduct
 }
 
-export const createProduct = async (input: ProductInput) => {
-  const id = uuidv4()
+export const createProduct = async (input: ProductInput): Promise<AvailableProduct> => {
+  const { availableProduct, transactItems } = createOneProductTransaction(input)
 
-  const command = new TransactWriteCommand({
-    TransactItems: [
-      {
-        Put: {
-          TableName: productsTableName,
-          Item: {
-            id,
-            ...input
-          }
-        }
-      },
-      {
-        Put: {
-          TableName: stocksTableName,
-          Item: {
-            product_id: id,
-            count: input.count
-          }
-        }
-      }
-    ],
-    ReturnConsumedCapacity: 'TOTAL'
-  })
+  const command = new TransactWriteCommand({ TransactItems: transactItems })
 
   const response = await docClient.send(command)
   if (response.$metadata.httpStatusCode !== 200) {
     throw new ProductCreationFail()
   }
 
-  const availableProduct: AvailableProduct = {
-    id,
-    ...input
-  }
   return availableProduct
+}
+
+export const createProductsInBatch = async (
+  products: ProductInput[]
+): Promise<AvailableProduct[]> => {
+  const { availableProducts, transactItems } = createManyProductsTransaction(products)
+
+  const command = new TransactWriteCommand({
+    TransactItems: transactItems
+  })
+
+  const response = await docClient.send(command)
+  if (response.$metadata.httpStatusCode !== 200) {
+    throw new ProductCreationFail()
+  }
+  return availableProducts
 }

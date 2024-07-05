@@ -6,7 +6,7 @@ export const config = {
   queue: {
     name: 'catalogItemsQueue',
     retentionPeriodInDays: 1,
-    receiveMessageWaitTimeInSeconds: 10,
+    receiveMessageWaitTimeInSeconds: 0,
     batchSize: 5,
     maxBatchingWindowInSeconds: 10
   },

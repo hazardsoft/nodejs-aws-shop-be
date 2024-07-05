@@ -1,4 +1,4 @@
-import { Duration, RemovalPolicy } from 'aws-cdk-lib'
+import { CfnOutput, Duration, RemovalPolicy } from 'aws-cdk-lib'
 import type { IFunction } from 'aws-cdk-lib/aws-lambda'
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs'
@@ -17,6 +17,12 @@ export class ProductServiceQueue extends Construct {
       receiveMessageWaitTime: Duration.seconds(queue.receiveMessageWaitTimeInSeconds),
       encryption: QueueEncryption.SQS_MANAGED,
       removalPolicy: RemovalPolicy.DESTROY
+    })
+
+    new CfnOutput(this, 'ProductsQueueArn', {
+      value: this.queue.queueArn,
+      description: 'ARN of Products SQS',
+      exportName: 'ProductsQueueArn'
     })
   }
 

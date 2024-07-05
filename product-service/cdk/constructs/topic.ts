@@ -1,5 +1,5 @@
 import type { IFunction } from 'aws-cdk-lib/aws-lambda'
-import { Topic } from 'aws-cdk-lib/aws-sns'
+import { SubscriptionFilter, Topic } from 'aws-cdk-lib/aws-sns'
 import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions'
 import { Construct } from 'constructs'
 
@@ -19,6 +19,16 @@ export class ProductServiceTopic extends Construct {
 
   addEmailSubscription(email: string) {
     this.topic.addSubscription(new EmailSubscription(email))
+  }
+
+  addLowStockEmailSubscription(email: string) {
+    this.topic.addSubscription(
+      new EmailSubscription(email, {
+        filterPolicy: {
+          stockStatus: SubscriptionFilter.stringFilter({ allowlist: ['some_out_of_stock'] })
+        }
+      })
+    )
   }
 
   addNotifier(handler: IFunction) {

@@ -3,7 +3,7 @@ import { validateProduct } from '@/helpers/validate.js'
 import { createProductsInBatch } from '@/repository.js'
 import type { AvailableProduct, ProductInput } from '@/types.js'
 import { sendNotification } from '@/topic.js'
-import { getEmail } from '@/helpers/email.js'
+import { getEmail, getEmailAttributes } from '@/helpers/email.js'
 
 type Event = Omit<SQSEvent, 'Records'> & { Records: Pick<SQSRecord, 'body'>[] }
 
@@ -24,9 +24,7 @@ export const handler = async (event: Event): Promise<AvailableProduct[]> => {
     const availableProducts = await createProductsInBatch(products)
     console.log('available products created in batch:', availableProducts)
 
-    const notification = getEmail(availableProducts)
-    await sendNotification(topicArn, notification.subject, notification.body)
-    console.log('notification sent')
+    await sendMessageToTopic(availableProducts)
 
     return availableProducts
   } catch (err) {
@@ -41,4 +39,11 @@ const processMessage = (message: string): ProductInput | null => {
     console.error('failed to validate product:', validationResult.issues)
   }
   return validationResult.success ? validationResult.data : null
+}
+
+const sendMessageToTopic = async (products: AvailableProduct[]) => {
+  const notification = getEmail(products)
+  const attributes = getEmailAttributes(products)
+  await sendNotification(topicArn, notification.subject, notification.body, attributes)
+  console.log('notification sent')
 }

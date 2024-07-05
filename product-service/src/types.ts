@@ -77,3 +77,11 @@ export interface ProductError {
 }
 
 export type ProductResponse = Pick<APIGatewayProxyResult, 'statusCode' | 'body' | 'headers'>
+
+export type EmailAttributesKeys = 'stockStatus'
+export type EmailAttributes = Record<EmailAttributesKeys, string>
+
+export const enum StockStatus {
+  ALL_IN_STOCK = 'all_in_stock',
+  SOME_OUT_OF_STOCK = 'some_out_of_stock'
+}

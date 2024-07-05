@@ -14,6 +14,7 @@ class ProductService extends Stack {
       displayName: config.topic.name
     })
     topicConstruct.addEmailSubscription(config.topic.email)
+    topicConstruct.addLowStockEmailSubscription(config.topic.lowStockEmail)
 
     const { getManyProducts, getOneProduct, createOneProduct, catalogBatchProcess } =
       new ProductServiceHandlers(this, 'ProductServiceHandlers', {

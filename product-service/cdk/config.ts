@@ -12,6 +12,7 @@ export const config = {
   },
   topic: {
     name: 'createProductTopic',
-    email: process.env.TOPIC_SUBSCRIPTION_EMAIL ?? ''
+    email: process.env.TOPIC_SUBSCRIPTION_EMAIL ?? '',
+    lowStockEmail: process.env.TOPIC_SUBSCRIPTION_EMAIL_LOW_STOCK ?? ''
   }
 }

@@ -4,7 +4,7 @@ import { handler } from '@/handlers/catalogBatchProcess.js'
 
 import { ProductCreationFail } from '@/errors.js'
 import { config, manyProductsInput, sqsEvent } from '../setup.js'
-import { getEmail } from '@/helpers/email.js'
+import { getEmail, getEmailAttributes } from '@/helpers/email.js'
 
 const mocks = vi.hoisted(() => {
   return {
@@ -36,11 +36,13 @@ describe('catalogBatchProcess handler tests', () => {
     expect(mocks.createProductsInBatch).toHaveReturned()
 
     const notification = getEmail(availableProducts)
+    const attributes = getEmailAttributes(availableProducts)
     expect(mocks.sendNotification).toHaveBeenCalledOnce()
     expect(mocks.sendNotification).toHaveBeenCalledWith(
       config.topicArn,
       notification.subject,
-      notification.body
+      notification.body,
+      attributes
     )
     expect(mocks.sendNotification).toHaveReturned()
   })

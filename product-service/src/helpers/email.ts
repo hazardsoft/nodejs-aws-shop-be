@@ -1,4 +1,4 @@
-import type { AvailableProduct } from '@/types'
+import { StockStatus, type AvailableProduct, type EmailAttributes } from '@/types.js'
 
 interface Email {
   subject: string
@@ -28,4 +28,13 @@ const getProductDescription = (index: number, product: AvailableProduct) => {
   parts.push(`count: ${product.count}`)
   parts.push(`price: ${product.price}`)
   return parts.join(', ')
+}
+
+export const getEmailAttributes = (products: AvailableProduct[]): EmailAttributes => {
+  const isProductWithZeroStock = products.some(
+    (product) => product.count === 0 || product.count === undefined
+  )
+  return {
+    stockStatus: isProductWithZeroStock ? StockStatus.SOME_OUT_OF_STOCK : StockStatus.ALL_IN_STOCK
+  }
 }

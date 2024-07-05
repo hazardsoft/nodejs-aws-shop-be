@@ -47,7 +47,7 @@ describe('Test AWS CDK stack', () => {
       DisplayName: config.topic.name
     })
 
-    template.resourceCountIs('AWS::SNS::Subscription', 1)
+    template.resourceCountIs('AWS::SNS::Subscription', 2)
     template.hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'email'
     })

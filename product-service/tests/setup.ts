@@ -4,7 +4,8 @@ import data from '@/data/products.json'
 
 export const config = {
   topicArn: 'testTopicArn',
-  email: 'test@gmail.com'
+  email: 'test@gmail.com',
+  emailLowStock: 'test@outlook.com'
 }
 
 export const manyProductsInput: ProductInput[] = data.products.map((product) => {

@@ -9,6 +9,7 @@ interface ProductServiceDBProps {
     getOneProduct: IFunction
     getManyProducts: IFunction
     createOneProduct: IFunction
+    createManyProducts: IFunction
   }
 }
 
@@ -40,6 +41,10 @@ export class ProductServiceDB extends Construct {
     // granular permission to create a product
     this.products.grant(props.handlers.createOneProduct, 'dynamodb:PutItem')
     this.stocks.grant(props.handlers.createOneProduct, 'dynamodb:PutItem')
+
+    // granular permission to create products in batch
+    this.products.grant(props.handlers.createManyProducts, 'dynamodb:PutItem')
+    this.stocks.grant(props.handlers.createManyProducts, 'dynamodb:PutItem')
 
     // granular permission to get all products
     this.products.grant(props.handlers.getManyProducts, 'dynamodb:Scan')

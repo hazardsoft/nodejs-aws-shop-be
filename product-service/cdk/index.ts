@@ -22,7 +22,8 @@ class ProductService extends Stack {
       handlers: {
         getManyProducts,
         getOneProduct,
-        createOneProduct
+        createOneProduct,
+        createManyProducts: catalogBatchProcess
       }
     })
 

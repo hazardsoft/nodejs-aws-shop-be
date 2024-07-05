@@ -28,5 +28,8 @@ export const handler = async (event: Event): Promise<AvailableProduct[]> => {
 
 const processMessage = (message: string): ProductInput | null => {
   const validationResult = validateProduct(JSON.parse(message))
+  if (!validationResult.success) {
+    console.error('failed to validate product:', validationResult.issues)
+  }
   return validationResult.success ? validationResult.data : null
 }

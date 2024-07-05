@@ -2,6 +2,11 @@ import type { SQSEvent as LibSQSEvent, SQSRecord as LibSQSRecord } from 'aws-lam
 import type { ProductInput } from '@/types.js'
 import data from '@/data/products.json'
 
+export const config = {
+  topicArn: 'testTopicArn',
+  email: 'test@gmail.com'
+}
+
 export const manyProductsInput: ProductInput[] = data.products.map((product) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id, ...input } = product

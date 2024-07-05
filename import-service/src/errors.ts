@@ -1,4 +1,4 @@
-import type {ValidationIssue} from "@/helpers/validate.js"
+import type { ValidationIssue } from '@/helpers/validate.js'
 
 export class FilenameInvalidInput extends Error {
   constructor(public readonly issues?: ValidationIssue[]) {
@@ -21,5 +21,17 @@ export class FailedToCopyObject extends Error {
 export class FailedToDeleteObject extends Error {
   constructor(id: string) {
     super(`Failed to delete object ${id}`)
+  }
+}
+
+export class FailedToSendMessage extends Error {
+  constructor(message: string) {
+    super(`Failed to send message ${message}`)
+  }
+}
+
+export class FailedToSendMessagesInBatch extends Error {
+  constructor() {
+    super('Failed to send messages in batch')
   }
 }

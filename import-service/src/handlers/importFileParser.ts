@@ -2,6 +2,7 @@ import type { S3Event as LibS3Event, S3EventRecord as LibS3EventRecord } from 'a
 import { copyObject, deleteObject, readObject } from '@/helpers/bucket.js'
 import type { ProductInput } from '@/types.js'
 import { parseProducts } from '@/helpers/parser.js'
+import { sendMessagesInBatch } from '@/helpers/queue.js'
 
 type S3Bucket = Pick<LibS3EventRecord['s3']['bucket'], 'name'>
 type S3Object = Pick<LibS3EventRecord['s3']['object'], 'key'>
@@ -35,6 +36,8 @@ export const handler = async (event: S3Event): Promise<void> => {
       await deleteObject({ bucket: bucket.name, key: object.key })
     }
     console.log('all parsed products:', allProducts)
+    await sendMessagesInBatch(allProducts.map((product) => JSON.stringify(product)))
+    console.log('all messages sent')
   } catch (err) {
     console.error('error occured while parsing products', err)
   }

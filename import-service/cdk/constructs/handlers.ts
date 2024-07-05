@@ -3,6 +3,7 @@ import { Construct } from 'constructs'
 
 interface ImportServiceHandlersProps {
   bucketName: string
+  queueUrl: string
 }
 
 export class ImportServiceHandlers extends Construct {
@@ -12,21 +13,22 @@ export class ImportServiceHandlers extends Construct {
   constructor(scope: Construct, id: string, props: ImportServiceHandlersProps) {
     super(scope, id)
 
-    const env = {
-      BUCKET_NAME: props.bucketName
-    }
-
     this.getPresignedUrl = new LambdaFunction(this, 'GetPresignedUrl', {
       runtime: Runtime.NODEJS_20_X,
       code: Code.fromAsset('./dist/handlers/importProductsFile'),
       handler: 'importProductsFile.handler',
-      environment: env
+      environment: {
+        BUCKET_NAME: props.bucketName
+      }
     })
 
     this.parseProducts = new LambdaFunction(this, 'ParseProducts', {
       runtime: Runtime.NODEJS_20_X,
       code: Code.fromAsset('./dist/handlers/importFileParser'),
-      handler: 'importFileParser.handler'
+      handler: 'importFileParser.handler',
+      environment: {
+        PRODUCTS_QUEUE_URL: props.queueUrl
+      }
     })
   }
 }

@@ -22,7 +22,7 @@ describe('Test AWS CDK stack', () => {
     })
   })
 
-  test('Queue is created', () => {
+  test('SQS is created', () => {
     template.resourceCountIs('AWS::SQS::Queue', 1)
     template.hasResourceProperties('AWS::SQS::Queue', {
       QueueName: config.queue.name
@@ -32,6 +32,24 @@ describe('Test AWS CDK stack', () => {
     template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       BatchSize: config.queue.batchSize,
       MaximumBatchingWindowInSeconds: config.queue.maxBatchingWindowInSeconds
+    })
+
+    template.hasOutput('*', {
+      Export: {
+        Name: 'ProductsQueueArn'
+      }
+    })
+  })
+
+  test('SNS is created', () => {
+    template.resourceCountIs('AWS::SNS::Topic', 1)
+    template.hasResourceProperties('AWS::SNS::Topic', {
+      DisplayName: config.topic.name
+    })
+
+    template.resourceCountIs('AWS::SNS::Subscription', 1)
+    template.hasResourceProperties('AWS::SNS::Subscription', {
+      Protocol: 'email'
     })
   })
 

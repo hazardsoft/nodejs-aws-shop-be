@@ -3,6 +3,7 @@ import { validateProduct } from '@/helpers/validate.js'
 import { createProductsInBatch } from '@/repository.js'
 import type { AvailableProduct, ProductInput } from '@/types.js'
 import { sendNotification } from '@/topic.js'
+import { getEmail } from '@/helpers/email.js'
 
 type Event = Omit<SQSEvent, 'Records'> & { Records: Pick<SQSRecord, 'body'>[] }
 
@@ -23,10 +24,7 @@ export const handler = async (event: Event): Promise<AvailableProduct[]> => {
     const availableProducts = await createProductsInBatch(products)
     console.log('available products created in batch:', availableProducts)
 
-    const notification = {
-      subject: 'Products added',
-      body: `Products added: ${availableProducts.map((product) => JSON.stringify(product)).join('; ')}`
-    }
+    const notification = getEmail(availableProducts)
     await sendNotification(topicArn, notification.subject, notification.body)
     console.log('notification sent')
 

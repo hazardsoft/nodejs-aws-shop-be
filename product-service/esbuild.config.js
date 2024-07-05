@@ -12,7 +12,12 @@ const options = {
 
 const lambdaOptions = {
   ...options,
-  external: ['@aws-sdk/client-dynamodb', '@aws-sdk/client-lambda', '@aws-sdk/lib-dynamodb']
+  external: [
+    '@aws-sdk/client-dynamodb',
+    '@aws-sdk/client-lambda',
+    '@aws-sdk/lib-dynamodb',
+    '@aws-sdk/client-sns'
+  ]
 }
 
 const utilityOptions = {

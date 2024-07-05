@@ -23,3 +23,9 @@ export class ProductCreationFail extends Error {
     super('Failed to create product')
   }
 }
+
+export class FailToSendNotification extends Error {
+  constructor() {
+    super('Failed to send notification')
+  }
+}

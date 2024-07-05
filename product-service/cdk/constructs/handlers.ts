@@ -1,6 +1,11 @@
 import { Function as LambdaFunction, Runtime, Code, type IFunction } from 'aws-cdk-lib/aws-lambda'
-import { env } from '../config.js'
 import { Construct } from 'constructs'
+
+interface ProductServiceHandlersProps {
+  productsTableName: string
+  stocksTableName: string
+  topicArn: string
+}
 
 export class ProductServiceHandlers extends Construct {
   public readonly getManyProducts: IFunction
@@ -8,8 +13,13 @@ export class ProductServiceHandlers extends Construct {
   public readonly createOneProduct: IFunction
   public readonly catalogBatchProcess: IFunction
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: ProductServiceHandlersProps) {
     super(scope, id)
+
+    const env = {
+      PRODUCTS_TABLE_NAME: props.productsTableName,
+      STOCKS_TABLE_NAME: props.stocksTableName
+    }
 
     this.getManyProducts = new LambdaFunction(this, 'GetAllProducts', {
       runtime: Runtime.NODEJS_20_X,
@@ -35,7 +45,10 @@ export class ProductServiceHandlers extends Construct {
     this.catalogBatchProcess = new LambdaFunction(this, 'CatalogBatchProcess', {
       runtime: Runtime.NODEJS_20_X,
       code: Code.fromAsset('./dist/handlers/catalogBatchProcess'),
-      handler: 'catalogBatchProcess.handler'
+      handler: 'catalogBatchProcess.handler',
+      environment: {
+        TOPIC_ARN: props.topicArn
+      }
     })
   }
 }

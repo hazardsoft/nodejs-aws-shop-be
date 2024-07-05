@@ -3,17 +3,24 @@ import data from '@/data/products.json'
 import { handler } from '@/handlers/catalogBatchProcess.js'
 
 import { ProductCreationFail } from '@/errors.js'
-import { manyProductsInput, sqsEvent } from '../setup.js'
+import { config, manyProductsInput, sqsEvent } from '../setup.js'
+import { getEmail } from '@/helpers/email.js'
 
 const mocks = vi.hoisted(() => {
   return {
-    createProductsInBatch: vi.fn()
+    createProductsInBatch: vi.fn(),
+    sendNotification: vi.fn()
   }
 })
 
 vi.mock('@/repository.js', () => {
   return {
     createProductsInBatch: mocks.createProductsInBatch
+  }
+})
+vi.mock('@/topic.js', () => {
+  return {
+    sendNotification: mocks.sendNotification
   }
 })
 
@@ -27,6 +34,15 @@ describe('catalogBatchProcess handler tests', () => {
     expect(mocks.createProductsInBatch).toHaveBeenCalledOnce()
     expect(mocks.createProductsInBatch).toHaveBeenCalledWith(manyProductsInput)
     expect(mocks.createProductsInBatch).toHaveReturned()
+
+    const notification = getEmail(availableProducts)
+    expect(mocks.sendNotification).toHaveBeenCalledOnce()
+    expect(mocks.sendNotification).toHaveBeenCalledWith(
+      config.topicArn,
+      notification.subject,
+      notification.body
+    )
+    expect(mocks.sendNotification).toHaveReturned()
   })
 
   test('should return empty array of available products if creation fails', async () => {
@@ -36,5 +52,7 @@ describe('catalogBatchProcess handler tests', () => {
     expect(availableProducts.length).toBe(0)
     expect(mocks.createProductsInBatch).toHaveBeenCalledOnce()
     expect(mocks.createProductsInBatch).toHaveBeenCalledWith(manyProductsInput)
+
+    expect(mocks.sendNotification).not.toHaveBeenCalled()
   })
 })

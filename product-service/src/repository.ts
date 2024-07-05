@@ -28,6 +28,7 @@ const scan = async <T>(tableName: string): Promise<DBScanOutput<T>> => {
 
 export const getProducts = async (): Promise<AvailableProduct[]> => {
   const products = (await scan<Product>(productsTableName)).Items ?? []
+  if (!products.length) return []
 
   const getStocksCommand = new BatchGetCommand({
     RequestItems: {

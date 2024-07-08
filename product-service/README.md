@@ -24,6 +24,8 @@ Product Service is responsible for retrieving list of products or a product by i
 
 ## Environment
 
+### Populate DynamoDB
+
 NPM script `dynamodb:populate` uses `.env` file in order to access DynamoDB (required for _**remote**_ access only).
 Copy-paste `.env.example` file, rename it to `.env` and fill with values of `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 Credentials can be created with the following steps:
@@ -34,6 +36,12 @@ Credentials can be created with the following steps:
 4. Click on `Create access key` button;
 5. After creation copy values of `Access key` and `Secret access key`;
 6. Once remote DynamoDB is populated delete previously created access key.
+
+### Products Batch Processing
+
+The following env vars are used in AWS CDK stack to configure email notifications sent once processing of products of uploaded CSV file is complete:
+1. `TOPIC_SUBSCRIPTION_EMAIL` - email to send all notifications to;
+2. `TOPIC_SUBSCRIPTION_EMAIL_LOW_STOCK` - another email to send notifications if a batch contains a product with zero stock.
 
 ## Deployment
 
@@ -51,7 +59,7 @@ N.B. Previously used mock data from [products.json](src/data/products.json) is r
 
 ### OpenAPI Documentation
 
-Use [Products-prod-oas30.json](./docs/Products-prod-oas30.json) file (exported from `prod` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)
+Use [Products-prod-oas30.json](./docs/Products-prod.json) file (exported from `prod` stage of AWS API Gateway) and import it at https://editor-next.swagger.io/ (`File` -> `Import File` in the menu, see example usage on the screenshot below)
 ![Imported openapi.yaml file](images/openapi-products.png)
 
 ### Postman

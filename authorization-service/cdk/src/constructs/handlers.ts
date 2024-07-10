@@ -1,3 +1,4 @@
+import { CfnOutput } from 'aws-cdk-lib'
 import { Code, Function as LambdaFunction, Runtime, type IFunction } from 'aws-cdk-lib/aws-lambda'
 import { Construct } from 'constructs'
 
@@ -19,6 +20,12 @@ export class AuthorizationHandlers extends Construct {
         USERNAME: props.username,
         PASSWORD: props.password
       }
+    })
+
+    new CfnOutput(this, 'AuthorizerArn', {
+      description: 'Lambda authorizer (uses Basic token bearer)',
+      value: this.authorizer.functionArn,
+      exportName: 'AuthorizerArn'
     })
   }
 }

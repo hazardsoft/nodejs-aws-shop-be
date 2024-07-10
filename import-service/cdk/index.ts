@@ -13,7 +13,7 @@ class ImportService extends Stack {
     const bucketConstruct = new ImportServiceBucket(this, 'ImportServiceBucket')
     const queueConstruct = new ImportServiceQueue(this, 'ImportServiceQueue')
 
-    const { getPresignedUrl, parseProducts } = new ImportServiceHandlers(
+    const { getPresignedUrl, parseProducts, authorizer } = new ImportServiceHandlers(
       this,
       'ImportServiceHandlers',
       {
@@ -32,7 +32,7 @@ class ImportService extends Stack {
 
     queueConstruct.grantSendMessages(parseProducts)
 
-    new ImportServiceApi(this, 'ImportServiceApi', { handlers: { getPresignedUrl } })
+    new ImportServiceApi(this, 'ImportServiceApi', { handlers: { getPresignedUrl, authorizer } })
   }
 }
 

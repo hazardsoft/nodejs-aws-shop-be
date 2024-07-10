@@ -9,10 +9,12 @@ import { Construct } from 'constructs'
 import { ImportServiceModels } from './models.js'
 import { ImportServiceResponses } from './responses.js'
 import { ImportServiceGatewayResponses } from './apiGatewayResponses.js'
+import { ImportServiceAuthorizer } from './auth.js'
 
 interface ImportServiceApiProps {
   handlers: {
     getPresignedUrl: IFunction
+    authorizer: IFunction
   }
 }
 
@@ -53,6 +55,12 @@ export class ImportServiceApi extends Construct {
       }
     })
 
+    const { authorizer } = new ImportServiceAuthorizer(this, 'ImportServiceAuthorizer', {
+      handlers: {
+        authorizer: props.handlers.authorizer
+      }
+    })
+
     // Adds "POST" method
     importEndpoint.addMethod('GET', getPresignedUrlIntegration, {
       methodResponses: apiResponses.getPresignedUrlResponses,
@@ -62,7 +70,8 @@ export class ImportServiceApi extends Construct {
       requestValidatorOptions: {
         validateRequestBody: false,
         validateRequestParameters: true
-      }
+      },
+      authorizer
     })
   }
 }

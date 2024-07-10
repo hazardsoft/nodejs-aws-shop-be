@@ -1,3 +1,4 @@
+import { Fn } from 'aws-cdk-lib'
 import { Function as LambdaFunction, Runtime, Code, type IFunction } from 'aws-cdk-lib/aws-lambda'
 import { Construct } from 'constructs'
 
@@ -9,6 +10,7 @@ interface ImportServiceHandlersProps {
 export class ImportServiceHandlers extends Construct {
   public readonly getPresignedUrl: IFunction
   public readonly parseProducts: IFunction
+  public readonly authorizer: IFunction
 
   constructor(scope: Construct, id: string, props: ImportServiceHandlersProps) {
     super(scope, id)
@@ -30,5 +32,8 @@ export class ImportServiceHandlers extends Construct {
         PRODUCTS_QUEUE_URL: props.queueUrl
       }
     })
+
+    const authorizerARN = Fn.importValue('AuthorizerArn')
+    this.authorizer = LambdaFunction.fromFunctionArn(this, 'ImportAuthorizer', authorizerARN)
   }
 }

@@ -23,7 +23,7 @@ export class ImportServiceApi extends Construct {
     super(scope, id)
 
     const integrationOptions: LambdaIntegrationOptions = {
-      allowTestInvoke: false
+      allowTestInvoke: true
     }
     const getPresignedUrlIntegration = new LambdaIntegration(
       props.handlers.getPresignedUrl,

@@ -9,7 +9,7 @@ export default defineConfig({
     globals: false,
     watch: false,
     clearMocks: true,
-    setupFiles: './tests/setup.ts'
+    setupFiles: ['tests/setup.ts', 'tests/env.ts']
   },
   resolve: {
     alias: {

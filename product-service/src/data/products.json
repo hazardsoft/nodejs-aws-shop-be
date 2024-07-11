@@ -39,6 +39,14 @@
       "price": 19,
       "count": 5,
       "image": "https://www.dropbox.com/scl/fi/f3to22i7a6xvq85vhqye6/neuromancer.jpeg?rlkey=tvvx5n6cxu93wu66rez1lmpyq&dl=1"
+    },
+    {
+      "id": "2bce03a8-ebdf-4586-a140-31e0b7e9358c",
+      "title": "Burning Chrome",
+      "description": "William Gibson",
+      "price": 20,
+      "count": 6,
+      "image": "https://www.dropbox.com/scl/fi/uk8hn3d3tx4rxr3r5kgyl/burning-chrome.jpeg?rlkey=y4jwkpf0bh2wf6upp9rz3n6x7&dl=1"
     }
   ]
 }

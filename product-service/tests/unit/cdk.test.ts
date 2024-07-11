@@ -1,12 +1,13 @@
 import { Template } from 'aws-cdk-lib/assertions'
 import { describe, test } from 'vitest'
 import { productService } from '../../cdk/index.js'
+import { config } from '../../cdk/config.js'
 
 describe('Test AWS CDK stack', () => {
   const template = Template.fromStack(productService)
 
   test('Lambda handlers are created', () => {
-    template.resourceCountIs('AWS::Lambda::Function', 3)
+    template.resourceCountIs('AWS::Lambda::Function', 4)
     template.hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'getProductsList.handler'
     })
@@ -15,6 +16,40 @@ describe('Test AWS CDK stack', () => {
     })
     template.hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'createProduct.handler'
+    })
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Handler: 'catalogBatchProcess.handler'
+    })
+  })
+
+  test('SQS is created', () => {
+    template.resourceCountIs('AWS::SQS::Queue', 1)
+    template.hasResourceProperties('AWS::SQS::Queue', {
+      QueueName: config.queue.name
+    })
+
+    template.resourceCountIs('AWS::Lambda::EventSourceMapping', 1)
+    template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      BatchSize: config.queue.batchSize,
+      MaximumBatchingWindowInSeconds: config.queue.maxBatchingWindowInSeconds
+    })
+
+    template.hasOutput('*', {
+      Export: {
+        Name: 'ProductsQueueArn'
+      }
+    })
+  })
+
+  test('SNS is created', () => {
+    template.resourceCountIs('AWS::SNS::Topic', 1)
+    template.hasResourceProperties('AWS::SNS::Topic', {
+      DisplayName: config.topic.name
+    })
+
+    template.resourceCountIs('AWS::SNS::Subscription', 2)
+    template.hasResourceProperties('AWS::SNS::Subscription', {
+      Protocol: 'email'
     })
   })
 
@@ -26,7 +61,6 @@ describe('Test AWS CDK stack', () => {
     template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       TableName: 'Stocks'
     })
-   
   })
 
   test('REST API is created', () => {

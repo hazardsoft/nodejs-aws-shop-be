@@ -12,7 +12,12 @@ const options = {
 
 const lambdaOptions = {
   ...options,
-  external: ['@aws-sdk/client-dynamodb', '@aws-sdk/client-lambda', '@aws-sdk/lib-dynamodb']
+  external: [
+    '@aws-sdk/client-dynamodb',
+    '@aws-sdk/client-lambda',
+    '@aws-sdk/lib-dynamodb',
+    '@aws-sdk/client-sns'
+  ]
 }
 
 const utilityOptions = {
@@ -46,5 +51,10 @@ await esbuild.build({
 await esbuild.build({
   entryPoints: ['src/handlers/createProduct.ts'],
   outfile: 'dist/handlers/createProduct/createProduct.mjs',
+  ...lambdaOptions
+})
+await esbuild.build({
+  entryPoints: ['src/handlers/catalogBatchProcess.ts'],
+  outfile: 'dist/handlers/catalogBatchProcess/catalogBatchProcess.mjs',
   ...lambdaOptions
 })

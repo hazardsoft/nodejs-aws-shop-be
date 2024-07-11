@@ -12,7 +12,7 @@ const options = {
 
 const lambdaOptions = {
   ...options,
-  external: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner']
+  external: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner', '@aws-sdk/client-sqs']
 }
 
 const utilityOptions = {

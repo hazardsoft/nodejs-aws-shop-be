@@ -12,7 +12,7 @@
     "test:integration:run": "vitest --config vitest.config.integration.js",
     "test:integration": "run-s docker:up test:integration:run",
     "test": "run-s test:unit",
-    "cdk": "run-s lint build cdk:run",
+    "cdk": "env-cmd --file .env run-s lint build cdk:run",
     "cdk:run": "node cdk.out/index.js",
     "cdk:diff": "cdk diff",
     "cdk:deploy": "cdk deploy",
@@ -40,6 +40,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.598.0",
     "@aws-sdk/client-lambda": "^3.438.0",
+    "@aws-sdk/client-sns": "^3.609.0",
     "@aws-sdk/lib-dynamodb": "^3.598.0",
     "aws-cdk-lib": "^2.144.0",
     "constructs": "^10.0.0",

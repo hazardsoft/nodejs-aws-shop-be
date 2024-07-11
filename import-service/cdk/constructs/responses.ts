@@ -26,6 +26,18 @@ export class ImportServiceResponses extends Construct {
         }
       },
       {
+        statusCode: '401',
+        responseModels: {
+          'application/json': props.models.error
+        }
+      },
+      {
+        statusCode: '403',
+        responseModels: {
+          'application/json': props.models.error
+        }
+      },
+      {
         statusCode: '500',
         responseModels: {
           'application/json': props.models.error

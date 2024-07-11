@@ -36,6 +36,14 @@ export class ImportServiceApi extends Construct {
       'GetPresignedUrlBadRequestBody',
       ImportServiceGatewayResponses.options.BAD_REQUEST_BODY
     )
+    api.addGatewayResponse(
+      'GetPresignedUrlDefault4xx',
+      ImportServiceGatewayResponses.options.DEFAULT_4XX
+    )
+    api.addGatewayResponse(
+      'GetPresignedUrlDefault5xx',
+      ImportServiceGatewayResponses.options.DEFAULT_5XX
+    )
 
     const { presignedUrl, error } = new ImportServiceModels(this, 'ImportServiceModels', { api })
     const apiResponses = new ImportServiceResponses(this, 'ImportServiceResponses', {

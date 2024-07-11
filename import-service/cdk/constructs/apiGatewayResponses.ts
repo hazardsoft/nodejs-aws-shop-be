@@ -2,7 +2,9 @@ import { ResponseType, type GatewayResponseOptions } from 'aws-cdk-lib/aws-apiga
 import { Construct } from 'constructs'
 
 const enum ResponseTypeOptions {
-  BAD_REQUEST_BODY = 'BAD_REQUEST_BODY'
+  BAD_REQUEST_BODY = 'BAD_REQUEST_BODY',
+  DEFAULT_4XX = 'DEFAULT_4XX',
+  DEFAULT_5XX = 'DEFAULT_5XX'
 }
 
 export class ImportServiceGatewayResponses extends Construct {
@@ -15,6 +17,18 @@ export class ImportServiceGatewayResponses extends Construct {
       templates: {
         'application/json':
           '{"message": "$context.error.messageString", "issues": ["$context.error.validationErrorString"]}'
+      }
+    },
+    DEFAULT_4XX: {
+      type: ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'"
+      }
+    },
+    DEFAULT_5XX: {
+      type: ResponseType.DEFAULT_5XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'"
       }
     }
   }

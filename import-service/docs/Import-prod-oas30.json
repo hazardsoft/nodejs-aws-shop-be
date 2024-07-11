@@ -2,7 +2,7 @@
   "openapi" : "3.0.1",
   "info" : {
     "title" : "Import",
-    "version" : "2024-06-27T09:52:24Z"
+    "version" : "2024-07-11T07:21:45Z"
   },
   "servers" : [ {
     "url" : "https://sjova0c3h3.execute-api.eu-central-1.amazonaws.com/{basePath}",
@@ -24,6 +24,26 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ImportImporacwRMyvRvEba"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "401 response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ImportImporhhEToHqqADTu"
+                }
+              }
+            }
+          },
           "500" : {
             "description" : "500 response",
             "content" : {
@@ -34,17 +54,20 @@
               }
             }
           },
-          "200" : {
-            "description" : "200 response",
+          "403" : {
+            "description" : "403 response",
             "content" : {
-              "text/plain" : {
+              "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ImportImporacwRMyvRvEba"
+                  "$ref" : "#/components/schemas/ImportImporhhEToHqqADTu"
                 }
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "ImportServiceImportServiceApiImportServiceAuthorizer528C27DE" : [ ]
+        } ]
       },
       "options" : {
         "responses" : {
@@ -94,6 +117,14 @@
       "ImportImporacwRMyvRvEba" : {
         "type" : "string",
         "description" : "Presigned url for CSV file upload"
+      }
+    },
+    "securitySchemes" : {
+      "ImportServiceImportServiceApiImportServiceAuthorizer528C27DE" : {
+        "type" : "apiKey",
+        "name" : "Authorization",
+        "in" : "header",
+        "x-amazon-apigateway-authtype" : "custom"
       }
     }
   }

@@ -1,12 +1,18 @@
 type Token = string
 
-const delimiter = ':'
+export const delimiter = ':'
+export const tokenStart = 'Basic '
 
-export const encodeToken = (user: string, password: string): Token => {
-  return Buffer.from(`${user}${delimiter}${password}`).toString('base64')
+export const validate = (token: Token): boolean => {
+  return token.startsWith(tokenStart) && token.length > tokenStart.length
 }
 
-export const decodeToken = (token: string): [user: string, password: string] => {
+export const encode = (user: string, password: string): Token => {
+  return tokenStart + Buffer.from(`${user}${delimiter}${password}`).toString('base64')
+}
+
+export const decode = (token: string): [user: string, password: string] => {
+  token = token.replace(tokenStart, '')
   const [user, password] = Buffer.from(token, 'base64').toString().split(delimiter)
   return [user ?? '', password ?? '']
 }

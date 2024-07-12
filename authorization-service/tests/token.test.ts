@@ -1,4 +1,4 @@
-import { decodeToken, encodeToken } from '@/helpers/token.js'
+import { decode, encode, validate } from '@/helpers/token.js'
 import { describe, expect, test } from 'vitest'
 import { config } from './setup.js'
 
@@ -6,10 +6,11 @@ describe('Token Tests', () => {
   test('shoud encode/decode token', () => {
     const { username, password } = config
 
-    const encodedToken = encodeToken(username, password)
-    const [decodedUsername, decodedPassord] = decodeToken(encodedToken)
+    const encodedToken = encode(username, password)
+    const [decodedUsername, decodedPassword] = decode(encodedToken)
 
     expect(decodedUsername).toBe(username)
-    expect(decodedPassord).toBe(password)
+    expect(decodedPassword).toBe(password)
+    expect(validate(encodedToken)).toBe(true)
   })
 })

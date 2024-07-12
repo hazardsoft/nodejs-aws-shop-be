@@ -1,5 +1,5 @@
 import { createPolicy } from '@/helpers/policy.js'
-import { decodeToken } from '@/helpers/token.js'
+import { decode, validate } from '@/helpers/token.js'
 import type {
   APIGatewayAuthorizerResult,
   APIGatewayRequestAuthorizerEvent,
@@ -8,7 +8,6 @@ import type {
 
 const userName = process.env.USERNAME ?? ''
 const userPassword = process.env.PASSWORD ?? ''
-const tokenBeginning = 'Basic '
 
 export const handler = async (
   event: Pick<APIGatewayRequestAuthorizerEvent, 'methodArn' | 'headers'>
@@ -22,16 +21,13 @@ export const handler = async (
     }
   }
 
-  if (!event.headers?.Authorization || !event.headers.Authorization.startsWith(tokenBeginning)) {
+  const token = event.headers?.Authorization
+
+  if (!token || !validate(token)) {
     return createResponse('Deny')
   }
 
-  const token = event.headers.Authorization.split(tokenBeginning)[1]
-  if (!token) {
-    return createResponse('Deny')
-  }
-
-  const [user, password] = decodeToken(token)
+  const [user, password] = decode(token)
   if (user === userName && password === userPassword) {
     return createResponse('Allow')
   }

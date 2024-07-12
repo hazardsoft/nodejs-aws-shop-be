@@ -3,7 +3,7 @@ import { handler } from '@/handlers/basicAuthorizer.js'
 import { createPolicy } from '@/helpers/policy.js'
 import { config } from './setup.js'
 import type { APIGatewayAuthorizerResult, StatementEffect } from 'aws-lambda'
-import { encodeToken } from '@/helpers/token.js'
+import { encode } from '@/helpers/token.js'
 
 const createResponse = (
   username: string,
@@ -50,7 +50,7 @@ describe('Basic Authorizer Tests', () => {
     const response = await handler({
       methodArn: config.methodArn,
       headers: {
-        Authorization: `Basic ${encodeToken(config.username, config.password)}`
+        Authorization: encode(config.username, config.password)
       }
     })
 

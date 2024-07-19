@@ -9,10 +9,12 @@ import { Construct } from 'constructs'
 import { ImportServiceModels } from './models.js'
 import { ImportServiceResponses } from './responses.js'
 import { ImportServiceGatewayResponses } from './apiGatewayResponses.js'
+import { ImportServiceAuthorizer } from './auth.js'
 
 interface ImportServiceApiProps {
   handlers: {
     getPresignedUrl: IFunction
+    authorizer: IFunction
   }
 }
 
@@ -21,7 +23,7 @@ export class ImportServiceApi extends Construct {
     super(scope, id)
 
     const integrationOptions: LambdaIntegrationOptions = {
-      allowTestInvoke: false
+      allowTestInvoke: true
     }
     const getPresignedUrlIntegration = new LambdaIntegration(
       props.handlers.getPresignedUrl,
@@ -33,6 +35,14 @@ export class ImportServiceApi extends Construct {
     api.addGatewayResponse(
       'GetPresignedUrlBadRequestBody',
       ImportServiceGatewayResponses.options.BAD_REQUEST_BODY
+    )
+    api.addGatewayResponse(
+      'GetPresignedUrlDefault4xx',
+      ImportServiceGatewayResponses.options.DEFAULT_4XX
+    )
+    api.addGatewayResponse(
+      'GetPresignedUrlDefault5xx',
+      ImportServiceGatewayResponses.options.DEFAULT_5XX
     )
 
     const { presignedUrl, error } = new ImportServiceModels(this, 'ImportServiceModels', { api })
@@ -53,6 +63,12 @@ export class ImportServiceApi extends Construct {
       }
     })
 
+    const { authorizer } = new ImportServiceAuthorizer(this, 'ImportServiceAuthorizer', {
+      handlers: {
+        authorizer: props.handlers.authorizer
+      }
+    })
+
     // Adds "POST" method
     importEndpoint.addMethod('GET', getPresignedUrlIntegration, {
       methodResponses: apiResponses.getPresignedUrlResponses,
@@ -62,7 +78,8 @@ export class ImportServiceApi extends Construct {
       requestValidatorOptions: {
         validateRequestBody: false,
         validateRequestParameters: true
-      }
+      },
+      authorizer
     })
   }
 }

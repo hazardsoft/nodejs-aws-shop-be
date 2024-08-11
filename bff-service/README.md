@@ -26,4 +26,15 @@ Product/Cart endpoints URLs should be defined in `.env` file created out of [.en
 
 ## Caching
 
-All products fetched by `product` endpoint are stored in in-memory cache (cache expiration is set with `PRODUCTS_CACHE_EXPIRATION` var (in seconds) in `.env` file, defaults to `0` if not defined).
+All products fetched by `product` endpoint are stored in in-memory cache (cache expiration is set with `CACHE_TTL` var (in seconds) in `.env` file, defaults to `0` if not defined).
+
+## API Testing
+
+[Postman collection](./postman/bff.postman_collection.json) can be used to test BFF service from local machine.
+The folllowing cases are covered:
+1. `GET` all products;
+2. `GET` one product;
+3. `POST` one product;
+4. `GET` cart of an user (includes `Authorization` token);
+5. `PUT` cart with a product (includes `Authorization` token);
+6. `POST` cart with an order (includes `Authorization` token);

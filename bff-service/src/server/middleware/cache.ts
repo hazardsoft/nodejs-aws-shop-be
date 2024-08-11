@@ -11,7 +11,7 @@ const middleware = async (_: ServerRequest, res: ServerResponse, next: Next): Pr
     const originalResEnd = res.end
     res.end = function (data) {
       originalResEnd.apply(this, [data, 'utf-8'])
-      save(data)
+      save(JSON.parse(data))
       return res
     }
     next()

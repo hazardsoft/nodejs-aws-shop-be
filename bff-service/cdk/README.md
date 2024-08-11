@@ -1,26 +1,11 @@
 # Overview
 
-Contains AWS CDK infrastructure as code for Cart Service.
+Contains AWS CDK infrastructure as code for BFF Service.
 Describes the following resources:
 
-1. Lambda cart handler (uses basic auth token encoded in Base64 provided in `Authorization` request header to authenticate an user);
-2. RDS DB instance (Postgres) to store users, cart items, carts, orders;
-3. Network resources (e.g. VPC and security groups) to provide means of communication between Lambda and RDS DB instance, RDS DB instance and Internet
+1. HTTP API to proxy requests to cart/product services.
 
 ## Environment
-
-### RDS DB Instance
-
-The following env vars are used by AWS CDK stack during RDS DB instance creation (copy/paste [.env.example](./.env.example), rename it to `.env` and fill with the relevant values):
-
-- `DATABASE_USERNAME`;
-- `DATABASE_PASSWORD`.
-
-### Lambda - Cart Handler
-
-The following env var is passed into cart handler in order to provide access to previously created RDS DB instance:
-
-- `DATABASE_URL` - generated dynamically based on db instance endpoint host/port values + username/password passed via `.env` file.
 
 ### HTTP API
 
@@ -28,7 +13,7 @@ Elastic Beanstalk deploy provides HTTP endpoint, but to integrate it with FE it 
 In order to provide HTTPS endpoint additional HTTP API is created to proxy requests to EC2 instance of EB application.
 The following env var is used to define EB endpoint:
 
-- `CART_SERVICE_URL`
+- `BFF_SERVICE_URL`
 
 ## NPM scripts
 

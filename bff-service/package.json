@@ -1,0 +1,40 @@
+{
+  "name": "bff-service",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint --fix .",
+    "format": "prettier --write .",
+    "prebuild": "rimraf dist",
+    "build": "node esbuild.config.js",
+    "start": "node dist/index.js",
+    "start:local": "node --env-file=.env dist/index.js",
+    "test": "exit 0",
+    "eb:init": "eb init hazardsoft-bff-api",
+    "eb:create": "env-cmd -x -f .env eb create bff-prod --cname hazardsoft-bff-api-prod --single --envvars cart=\\$cart,product=\\$product,CACHE_TTL=\\$CACHE_TTL,PORT=\\$PORT --instance-types=t2.micro",
+    "eb:deploy": "eb deploy bff-prod",
+    "eb:destroy": "eb terminate --all"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.6.0",
+    "@types/node": "^20.14.10",
+    "env-cmd": "^10.1.0",
+    "esbuild": "^0.23.0",
+    "eslint": "^8.57.0",
+    "globals": "^15.8.0",
+    "npm-run-all2": "^6.2.2",
+    "prettier": "^3.3.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^7.16.0"
+  },
+  "dependencies": {
+    "axios": "^1.7.3",
+    "path-to-regexp": "^7.1.0"
+  }
+}

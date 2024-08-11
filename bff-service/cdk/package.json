@@ -1,0 +1,42 @@
+{
+  "name": "cart-service-cdk",
+  "version": "1.0.0",
+  "main": "cdk.out/index.js",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint --fix .",
+    "format": "prettier --write .",
+    "prebuild": "rm -rf dist",
+    "build": "node esbuild.config.js",
+    "start": "node cdk.out/index.js",
+    "test": "vitest --config vitest.config.js",
+    "cdk": "env-cmd --file .env run-s lint format build cdk:run",
+    "cdk:run": "node cdk.out/index.js",
+    "cdk:diff": "cdk diff",
+    "cdk:deploy": "cdk deploy",
+    "cdk:destroy": "cdk destroy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.6.0",
+    "@types/aws-lambda": "^8.10.141",
+    "@types/node": "^20.14.10",
+    "env-cmd": "^10.1.0",
+    "esbuild": "^0.23.0",
+    "eslint": "^8.57.0",
+    "globals": "^15.8.0",
+    "npm-run-all2": "^6.2.2",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^7.16.0",
+    "vitest": "^2.0.1"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.148.0",
+    "aws-lambda": "^1.0.7",
+    "constructs": "^10.3.0"
+  }
+}

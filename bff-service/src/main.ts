@@ -7,7 +7,7 @@ import redirectMiddleware from './server/middleware/redirect'
 import type { PathMatcher, ServerRequest } from './server/types'
 import { match } from 'path-to-regexp'
 
-const port = Number(process.env.PORT) || 8080
+const port = Number(process.env.PORT) || 3000
 
 const productsMatcher: PathMatcher = (req: ServerRequest) => {
   const matchProducts = match('/product', { decode: decodeURIComponent })

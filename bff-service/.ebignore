@@ -1,0 +1,12 @@
+
+# Ignore everything
+*
+
+# Except  
+!.ebextensions
+!dist
+!package*.json
+
+# Ignore node_modules
+node_modules
+cdk

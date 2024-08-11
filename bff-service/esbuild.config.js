@@ -8,7 +8,7 @@ const options = {
   sourcemap: true,
   minify: false,
   tsconfig: 'tsconfig.app.json',
-  // packages: 'external'
+  packages: 'external'
 }
 
 await esbuild.build({
